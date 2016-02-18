@@ -54,6 +54,8 @@ public class Parser {
 				case GuestId :
 					ofnMatchData.setGuestId(Long.parseLong(val));
 					break;
+				case BaseData :
+					break;
 				default :
 					break;
 					
