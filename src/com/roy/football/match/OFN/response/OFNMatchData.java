@@ -4,6 +4,13 @@ import java.util.Date;
 
 public class OFNMatchData {
 
+	@Override
+	public String toString() {
+		return "OFNMatchData [matchId=" + matchId + ", matchTime=" + matchTime
+				+ ", hostId=" + hostId + ", hostName=" + hostName
+				+ ", guestId=" + guestId + ", guestName=" + guestName + "]";
+	}
+
 	public Long getMatchId() {
 		return matchId;
 	}

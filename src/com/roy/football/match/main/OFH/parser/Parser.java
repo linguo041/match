@@ -18,9 +18,11 @@ public class Parser {
 
 		while (matcher.find()) {
 			String key = matcher.group(1);
-			String var = matcher.group(2);
-			System.out.println(key + "    " + var);
+			String val = matcher.group(2);
+			generateMatchData(key, val, ofnMatchData);
 		}
+		
+		System.out.println(ofnMatchData);
 	}
 	
 	private void generateMatchData (String key, String val, OFNMatchData ofnMatchData) {
