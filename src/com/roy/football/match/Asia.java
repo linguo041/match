@@ -1,6 +1,6 @@
 package com.roy.football.match;
 
-public class AoMen {
+public class Asia {
 	
 	public PanKou getOrigPankou() {
 		return origPankou;

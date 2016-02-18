@@ -1,7 +1,7 @@
 package com.roy.football.match.main.OFH.parser;
 
 public class OFHKey {
-	public enum Match implements IShortKey {
+	public static enum Match implements IShortKey {
 		MatchId("mid"),
 		MatchTime("mtime"),
 		HostName("homename"),
@@ -24,6 +24,20 @@ public class OFHKey {
 		public String getShortKey() {
 			// TODO Auto-generated method stub
 			return shotKey;
+		}
+
+		public static Match shortKeyOf (String shortKey) {
+			if (shortKey == null) {
+				return null;
+			}
+			
+			for (Match m : Match.values()) {
+				if (m.shotKey.equalsIgnoreCase(shortKey)) {
+					return m;
+				}
+			}
+			
+			return null;
 		}
 		
 		private String shotKey;

@@ -1,6 +1,6 @@
 package com.roy.football.match;
 
-public class RecentData {
+public class RecentMatches {
 	
 	public Integer getGoals() {
 		return goals;

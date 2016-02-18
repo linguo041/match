@@ -1,6 +1,6 @@
 package com.roy.football.match;
 
-public class OldRecord {
+public class OldMatches {
 	
 	public Integer getHostWins() {
 		return hostWins;
@@ -26,15 +26,15 @@ public class OldRecord {
 	public void setHostWinsAsHost(Integer hostWinsAsHost) {
 		this.hostWinsAsHost = hostWinsAsHost;
 	}
-	public AoMen getRecentPankou() {
+	public Asia getRecentPankou() {
 		return recentPankou;
 	}
-	public void setRecentPankou(AoMen recentPankou) {
+	public void setRecentPankou(Asia recentPankou) {
 		this.recentPankou = recentPankou;
 	}
 	private Integer hostWins;
 	private Integer draws;
 	private Integer hostLoses;
 	private Integer hostWinsAsHost;
-	private AoMen recentPankou;
+	private Asia recentPankou;
 }
