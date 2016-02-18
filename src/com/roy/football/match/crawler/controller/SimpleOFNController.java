@@ -7,12 +7,14 @@ import java.util.List;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.roy.football.match.OFN.response.JinCaiSummary;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.httpRequest.HttpRequestException;
 import com.roy.football.match.httpRequest.HttpRequestService;
+import com.roy.football.match.main.OFH.parser.Parser;
 import com.roy.football.match.util.MatchUtil;
 import com.roy.football.match.util.XmlParseException;
 import com.roy.football.match.util.XmlParser;
@@ -46,9 +48,12 @@ public class SimpleOFNController {
 					if ((xid+"").contains(matchDay)) {
 						
 						Document doc = Jsoup.connect(ANALYSIS_URL_PREFIX + match.getOddsmid()).get();
+
+						Element script = doc.select("script").last();
 						
-						Elements e = doc.select("#hawar td:eq(6)");
-						System.out.println(e.val());
+						String jsData = script.data();
+						
+						parser.parse(jsData);
 						break;
 					}
 				}
@@ -74,4 +79,5 @@ public class SimpleOFNController {
 	}
 
 	private HttpRequestService httpService;
+	private Parser parser = new Parser();
 }
