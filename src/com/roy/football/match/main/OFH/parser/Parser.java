@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.roy.football.match.OFN.response.ClubDatas;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.main.OFH.parser.OFHKey.Match;
 import com.roy.football.match.util.StringUtil;
@@ -55,6 +56,8 @@ public class Parser {
 					ofnMatchData.setGuestId(Long.parseLong(val));
 					break;
 				case BaseData :
+					ClubDatas clubDatas = OFHConverter.convertClubDatas(val);
+					ofnMatchData.setBaseData(clubDatas);
 					break;
 				default :
 					break;

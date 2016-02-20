@@ -48,11 +48,19 @@ public class OFNMatchData {
 		this.guestName = guestName;
 	}
 
+	public ClubDatas getBaseData() {
+		return baseData;
+	}
+
+	public void setBaseData(ClubDatas baseData) {
+		this.baseData = baseData;
+	}
+
 	private Long matchId;
 	private Date matchTime;
 	private Long hostId;
 	private String hostName;
 	private Long guestId;
 	private String guestName;
-	
+	private ClubDatas baseData;
 }
