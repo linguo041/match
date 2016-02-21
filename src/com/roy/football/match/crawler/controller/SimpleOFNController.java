@@ -2,6 +2,7 @@ package com.roy.football.match.crawler.controller;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,8 +11,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.roy.football.match.OFN.response.AsiaData;
+import com.roy.football.match.OFN.response.EuroData;
 import com.roy.football.match.OFN.response.JinCaiSummary;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
+import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.httpRequest.HttpRequestException;
 import com.roy.football.match.httpRequest.HttpRequestService;
 import com.roy.football.match.main.OFH.parser.Parser;
@@ -20,54 +24,25 @@ import com.roy.football.match.util.XmlParseException;
 import com.roy.football.match.util.XmlParser;
 
 public class SimpleOFNController {
-	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
-	private final static String ANALYSIS_URL_PREFIX = "http://odds.159cai.com/match/analysis/";
-	
+
 	public SimpleOFNController(HttpRequestService httpService) {
 		this.httpService = httpService;
 	}
 	
 	public void process () {
-		try {
-			String resData = this.httpService.doHttpRequest(JIN_CAI_URL, HttpRequestService.GET_METHOD, null, null);
-
-			JinCaiSummary response = XmlParser.parseXmlToObject(
-							new StringReader(resData),
-							JinCaiSummary.class, "xml");
-
-			List<JinCaiMatch> matches = response.getRows();
-
-			if (matches != null && matches.size() > 0) {
-				Collections.sort(matches);
-				
-				String matchDay = MatchUtil.getMatchDay();
-
-				
-				for (JinCaiMatch match : matches) {
-					Long xid = match.getXid();
-					if ((xid+"").contains(matchDay)) {
-						
-						Document doc = Jsoup.connect(ANALYSIS_URL_PREFIX + match.getOddsmid()).get();
-
-						Element script = doc.select("script").last();
-						
-						String jsData = script.data();
-						
-						parser.parse(jsData);
-						break;
-					}
-				}
+		List <OFNMatchData> ofnMatches = new ArrayList <OFNMatchData> ();
+		
+		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatches();
+		
+		if (jinCaiMatches != null && jinCaiMatches.size() > 0) {
+			for (JinCaiMatch jcMatch : jinCaiMatches) {
+				OFNMatchData ofnMatch = parser.parseMatchData(jcMatch.getOddsmid());
+				EuroData euroData = parser.parseEuroData(jcMatch.getOddsmid());
+				AsiaData asiaData = parser.parseAsiaData(jcMatch.getOddsmid());
 			}
-
-			System.out.println(matches);
-		} catch (HttpRequestException | XmlParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
+
 
 	
 	public HttpRequestService getHttpService() {
@@ -79,5 +54,5 @@ public class SimpleOFNController {
 	}
 
 	private HttpRequestService httpService;
-	private Parser parser = new Parser();
+	private Parser parser = new Parser(httpService);
 }
