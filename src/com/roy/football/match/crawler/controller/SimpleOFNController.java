@@ -37,7 +37,7 @@ public class SimpleOFNController {
 		if (jinCaiMatches != null && jinCaiMatches.size() > 0) {
 			for (JinCaiMatch jcMatch : jinCaiMatches) {
 				OFNMatchData ofnMatch = parser.parseMatchData(jcMatch.getOddsmid());
-				EuroData euroData = parser.parseEuroData(jcMatch.getOddsmid());
+				EuroData euroData = parser.parseEuroData(jcMatch.getOddsmid(), 442l);
 				AsiaData asiaData = parser.parseAsiaData(jcMatch.getOddsmid());
 			}
 		}

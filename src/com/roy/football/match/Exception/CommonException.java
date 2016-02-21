@@ -20,12 +20,6 @@ private static final long serialVersionUID = 1196116378666755633L;
 	public CommonException (Throwable cause){
 		super(cause);
 	}
-	
-	protected CommonException(String message, Throwable cause,
-            boolean enableSuppression,
-            boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
 
 	public CommonException (ErrorType errorType, Object ...args) {
 		super(String.format("Error Code " + errorType.getCode() + " - " + errorType.getErrorMsg(), args));

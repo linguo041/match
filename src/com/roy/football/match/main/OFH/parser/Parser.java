@@ -11,8 +11,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import com.google.gson.reflect.TypeToken;
 import com.roy.football.match.OFN.response.AsiaData;
 import com.roy.football.match.OFN.response.ClubDatas;
+import com.roy.football.match.OFN.response.EType;
 import com.roy.football.match.OFN.response.EuroData;
 import com.roy.football.match.OFN.response.JinCaiSummary;
 import com.roy.football.match.OFN.response.OFNMatchData;
@@ -20,6 +22,7 @@ import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.httpRequest.HttpRequestException;
 import com.roy.football.match.httpRequest.HttpRequestService;
 import com.roy.football.match.main.OFH.parser.OFHKey.Match;
+import com.roy.football.match.util.GsonConverter;
 import com.roy.football.match.util.StringUtil;
 import com.roy.football.match.util.XmlParseException;
 import com.roy.football.match.util.XmlParser;
@@ -27,6 +30,7 @@ import com.roy.football.match.util.XmlParser;
 public class Parser {
 	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.159cai.com/match/analysis/";
+	private final static String EURO_URL_PREIX = "http://odds.159cai.com/match/detail";
 
 	private final static Pattern KEY_VALUE_REG = Pattern.compile("\\b(\\w+)\\b\\s*=\\s*(.+?);");
 	
@@ -78,7 +82,17 @@ public class Parser {
 	}
 
 	
-	public EuroData parseEuroData (Long oddsmid) {
+	public EuroData parseEuroData (Long oddsmid, Long cid) {
+		try {
+			String resData = this.httpService.doHttpRequest(EURO_URL_PREIX
+						+ "?cid=" + cid + "&mid=" + oddsmid + "&etype=" + EType.eruo,
+					HttpRequestService.GET_METHOD, null, null);
+			
+			
+		} catch (HttpRequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
@@ -143,4 +157,12 @@ public class Parser {
 	}
 
 	private HttpRequestService httpService;
+	
+	public static void main (String [] args) {
+		String instr = "[[\"4.00\",\"3.75\",\"1.75\",\"1454880574\"],[\"3.60\",\"3.75\",\"1.83\",\"1455221779\"],[\"4.20\",\"3.80\",\"1.70\",\"1455434403\"],[\"3.60\",\"3.75\",\"1.83\",\"1455435003\"],[\"4.20\",\"3.80\",\"1.70\",\"1455435312\"]]";
+		
+		String out[][] = GsonConverter.convertJSonToObjectUseNormal(instr, new TypeToken<String[][]>(){});
+		
+		System.out.println(out);
+	}
 }
