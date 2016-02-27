@@ -3,6 +3,12 @@ package com.roy.football.match.OFN.response;
 import com.google.gson.annotations.SerializedName;
 
 public class ClubDatas {
+	
+	@Override
+	public String toString() {
+		return "ClubDatas [hostData=" + hostData + ", guestData=" + guestData
+				+ "]";
+	}
 
 	public ClubData getHostData() {
 		return hostData;
@@ -20,13 +26,40 @@ public class ClubDatas {
 		this.guestData = guestData;
 	}
 
+	@SerializedName("home")
 	private ClubData hostData;
+	@SerializedName("away")
 	private ClubData guestData;
 	
 	public static class ClubData {
 
+		@Override
+		public String toString() {
+			return "ClubData [allNum=" + getAllNum() + ", homeNum="
+					+ getHomeNum() + ", awayNum=" + getAwayNum()
+					+ ", allWin=" + getAllWin() + ", homeWin="
+					+ getHomeWin() + ", awayWin=" + getAwayWin()
+					+ ", allDraw=" + getAllDraw() + ", homeDraw="
+					+ getHomeDraw() + ", awayDraw=" + getAwayDraw()
+					+ ", allLose=" + getAllLose() + ", homeLose="
+					+ getHomeLose() + ", awayLose=" + getAwayLose()
+					+ ", allGoal=" + getAllGoal() + ", homeGoal="
+					+ getHomeGoal() + ", awayGoal=" + getAwayGoal()
+					+ ", allMiss=" + getAllMiss() + ", homeMiss="
+					+ getHomeMiss() + ", awayMiss=" + getAwayMiss()
+					+ ", allNet=" + getAllNet() + ", homeNet="
+					+ getHomeNet() + ", awayNet=" + getAwayNet()
+					+ ", allScore=" + getAllScore() + ", homeScore="
+					+ getHomeScore() + ", awayScore=" + getAwayScore()
+					+ ", pm=" + getPm() + "]";
+		}
+
 		public Integer getAllNum() {
-			return homeNum + awayNum;
+			if (allNum == null && homeNum != null && awayNum != null) {
+				allNum = homeNum + awayNum;
+			}
+
+			return allNum;
 		}
 		public void setAllNum(Integer allNum) {
 			this.allNum = allNum;
@@ -44,7 +77,10 @@ public class ClubDatas {
 			this.awayNum = awayNum;
 		}
 		public Integer getAllWin() {
-			return homeWin + awayWin;
+			if (allWin == null && homeWin != null && awayWin != null) {
+				allWin = homeWin + awayWin;
+			}
+			return allWin;
 		}
 		public void setAllWin(Integer allWin) {
 			this.allWin = allWin;
@@ -62,7 +98,10 @@ public class ClubDatas {
 			this.awayWin = awayWin;
 		}
 		public Integer getAllDraw() {
-			return homeDraw + awayDraw;
+			if (allDraw == null && homeDraw != null && awayDraw != null) {
+				allDraw = homeDraw + awayDraw;
+			}
+			return allDraw;
 		}
 		public void setAllDraw(Integer allDraw) {
 			this.allDraw = allDraw;
@@ -80,7 +119,10 @@ public class ClubDatas {
 			this.awayDraw = awayDraw;
 		}
 		public Integer getAllLose() {
-			return homeLose + awayLose;
+			if (allLose == null && homeLose != null && awayLose != null) {
+				allLose = homeLose + awayLose;
+			}
+			return allLose;
 		}
 		public void setAllLose(Integer allLose) {
 			this.allLose = allLose;
@@ -98,7 +140,10 @@ public class ClubDatas {
 			this.awayLose = awayLose;
 		}
 		public Integer getAllGoal() {
-			return homeGoal + awayGoal;
+			if (allGoal == null && homeGoal != null && awayGoal != null) {
+				allGoal = homeGoal + awayGoal;
+			}
+			return allGoal;
 		}
 		public void setAllGoal(Integer allGoal) {
 			this.allGoal = allGoal;
@@ -116,7 +161,10 @@ public class ClubDatas {
 			this.awayGoal = awayGoal;
 		}
 		public Integer getAllMiss() {
-			return homeMiss + awayMiss;
+			if (allMiss == null && homeMiss != null && awayMiss != null) {
+				allMiss = homeMiss + awayMiss;
+			}
+			return allMiss;
 		}
 		public void setAllMiss(Integer allMiss) {
 			this.allMiss = allMiss;
@@ -134,19 +182,28 @@ public class ClubDatas {
 			this.awayMiss = awayMiss;
 		}
 		public Integer getAllNet() {
-			return getHomeNet() + getAwayNet();
+			if (allNet == null && getHomeNet() != null && getAwayNet() != null) {
+				allNet = getHomeNet() + getAwayNet();
+			}
+			return allNet;
 		}
 		public void setAllNet(Integer allNet) {
 			this.allNet = allNet;
 		}
 		public Integer getHomeNet() {
-			return homeGoal -homeMiss;
+			if (homeNet == null && homeGoal != null && homeMiss != null) {
+				homeNet = homeGoal - homeMiss;
+			}
+			return homeNet;
 		}
 		public void setHomeNet(Integer homeNet) {
 			this.homeNet = homeNet;
 		}
 		public Integer getAwayNet() {
-			return awayGoal -awayMiss;
+			if (awayNet == null && awayGoal != null && awayMiss != null) {
+				awayNet = awayGoal -awayMiss;
+			}
+			return awayNet;
 		}
 		public void setAwayNet(Integer awayNet) {
 			this.awayNet = awayNet;
@@ -169,23 +226,11 @@ public class ClubDatas {
 		public void setAwayScore(Integer awayScore) {
 			this.awayScore = awayScore;
 		}
-		public Integer getAllPm() {
-			return allPm;
+		public PaiMing getPm() {
+			return pm;
 		}
-		public void setAllPm(Integer allPm) {
-			this.allPm = allPm;
-		}
-		public Integer getHomePm() {
-			return homePm;
-		}
-		public void setHomePm(Integer homePm) {
-			this.homePm = homePm;
-		}
-		public Integer getAwayPm() {
-			return awayPm;
-		}
-		public void setAwayPm(Integer awayPm) {
-			this.awayPm = awayPm;
+		public void setPm(PaiMing pm) {
+			this.pm = pm;
 		}
 
 		private Integer allNum;
@@ -235,6 +280,35 @@ public class ClubDatas {
 		@SerializedName("ascore")
 		private Integer awayScore;
 		
+		private PaiMing pm;
+	}
+	
+	public static class PaiMing {
+
+		@Override
+		public String toString() {
+			return "PaiMing [allPm=" + allPm + ", homePm=" + homePm
+					+ ", awayPm=" + awayPm + "]";
+		}
+
+		public Integer getAllPm() {
+			return allPm;
+		}
+		public void setAllPm(Integer allPm) {
+			this.allPm = allPm;
+		}
+		public Integer getHomePm() {
+			return homePm;
+		}
+		public void setHomePm(Integer homePm) {
+			this.homePm = homePm;
+		}
+		public Integer getAwayPm() {
+			return awayPm;
+		}
+		public void setAwayPm(Integer awayPm) {
+			this.awayPm = awayPm;
+		}
 		@SerializedName("all")
 		private Integer allPm;
 		@SerializedName("hpm")
@@ -242,5 +316,4 @@ public class ClubDatas {
 		@SerializedName("apm")
 		private Integer awayPm;
 	}
-	
 }

@@ -1,4 +1,4 @@
-package com.roy.football.match.main.OFH.parser;
+package com.roy.football.match.OFN.parser;
 
 public interface IShortKey {
 	public String getShortKey ();

@@ -1,14 +1,24 @@
 package com.roy.football.match.OFN.response;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-public class OFNMatchData {
+import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
+import com.roy.football.match.base.AbstractMatchData;
+import com.roy.football.match.base.MatchData;
+
+public class OFNMatchData extends AbstractMatchData<OFNCalculateResult> implements MatchData{
 
 	@Override
 	public String toString() {
 		return "OFNMatchData [matchId=" + matchId + ", matchTime=" + matchTime
 				+ ", hostId=" + hostId + ", hostName=" + hostName
-				+ ", guestId=" + guestId + ", guestName=" + guestName + "]";
+				+ ", guestId=" + guestId + ", guestName=" + guestName
+				+ ", baseData=" + baseData + ", jiaoShou=" + jiaoShou
+				+ ", hostMatches=" + hostMatches + ", guestMatches="
+				+ guestMatches + ", euroPls=" + euroPls + ", aoMen=" + aoMen
+				+ "]";
 	}
 
 	public Long getMatchId() {
@@ -56,6 +66,52 @@ public class OFNMatchData {
 		this.baseData = baseData;
 	}
 
+	public Map<Company, List<EuroPl>> getEuroPls() {
+		return euroPls;
+	}
+
+	public void setEuroPls(Map<Company, List<EuroPl>> euroPls) {
+		this.euroPls = euroPls;
+	}
+
+	public List<AsiaPl> getAoMen() {
+		return aoMen;
+	}
+
+	public void setAoMen(List<AsiaPl> aoMen) {
+		this.aoMen = aoMen;
+	}
+
+
+	public List<FinishedMatch> getJiaoShou() {
+		return jiaoShou;
+	}
+
+	public void setJiaoShou(List<FinishedMatch> jiaoShou) {
+		this.jiaoShou = jiaoShou;
+	}
+
+
+	public List<FinishedMatch> getHostMatches() {
+		return hostMatches;
+	}
+
+	public void setHostMatches(List<FinishedMatch> hostMatches) {
+		this.hostMatches = hostMatches;
+	}
+
+
+
+	public List<FinishedMatch> getGuestMatches() {
+		return guestMatches;
+	}
+
+	public void setGuestMatches(List<FinishedMatch> guestMatches) {
+		this.guestMatches = guestMatches;
+	}
+
+
+
 	private Long matchId;
 	private Date matchTime;
 	private Long hostId;
@@ -63,4 +119,9 @@ public class OFNMatchData {
 	private Long guestId;
 	private String guestName;
 	private ClubDatas baseData;
+	private List<FinishedMatch> jiaoShou;
+	private List<FinishedMatch> hostMatches;
+	private List<FinishedMatch> guestMatches;
+	private Map<Company, List<EuroPl>> euroPls;
+	private List<AsiaPl> aoMen;
 }

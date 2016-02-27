@@ -12,4 +12,11 @@ public class MatchUtil {
 		
 		return df.format(new Date());
 	}
+	
+	public static Date parseFromOFHString (String dtStr) {
+		if (dtStr == null || dtStr.isEmpty()) {
+			return null;
+		}
+		return new Date(Long.parseLong(dtStr)*1000);
+	}
 }

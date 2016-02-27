@@ -1,12 +1,14 @@
 package com.roy.football.match.main;
 
+import com.roy.football.match.context.MatchContext;
+import com.roy.football.match.context.OFHContext;
 import com.roy.football.match.crawler.controller.SimpleOFNController;
-import com.roy.football.match.httpRequest.HttpRequestService;
 
 public class Main {
 	
 	public static void main (String []  args) {
-		SimpleOFNController simpleController = new SimpleOFNController(new HttpRequestService());
+		MatchContext context = OFHContext.getMatchContext();
+		SimpleOFNController simpleController = new SimpleOFNController(context);
 		
 		simpleController.process();
 	}

@@ -31,7 +31,8 @@ public class HttpRequestService {
 	private final static String RSP_ARRAY = "\"data\":[]";
 	
 	private final static String CONTENT_TYPE_KEY = "Content-Type";
-	private final static String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
+//	private final static String DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded";
+	private final static String DEFAULT_CONTENT_TYPE = "application/json";
 	private final static int CONNECT_TIMEOUT = 20000; // 20s
 	private final static int READ_TIMEOUT = 20000; // 20s
 
