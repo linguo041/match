@@ -4,6 +4,7 @@ public enum TeamLabel {
 
 	Powerful(0.6f, 1.8f, 3, 0.8f, 2f, 1f, MatrixType.All),
 	HomeStrong(0.5f, 1.2f, 6, 0.8f, 1.2f, 1.2f, MatrixType.Home),
+	AwayWeak(0.2f, -0.3f, 15, 0.4f, 1f, 1.2f, MatrixType.Away),
 	Offensive(0.38f, 1f, 10, 0.6f, 1.5f, 100f, MatrixType.All),
 	Defensive(0.38f, 1f, 10, 0.6f, 0.01f, 1.1f, MatrixType.All);
 	
@@ -13,13 +14,13 @@ public enum TeamLabel {
 	}
 	
 	TeamLabel(Float winRateStd, Float netGoalStd, Integer pm,
-			Float winDrawRateStd, Float goalStd, Float loseStd, MatrixType type) {
+			Float winDrawRateStd, Float goalStd, Float missStd, MatrixType type) {
 		this.winRateStd = winRateStd;
 		this.netGoalStd = netGoalStd;
 		this.pm = pm;
 		this.winDrawRateStd = winDrawRateStd;
 		this.goalStd = goalStd;
-		this.loseStd = loseStd;
+		this.missStd = missStd;
 		this.type = type;
 	}
 
@@ -53,12 +54,7 @@ public enum TeamLabel {
 	public void setGoalStd(Float goalStd) {
 		this.goalStd = goalStd;
 	}
-	public Float getLoseStd() {
-		return loseStd;
-	}
-	public void setLoseStd(Float loseStd) {
-		this.loseStd = loseStd;
-	}
+
 
 	public MatrixType getType() {
 		return type;
@@ -68,11 +64,19 @@ public enum TeamLabel {
 		this.type = type;
 	}
 
+	public Float getMissStd() {
+		return missStd;
+	}
+
+	public void setMissStd(Float missStd) {
+		this.missStd = missStd;
+	}
+
 	private Float winRateStd;
 	private Float netGoalStd;
 	private Integer pm;
 	private Float winDrawRateStd;
 	private Float goalStd;
-	private Float loseStd;
+	private Float missStd;
 	private MatrixType type;
 }

@@ -3,8 +3,28 @@ package com.roy.football.match.OFN.response;
 import java.util.Date;
 
 import com.google.gson.annotations.SerializedName;
+import com.roy.football.match.base.MatchData;
 
-public class FinishedMatch {
+public class FinishedMatch implements MatchData, Comparable <FinishedMatch> {
+	
+	@Override
+	public int compareTo(FinishedMatch o) {
+//		return (int) (this.getMatchTime().getTime() - o.getMatchTime().getTime());
+		return (int)(o.getMatchId() - this.getMatchId());
+	}
+	
+	@Override
+	public String toString() {
+		return "FinishedMatch [matchId=" + matchId + ", leagueId=" + leagueId
+				+ ", leagueName=" + leagueName + ", matchTime=" + matchTime
+				+ ", hostId=" + hostId + ", hostName=" + hostName
+				+ ", guestId=" + guestId + ", guestName=" + guestName + ", bc="
+				+ bc + ", asiaPanKou=" + asiaPanKou + ", asiaPanLu="
+				+ asiaPanLu + ", daxiaoPanKou=" + daxiaoPanKou + ", hscore="
+				+ hscore + ", ascore=" + ascore + "]";
+	}
+
+
 
 	public Long getMatchId() {
 		return matchId;
@@ -114,10 +134,9 @@ public class FinishedMatch {
 	@SerializedName("asiapl")
 	private String asiaPanLu;    // win/lose pankou
 	@SerializedName("daxiaopk")
-	private String daxiaoPanKou; // daxiao pankou
+	private String daxiaoPanKou; // daxiao pankou string
 	@SerializedName("hscore")
 	private Integer hscore;
 	@SerializedName("ascore")
 	private Integer ascore;
-	
 }

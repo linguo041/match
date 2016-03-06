@@ -12,8 +12,10 @@ import com.roy.football.match.util.GsonConverter;
 
 public class OFHConverter {
 	
-	private final static String RSP_OBJECT = ":{}";
+	private final static String RSP_OBJECT = ":null";
 	private final static String RSP_ARRAY = ":[]";
+	private final static String TOKEN_DASH = "\"-\"";
+	private final static String TOKEN_QUOTE = "\"\"";
 	
 	private final static String OFH_JSONC_NAME = "OFH";
 	
@@ -29,8 +31,9 @@ public class OFHConverter {
 	}
 	
 	public static List<FinishedMatch> convertJiaoShouMatch (String json) {
-		json = json.replace(RSP_ARRAY, RSP_OBJECT);
-		GsonConverter convverter = GsonConverter.useCustomizedGson(OFH_JSONC_NAME);
-		return convverter.convertJSonToObject(json, new TypeToken<List<FinishedMatch>>(){});
+		json = json.replace(RSP_ARRAY, RSP_OBJECT).replace(TOKEN_DASH, TOKEN_QUOTE);
+		GsonConverter converter = GsonConverter.useCustomizedGson(OFH_JSONC_NAME);
+
+		return converter.convertJSonToObject(json, new TypeToken<List<FinishedMatch>>(){});
 	}
 }

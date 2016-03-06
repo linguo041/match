@@ -1,8 +1,18 @@
 package com.roy.football.match.OFN.statics.matrices;
 
+import com.roy.football.match.base.MatchData;
 import com.roy.football.match.process.CalculateResult;
 
-public class ClubMatrices implements CalculateResult{
+public class ClubMatrices implements CalculateResult, MatchData{
+
+	@Override
+	public String toString() {
+		return "ClubMatrices [hostAllMatrix=" + hostAllMatrix
+				+ ", hostHomeMatrix=" + hostHomeMatrix + ", hostAwayMatrix="
+				+ hostAwayMatrix + ", guestAllMatrix=" + guestAllMatrix
+				+ ", guestHomeMatrix=" + guestHomeMatrix + ", guestAwayMatrix="
+				+ guestAwayMatrix + "]";
+	}
 
 	public ClubMatrix getHostAllMatrix() {
 		return hostAllMatrix;
@@ -67,7 +77,7 @@ public class ClubMatrices implements CalculateResult{
 		public String toString() {
 			return "ClubMatrix [num=" + num + ", winRt=" + winRt
 					+ ", winDrawRt=" + winDrawRt + ", drawLoseRt=" + drawLoseRt
-					+ ", goals=" + goals + ", loses=" + loses + ", winGoals="
+					+ ", goals=" + goals + ", misses=" + misses + ", winGoals="
 					+ winGoals + ", winLoseDiff=" + winLoseDiff + ", pm=" + pm
 					+ "]";
 		}
@@ -115,13 +125,7 @@ public class ClubMatrices implements CalculateResult{
 		public void setGoals(Integer goals) {
 			this.goals = goals;
 		}
-		public Integer getLoses() {
-			return loses;
-		}
 
-		public void setLoses(Integer loses) {
-			this.loses = loses;
-		}
 		
 		public Integer getNum() {
 			return num;
@@ -131,12 +135,19 @@ public class ClubMatrices implements CalculateResult{
 			this.num = num;
 		}
 
+		public Integer getMisses() {
+			return misses;
+		}
+		public void setMisses(Integer misses) {
+			this.misses = misses;
+		}
+
 		private Integer num;
 		private Float winRt;
 		private Float winDrawRt;
 		private Float drawLoseRt;
 		private Integer goals;
-		private Integer loses;
+		private Integer misses;
 		private Integer winGoals;
 		private Integer winLoseDiff;
 		private Integer pm;

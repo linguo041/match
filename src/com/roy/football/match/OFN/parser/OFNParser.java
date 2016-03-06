@@ -33,7 +33,7 @@ import com.roy.football.match.util.StringUtil;
 import com.roy.football.match.util.XmlParseException;
 import com.roy.football.match.util.XmlParser;
 
-public class Parser {
+public class OFNParser {
 	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.159cai.com/match/analysis/";
 	private final static String EURO_URL_PREIX = "http://odds.159cai.com/match/detial";
@@ -43,10 +43,9 @@ public class Parser {
 	private final static String HOME_PANKOU = "H";
 	private final static String AWAY_PANKOU = "A";
 	
-	public Parser() {
+	public OFNParser() {
 	}
-	
-	
+
 	public List<JinCaiMatch> parseJinCaiMatches () {
 
 		try {
@@ -151,7 +150,7 @@ public class Parser {
 						asia.setPanKou(-1 * pankouVal.floatValue());
 					}
 					
-					asia.setMatchDate(MatchUtil.parseFromOFHString(as[4]));
+					asia.setPkDate(MatchUtil.parseFromOFHString(as[4]));
 					
 					asiaPls.add(asia);
 				}
@@ -181,8 +180,10 @@ public class Parser {
 					break;
 				case MatchTime :
 					val = getQuotedString(val);
-					Date matchDate = new Date(Long.parseLong(val)*1000);
-					ofnMatchData.setMatchTime(matchDate);
+					if (!StringUtil.isEmpty(val)) {
+						Date matchDate = new Date(Long.parseLong(val)*1000);
+						ofnMatchData.setMatchTime(matchDate);
+					}
 					break;
 				case HostName :
 					val = getQuotedString(val);

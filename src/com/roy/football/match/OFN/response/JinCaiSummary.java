@@ -3,6 +3,8 @@ package com.roy.football.match.OFN.response;
 import java.util.Date;
 import java.util.List;
 
+import com.roy.football.match.base.MatchData;
+
 public class JinCaiSummary {
 
 	public List<JinCaiMatch> getRows() {
@@ -22,7 +24,7 @@ public class JinCaiSummary {
 		return "JinCaiSummary [rows=" + rows + "]";
 	}
 
-	public static class JinCaiMatch implements Comparable<JinCaiMatch>{
+	public static class JinCaiMatch implements MatchData, Comparable<JinCaiMatch>{
 		public Long getXid() {
 			return xid;
 		}

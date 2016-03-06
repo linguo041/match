@@ -30,6 +30,11 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 		return null;
 	}
 	
+	@Override
+	public void calucate(ClubMatrices Result, OFNMatchData matchData) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	private ClubMatrix calculate (ClubData clubData, MatrixType type) {
 		if (clubData == null) {
@@ -43,9 +48,9 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setWinDrawRt((float)(clubData.getAllWin() + clubData.getAllDraw()) / clubData.getAllNum());
 			matrix.setWinGoals(clubData.getAllNet());
 			matrix.setDrawLoseRt((float)(clubData.getAllDraw() + clubData.getAllLose()) / clubData.getAllNum());
-			matrix.setWinLoseDiff(clubData.getAllWin() - clubData.getAllLose());
+			matrix.setWinLoseDiff(Math.abs(clubData.getAllWin() - clubData.getAllLose()));
 			matrix.setGoals(clubData.getAllGoal());
-			matrix.setLoses(clubData.getAllLose());
+			matrix.setMisses(clubData.getAllMiss());
 			matrix.setPm(clubData.getPm().getAllPm());
 		} else if (type == MatrixType.Home) {
 			matrix.setNum(clubData.getHomeNum());
@@ -53,9 +58,9 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setWinDrawRt((float)(clubData.getHomeWin() + clubData.getHomeDraw()) / clubData.getHomeNum());
 			matrix.setWinGoals(clubData.getHomeNet());
 			matrix.setDrawLoseRt((float)(clubData.getHomeDraw() + clubData.getHomeLose()) / clubData.getHomeNum());
-			matrix.setWinLoseDiff(clubData.getHomeWin() - clubData.getHomeLose());
+			matrix.setWinLoseDiff(Math.abs(clubData.getHomeWin() - clubData.getHomeLose()));
 			matrix.setGoals(clubData.getHomeGoal());
-			matrix.setLoses(clubData.getHomeLose());
+			matrix.setMisses(clubData.getHomeMiss());
 			matrix.setPm(clubData.getPm().getHomePm());
 		} else if (type == MatrixType.Away) {
 			matrix.setNum(clubData.getAwayNum());
@@ -63,9 +68,9 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setWinDrawRt((float)(clubData.getAwayWin() + clubData.getAwayDraw()) / clubData.getAwayNum());
 			matrix.setWinGoals(clubData.getAwayNet());
 			matrix.setDrawLoseRt((float)(clubData.getAwayDraw() + clubData.getAwayLose()) / clubData.getAwayNum());
-			matrix.setWinLoseDiff(clubData.getAwayWin() - clubData.getAwayLose());
+			matrix.setWinLoseDiff(Math.abs(clubData.getAwayWin() - clubData.getAwayLose()));
 			matrix.setGoals(clubData.getAwayGoal());
-			matrix.setLoses(clubData.getAwayLose());
+			matrix.setMisses(clubData.getAwayMiss());
 			matrix.setPm(clubData.getPm().getAwayPm());
 		}
 

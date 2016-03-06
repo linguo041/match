@@ -4,21 +4,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
-import com.roy.football.match.base.AbstractMatchData;
 import com.roy.football.match.base.MatchData;
 
-public class OFNMatchData extends AbstractMatchData<OFNCalculateResult> implements MatchData{
+public class OFNMatchData implements MatchData{
 
 	@Override
 	public String toString() {
-		return "OFNMatchData [matchId=" + matchId + ", matchTime=" + matchTime
-				+ ", hostId=" + hostId + ", hostName=" + hostName
-				+ ", guestId=" + guestId + ", guestName=" + guestName
-				+ ", baseData=" + baseData + ", jiaoShou=" + jiaoShou
-				+ ", hostMatches=" + hostMatches + ", guestMatches="
-				+ guestMatches + ", euroPls=" + euroPls + ", aoMen=" + aoMen
-				+ "]";
+		return "OFNMatchData [matchDayId=" + matchDayId + ", matchId="
+				+ matchId + ", matchTime=" + matchTime + ", leagueId="
+				+ leagueId + ", leagueName=" + leagueName + ", hostId="
+				+ hostId + ", hostName=" + hostName + ", guestId=" + guestId
+				+ ", guestName=" + guestName + ", baseData=" + baseData
+				+ ", jiaoShou=" + jiaoShou + ", hostMatches=" + hostMatches
+				+ ", guestMatches=" + guestMatches + ", euroPls=" + euroPls
+				+ ", aoMen=" + aoMen + "]";
 	}
 
 	public Long getMatchId() {
@@ -111,9 +110,38 @@ public class OFNMatchData extends AbstractMatchData<OFNCalculateResult> implemen
 	}
 
 
+	public Long getMatchDayId() {
+		return matchDayId;
+	}
 
+	public void setMatchDayId(Long matchDayId) {
+		this.matchDayId = matchDayId;
+	}
+
+
+	public Long getLeagueId() {
+		return leagueId;
+	}
+
+	public void setLeagueId(Long leagueId) {
+		this.leagueId = leagueId;
+	}
+
+
+	public String getLeagueName() {
+		return leagueName;
+	}
+
+	public void setLeagueName(String leagueName) {
+		this.leagueName = leagueName;
+	}
+
+
+	private Long matchDayId;
 	private Long matchId;
 	private Date matchTime;
+	private Long leagueId;
+	private String leagueName;
 	private Long hostId;
 	private String hostName;
 	private Long guestId;

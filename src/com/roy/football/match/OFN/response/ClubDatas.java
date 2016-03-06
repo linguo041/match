@@ -1,8 +1,9 @@
 package com.roy.football.match.OFN.response;
 
 import com.google.gson.annotations.SerializedName;
+import com.roy.football.match.base.MatchData;
 
-public class ClubDatas {
+public class ClubDatas implements MatchData {
 	
 	@Override
 	public String toString() {

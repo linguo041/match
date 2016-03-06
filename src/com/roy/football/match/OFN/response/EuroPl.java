@@ -2,7 +2,9 @@ package com.roy.football.match.OFN.response;
 
 import java.util.Date;
 
-public class EuroPl {
+import com.roy.football.match.base.MatchData;
+
+public class EuroPl implements MatchData {
 
 	@Override
 	public String toString() {

@@ -9,28 +9,34 @@ import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.base.MatrixType;
 import com.roy.football.match.base.TeamLabel;
 import com.roy.football.match.base.TeamLevel;
-import com.roy.football.match.process.CalculateResult;
 import com.roy.football.match.process.Calculator;
 
-public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements CalculateResult, Calculator<OFNCalculateResult, OFNCalculateResult> {
+public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements Calculator<OFNCalculateResult, ClubMatrices> {
 
 	@Override
-	public OFNCalculateResult calucate(OFNCalculateResult matchData) {
+	public OFNCalculateResult calucate(ClubMatrices matrices) {
+		OFNCalculateResult calResult = new OFNCalculateResult();
 		
-		ClubMatrices matrices = matchData.getClubMatrices();
-		
-		matchData.setHostLevel(measureTeamLevel(matrices.getHostAllMatrix()));
-		matchData.setGuestLevel(measureTeamLevel(matrices.getGuestAllMatrix()));
-		
-		List<TeamLabel> hostLabels = measureTeamLabel(matrices.getHostAllMatrix(), MatrixType.All);
-		measureTeamLabel(matrices.getHostHomeMatrix(), MatrixType.Home, hostLabels);
-		matchData.setHostLabels(hostLabels);
-		
-		List<TeamLabel> guestLabels = measureTeamLabel(matrices.getGuestAllMatrix(), MatrixType.All);
-//		measureTeamLabel(matrices.getGuestHomeMatrix(), MatrixType.Home, guestLabels);
-		matchData.setHostLabels(guestLabels);
+		calResult.setClubMatrices(matrices);
 
-		return matchData;
+		calResult.setHostLevel(measureTeamLevel(matrices.getHostAllMatrix()));
+		calResult.setGuestLevel(measureTeamLevel(matrices.getGuestAllMatrix()));
+		
+		List<TeamLabel> hostLabels = measureTeamPositiveLabel(matrices.getHostAllMatrix(), MatrixType.All);
+		measureTeamPositiveLabel(matrices.getHostHomeMatrix(), MatrixType.Home, hostLabels);
+		calResult.setHostLabels(hostLabels);
+		
+		List<TeamLabel> guestLabels = measureTeamPositiveLabel(matrices.getGuestAllMatrix(), MatrixType.All);
+		measureTeamNegativeLabel(matrices.getGuestAwayMatrix(), MatrixType.Away, guestLabels);
+		calResult.setGuestLabels(guestLabels);
+
+		return calResult;
+	}
+	
+	@Override
+	public void calucate(OFNCalculateResult Result, ClubMatrices matchData) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	private TeamLevel measureTeamLevel (ClubMatrix matrix) {
@@ -40,11 +46,11 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 
 		for (TeamLevel level : TeamLevel.values()) {
 			boolean result = matrix.getWinRt() >= level.getWinRateStd()
-					&& matrix.getWinGoals() >= matrix.getWinLoseDiff() * level.getNetGoalStd()
+					&& matrix.getWinGoals() >= (int)(matrix.getWinLoseDiff() * level.getNetGoalStd())
 					&& matrix.getPm() <= level.getPm()
 					&& matrix.getWinDrawRt() >= level.getWinDrawRateStd()
-					&& matrix.getGoals() >= matrix.getNum() * level.getGoalStd()
-					&& matrix.getLoses() <= matrix.getNum() * level.getLoseStd();
+					&& matrix.getGoals() >= (int)(matrix.getNum() * level.getGoalStd())
+					&& matrix.getMisses() <= (int)(matrix.getNum() * level.getMissStd());
 					
 			if (result) {
 				return level;
@@ -53,7 +59,7 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		return null;
 	}
 	
-	private List<TeamLabel> measureTeamLabel (ClubMatrix matrix, MatrixType type) {
+	private List<TeamLabel> measureTeamPositiveLabel (ClubMatrix matrix, MatrixType type) {
 		List<TeamLabel> labels = new ArrayList<TeamLabel>();
 		
 		if (matrix == null) {
@@ -63,10 +69,10 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		for (TeamLabel label : TeamLabel.values()) {
 			boolean result = matrix.getWinRt() >= label.getWinRateStd()
 					&& matrix.getWinGoals() >= matrix.getWinLoseDiff() * label.getNetGoalStd()
-					&& matrix.getPm() >= label.getPm()
+					&& matrix.getPm() <= label.getPm()
 					&& matrix.getWinDrawRt() >= label.getWinDrawRateStd()
 					&& matrix.getGoals() >= matrix.getNum() * label.getGoalStd()
-					&& matrix.getLoses() <= matrix.getNum() * label.getLoseStd()
+					&& matrix.getMisses() <= matrix.getNum() * label.getMissStd()
 					&& type == label.getType();
 					
 			if (result) {
@@ -76,7 +82,7 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		return labels;
 	}
 	
-	private void measureTeamLabel (ClubMatrix matrix, MatrixType type, List<TeamLabel> labels) {
+	private void measureTeamPositiveLabel (ClubMatrix matrix, MatrixType type, List<TeamLabel> labels) {
 	
 		if (matrix == null || labels == null) {
 			return;
@@ -85,10 +91,10 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		for (TeamLabel label : TeamLabel.values()) {
 			boolean result = matrix.getWinRt() >= label.getWinRateStd()
 					&& matrix.getWinGoals() >= matrix.getWinLoseDiff() * label.getNetGoalStd()
-					&& matrix.getPm() >= label.getPm()
+					&& matrix.getPm() <= label.getPm()
 					&& matrix.getWinDrawRt() >= label.getWinDrawRateStd()
 					&& matrix.getGoals() >= matrix.getNum() * label.getGoalStd()
-					&& matrix.getLoses() <= matrix.getNum() * label.getLoseStd()
+					&& matrix.getMisses() <= matrix.getNum() * label.getMissStd()
 					&& type == label.getType();
 					
 			if (result) {
@@ -96,5 +102,25 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 			}
 		}
 	}
+	
+	private void measureTeamNegativeLabel (ClubMatrix matrix, MatrixType type, List<TeamLabel> labels) {
+		
+		if (matrix == null || labels == null) {
+			return;
+		}
 
+		for (TeamLabel label : TeamLabel.values()) {
+			boolean result = matrix.getWinRt() <= label.getWinRateStd()
+					&& matrix.getWinGoals() <= matrix.getWinLoseDiff() * label.getNetGoalStd()
+					&& matrix.getPm() >= label.getPm()
+					&& matrix.getWinDrawRt() <= label.getWinDrawRateStd()
+					&& matrix.getGoals() <= matrix.getNum() * label.getGoalStd()
+					&& matrix.getMisses() >= matrix.getNum() * label.getMissStd()
+					&& type == label.getType();
+					
+			if (result) {
+				labels.add(label);
+			}
+		}
+	}
 }

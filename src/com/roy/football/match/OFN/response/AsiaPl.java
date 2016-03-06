@@ -2,12 +2,14 @@ package com.roy.football.match.OFN.response;
 
 import java.util.Date;
 
-public class AsiaPl {
+import com.roy.football.match.base.MatchData;
+
+public class AsiaPl implements MatchData {
 
 	@Override
 	public String toString() {
 		return "AsiaPl [hWin=" + hWin + ", aWin=" + aWin + ", panKou=" + panKou
-				+ ", matchDate=" + matchDate + "]";
+				+ ", pkDate=" + pkDate + "]";
 	}
 
 	public Float gethWin() {
@@ -28,15 +30,15 @@ public class AsiaPl {
 	public void setPanKou(Float panKou) {
 		this.panKou = panKou;
 	}
-	public Date getMatchDate() {
-		return matchDate;
+	public Date getPkDate() {
+		return pkDate;
 	}
-	public void setMatchDate(Date matchDate) {
-		this.matchDate = matchDate;
+	public void setPkDate(Date pkDate) {
+		this.pkDate = pkDate;
 	}
 
 	private Float hWin;
 	private Float aWin;
 	private Float panKou;
-	private Date matchDate;
+	private Date pkDate;
 }
