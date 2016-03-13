@@ -39,10 +39,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		Long guestId = matchData.getGuestId();
 		List<FinishedMatch> hMatches = matchData.getHostMatches();
 		List<FinishedMatch> gMatches = matchData.getGuestMatches();
+
+		int comparedMatches = 16;
+		try {
+			League le = League.getLeagueById(matchData.getLeagueId());
+			if (le != null) {
+				comparedMatches = (int)(le.getClubNum() * 0.8);
+			}
+		} catch (Exception e) {
+			
+		}
 		
 		List <Float> calPankous = new ArrayList<Float>();
 		
-		for (int i = 0; i < hMatches.size() && i < 16; i++) {
+		for (int i = 0; i < hMatches.size() && i < comparedMatches; i++) {
 			Long opponentId = null;
 			Float calPk = null;
 			Float hPk = null;
@@ -65,7 +75,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				hPk = hPk * -1 + 0.25f;
 			}
 			
-			for (int j = 0; j < gMatches.size() || j < 16; j++) {
+			for (int j = 0; j < gMatches.size() && j < comparedMatches; j++) {
 				FinishedMatch gMatch = gMatches.get(j);
 				
 				try {

@@ -22,6 +22,24 @@ public class OFNKillPromoteResult implements KillResult, PromoteResult{
 		this.promoteByPk = promoteByPk;
 	}
 
+	public ResultGroup getTooHot() {
+		return tooHot;
+	}
+
+	public void setTooHot(ResultGroup tooHot) {
+		this.tooHot = tooHot;
+	}
+
+	public ResultGroup getKillByPl() {
+		return killByPl;
+	}
+
+	public void setKillByPl(ResultGroup killByPl) {
+		this.killByPl = killByPl;
+	}
+
 	private ResultGroup killByPk;
+	private ResultGroup killByPl;
 	private ResultGroup promoteByPk;
+	private ResultGroup tooHot;
 }

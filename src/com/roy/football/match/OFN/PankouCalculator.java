@@ -24,7 +24,7 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 				pkMatrices.setCurrentPk(pks.get(pks.size() - 1));
 				
 				AsiaPl main = null;
-				long hours = 0;
+				float hours = 0;
 				AsiaPl temp = null;
 
 				for (AsiaPl pk : pks) {
@@ -32,9 +32,9 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 						Date thisDt = pk.getPkDate();
 						Date lastDt = temp.getPkDate();
 						
-						long tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
-						long lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
-						long thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
+						float tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
+						float lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
+						float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
 
 						// the latest(in 24h) long hours's pankou
 						if (lastTimeToMatch > 24) {

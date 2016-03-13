@@ -4,6 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+
+import com.roy.football.match.OFN.response.AsiaPl;
+import com.roy.football.match.base.TeamLabel;
 
 public class MatchUtil {
 	public final static String UNICODE_WIN = "\u8d62";
@@ -15,6 +19,50 @@ public class MatchUtil {
 	public final static long YEAR_TIME = 86400 * 360; // unit is second
 	
 	public final static String simple_date_format = "yyMMdd";
+	
+	public static boolean isHostHomeStrong (List <TeamLabel> hostLabels) {
+		if (hostLabels != null && hostLabels.size() > 0) {
+			for (TeamLabel l : hostLabels) {
+				if (TeamLabel.HomeStrong == l) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public static boolean isGuestDefensive (List <TeamLabel> guestLabels) {
+		if (guestLabels != null && guestLabels.size() > 0) {
+			for (TeamLabel l : guestLabels) {
+				if (TeamLabel.Defensive == l) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public static float getEuDiff (float eu1, float eu2, boolean abs) {
+		float temp;
+		
+		if (abs) {
+			temp = Math.abs(eu1 - eu2);
+		} else {
+			temp = eu1 - eu2;
+		}
+		
+		return eu1 > eu2 ? temp/eu1 : temp/eu2;
+	}
+	
+	public static float getCalculatedPk (AsiaPl asiaPk) {
+		float pankou = asiaPk.getPanKou();
+		float winP = asiaPk.gethWin();
+		float loseP = asiaPk.getaWin();
+		
+		return pankou - (winP - loseP)/2;
+	}
 
 	public static String getMatchDay () {
 		DateFormat df = new SimpleDateFormat(simple_date_format);
@@ -49,11 +97,11 @@ public class MatchUtil {
 		}
 	}
 	
-	public static long getDiffHours (Date current, Date another) {
+	public static float getDiffHours (Date current, Date another) {
 		long cTime = current.getTime();
 		long aTime = another.getTime();
 		
-		return (cTime - aTime) / 3600000;
+		return (float)(cTime - aTime) / 3600000;
 	}
 	
 	public static Float parsePankouString (String pkString) {

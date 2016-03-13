@@ -24,6 +24,7 @@ import com.roy.football.match.OFN.parser.OFNParser;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.base.League;
 import com.roy.football.match.context.MatchContext;
+import com.roy.football.match.util.DateUtil;
 
 public class SimpleOFNController {
 
@@ -102,7 +103,7 @@ public class SimpleOFNController {
 				writer.write(datas, workBook);
 			}
 
-			File file = new File ("C:\\work-records\\match\\data\\match.xlsx");
+			File file = new File ("C:\\work-records\\match\\data\\match-" + DateUtil.formatSimpleDate(new Date())+".xlsx");
 			
 			if (file.exists()) {
 				file.delete();

@@ -32,6 +32,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		ClubMatrices matrices = baseCalculator.calucate(matchData);
 
 		OFNCalculateResult calResult = baseMatrixCalculator.calucate(matrices);
+		calResult.setLeagueId(matchData.getLeagueId());
 		
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
 		calResult.setJiaoShou(jsMatrices);
@@ -49,8 +50,10 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		calResult.setEuroMatrices(euroMatrices);
 		
 		OFNKillPromoteResult killPromoteRes = pankouKiller.calculate(calResult);
-		calResult.setKill(killPromoteRes.getKillByPk());
+		calResult.setKillByPk(killPromoteRes.getKillByPk());
+		calResult.setKillByPl(killPromoteRes.getKillByPl());
 		calResult.setPromote(killPromoteRes.getPromoteByPk());
+		calResult.setTooHot(killPromoteRes.getTooHot());
 
 		return calResult;
 	}

@@ -57,7 +57,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 	private EuroPl getMainEuro (List<EuroPl> euroPls, Date matchDt) {
 		if (euroPls != null && euroPls.size() > 0) {
 			EuroPl main = null;
-			long hours = 0;
+			float hours = 0;
 			EuroPl temp = null;
 			
 			for (EuroPl eu : euroPls) {
@@ -65,9 +65,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 					Date thisDt = eu.geteDate();
 					Date lastDt = temp.geteDate();
 					
-					long tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
-					long lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
-					long thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
+					float tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
+					float lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
+					float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
 					
 					// the latest(in 24h) long hours's pankou
 					if (lastTimeToMatch > 24) {

@@ -14,6 +14,7 @@ import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.util.DateUtil;
+import com.roy.football.match.util.MatchUtil;
 
 public class OFNOutputFormater {
 	private static NumberFormat nf = NumberFormat.getInstance();
@@ -40,24 +41,27 @@ public class OFNOutputFormater {
 			Float origPk = pkmatrices.getOriginPk().getPanKou();
 			
 			excelData.setOriginPanKou(String.format("%.2f [%.2f, %.2f]",
-					origPk, getCalculatedPk(pkmatrices.getMainPk()), getCalculatedPk(pkmatrices.getCurrentPk())));
+					origPk, MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk())));
 			
-			ResultGroup kill = calculateResult.getKill();
-			excelData.setKill(kill == null ? "" : kill.getNum());
+			ResultGroup hot = calculateResult.getTooHot();
+			excelData.setTooHot(hot == null ? "" : hot.getNum());
+			ResultGroup killByPk = calculateResult.getKillByPk();
+			ResultGroup killByPl = calculateResult.getKillByPl();
+			String kill = "";
+			if (killByPk != null) {
+				kill = killByPk.getNum();
+			}
+			
+			if (killByPl != null) {
+				kill = kill + " | "+ killByPl.getNum();
+			}
+			excelData.setKill(kill);
 			ResultGroup promote = calculateResult.getPromote();
 			excelData.setPromote(promote == null ? "" : promote.getNum());
 //			excelData
 //			TODO
 		}
 		return excelData;
-	}
-	
-	private float getCalculatedPk (AsiaPl asiaPk) {
-		float pankou = asiaPk.getPanKou();
-		float winP = asiaPk.gethWin();
-		float loseP = asiaPk.getaWin();
-		
-		return pankou - (winP - loseP)/2;
 	}
 	
 	private String getHostLevel (TeamLevel tl, ClubMatrix baseMatrix) {

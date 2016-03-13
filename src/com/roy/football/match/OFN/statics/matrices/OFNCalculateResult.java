@@ -12,13 +12,15 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 
 	@Override
 	public String toString() {
-		return "OFNCalculateResult [clubMatrices=" + clubMatrices
-				+ ", hostLevel=" + hostLevel + ", hostLabels=" + hostLabels
-				+ ", guestLevel=" + guestLevel + ", guestLabels=" + guestLabels
-				+ ", jiaoShou=" + jiaoShou + ", matchState=" + matchState
-				+ ", pkMatrices=" + pkMatrices + ", predictPanKou="
-				+ predictPanKou + ", euroMatrices=" + euroMatrices + ", kill="
-				+ kill + ", promote=" + promote + "]";
+		return "OFNCalculateResult [leagueId=" + leagueId + ", clubMatrices="
+				+ clubMatrices + ", hostLevel=" + hostLevel + ", hostLabels="
+				+ hostLabels + ", guestLevel=" + guestLevel + ", guestLabels="
+				+ guestLabels + ", jiaoShou=" + jiaoShou + ", matchState="
+				+ matchState + ", pkMatrices=" + pkMatrices
+				+ ", predictPanKou=" + predictPanKou + ", euroMatrices="
+				+ euroMatrices + ", tooHot=" + tooHot + ", killByPk="
+				+ killByPk + ", killByPl=" + killByPl + ", promote=" + promote
+				+ "]";
 	}
 
 	public ClubMatrices getClubMatrices() {
@@ -87,13 +89,20 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	public void setEuroMatrices(EuroMatrices euroMatrices) {
 		this.euroMatrices = euroMatrices;
 	}
-
-	public ResultGroup getKill() {
-		return kill;
+	public ResultGroup getKillByPk() {
+		return killByPk;
 	}
 
-	public void setKill(ResultGroup kill) {
-		this.kill = kill;
+	public void setKillByPk(ResultGroup killByPk) {
+		this.killByPk = killByPk;
+	}
+
+	public ResultGroup getKillByPl() {
+		return killByPl;
+	}
+
+	public void setKillByPl(ResultGroup killByPl) {
+		this.killByPl = killByPl;
 	}
 
 	public ResultGroup getPromote() {
@@ -104,6 +113,23 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.promote = promote;
 	}
 
+	public ResultGroup getTooHot() {
+		return tooHot;
+	}
+
+	public void setTooHot(ResultGroup tooHot) {
+		this.tooHot = tooHot;
+	}
+
+	public long getLeagueId() {
+		return leagueId;
+	}
+
+	public void setLeagueId(long leagueId) {
+		this.leagueId = leagueId;
+	}
+
+	private long leagueId;
 	private ClubMatrices clubMatrices;
 	private TeamLevel hostLevel;
 	private List<TeamLabel> hostLabels;
@@ -114,6 +140,8 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private PankouMatrices pkMatrices;
 	private Float predictPanKou;
 	private EuroMatrices euroMatrices;
-	private ResultGroup kill;
+	private ResultGroup tooHot;
+	private ResultGroup killByPk;
+	private ResultGroup killByPl;
 	private ResultGroup promote;
 }
