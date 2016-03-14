@@ -95,6 +95,8 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	
 	private float getPankouWeightByState (LatestMatchMatrices hostMatrices,
 			LatestMatchMatrices guestMatrices, TeamLevel hostLevel, TeamLevel guestLevel) {
+		float pkWeight = 0;
+		
 		if (hostMatrices != null && guestMatrices != null) {
 			float hostGoodRate = 0;
 			float guestGoodRate = 0;
@@ -116,13 +118,26 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			}
 
 			if (hostGoodRate - guestGoodRate > 0.15) {
-				return 0.05f;
+				pkWeight = 0.05f;
 			} else if (guestGoodRate - hostGoodRate > 0.15) {
-				return -0.05f;
+				pkWeight = -0.05f;
+			}
+			
+			float winPkRateDiff = hostMatrices.getWinPkRate() - guestMatrices.getWinPkRate();
+			float wdPkRateDiff = hostMatrices.getWinDrawPkRate() - guestMatrices.getWinDrawPkRate();
+			
+			if (winPkRateDiff > 0.6) {
+				pkWeight += 0.1;
+			} else if (winPkRateDiff > 0.3 && wdPkRateDiff > 0.3) {
+				pkWeight += 0.05;
+			} else if (winPkRateDiff < -0.3 && wdPkRateDiff < -0.3) {
+				pkWeight -= 0.05;
+			} else if (winPkRateDiff < -0.6) {
+				pkWeight -= 0.1;
 			}
 		}
 		
-		return 0;
+		return pkWeight;
 	}
 
 }

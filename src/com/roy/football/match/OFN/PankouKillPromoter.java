@@ -149,40 +149,40 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 			EuroMatrix aomen = euMatrices.getAomenMatrix();
 			
 			if (will != null && lab != null) {
-				EuroPl currenWillEu = will.getCurrentEuro();
-				EuroPl currenLabEu = lab.getCurrentEuro();
-				EuroPl currenAomenEu = aomen.getCurrentEuro();
+				EuroPl mainWillEu = will.getMainEuro();
+				EuroPl mainLabEu = lab.getMainEuro();
+				EuroPl mainAomenEu = aomen.getMainEuro();
 				
-				float wlWinRt = MatchUtil.getEuDiff(currenWillEu.geteWin(), currenLabEu.geteWin(), true);
-				float wlLoseRt = MatchUtil.getEuDiff(currenWillEu.geteLose(), currenLabEu.geteLose(), true);
-				float waWinRt = MatchUtil.getEuDiff(currenWillEu.geteWin(), currenAomenEu.geteWin(), false);
-				float waLoseRt = MatchUtil.getEuDiff(currenWillEu.geteLose(), currenAomenEu.geteLose(), false);
+				float wlWinRt = MatchUtil.getEuDiff(mainWillEu.geteWin(), mainLabEu.geteWin(), true);
+				float wlLoseRt = MatchUtil.getEuDiff(mainWillEu.geteLose(), mainLabEu.geteLose(), true);
+				float waWinRt = MatchUtil.getEuDiff(mainWillEu.geteWin(), mainAomenEu.geteWin(), false);
+				float waLoseRt = MatchUtil.getEuDiff(mainWillEu.geteLose(), mainAomenEu.geteLose(), false);
 				if (aomenPk > 0.25) {
-					if (wlWinRt > 0.05) {
+					if (wlWinRt > 0.055) {
 						return ResultGroup.Three;
 					}
-					if (waWinRt < 0.02 && aomenPk <= 1) {
+					if (waWinRt < 0.01 && aomenPk <= 1) {
 						return ResultGroup.Three;
 					}
 				} else if (aomenPk >= 0) {
-					if (wlWinRt > 0.06) {
+					if (wlWinRt > 0.065) {
 						return ResultGroup.Three;
 					}
-					if (waWinRt < 0.02) {
+					if (waWinRt < 0.01) {
 						return ResultGroup.Three;
 					}
 				} else if (aomenPk > -0.5) {
-					if (wlLoseRt > 0.06) {
+					if (wlLoseRt > 0.065) {
 						return ResultGroup.Zero;
 					}
-					if (waLoseRt < 0.02) {
+					if (waLoseRt < 0.01) {
 						return ResultGroup.Zero;
 					}
 				} else {
-					if (wlLoseRt > 0.05) {
+					if (wlLoseRt > 0.055) {
 						return ResultGroup.Zero;
 					}
-					if (waLoseRt < 0.02 && aomenPk <= -1) {
+					if (waLoseRt < 0.01 && aomenPk <= -1) {
 						return ResultGroup.Zero;
 					}
 				}

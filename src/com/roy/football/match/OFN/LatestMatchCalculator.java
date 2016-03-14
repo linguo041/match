@@ -179,18 +179,18 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				// calculate the latest 6 matches
 				if (allNum == 5) {
 					if (isHost) {
-						matchState.setHostState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum));
+						matchState.setHostState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
 					} else {
-						matchState.setGuestState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum));
+						matchState.setGuestState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
 					}
 				}
 				
 				// calculate the latest 10 matches
 				if (allNum == 9) {
 					if (isHost) {
-						matchState.setHostState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum));
+						matchState.setHostState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
 					} else {
-						matchState.setGuestState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum));
+						matchState.setGuestState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
 					}
 					
 					break;
@@ -200,13 +200,14 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 
 	private LatestMatchMatrices setMatchMatricesData (int winNum,
-			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum) {
+			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum, int drawPkNum) {
 		LatestMatchMatrices matrices =  new LatestMatchMatrices();
 		matrices.setMatchGoal((float)goals/allNum);
 		matrices.setMatchMiss((float)misses/allNum);
 		matrices.setWinRate((float)winNum/allNum);
 		matrices.setWinDrawRate((float) (winNum + drawNum)/allNum);
 		matrices.setWinPkRate((float) winPkNum / allNum);
+		matrices.setWinDrawPkRate((float) (winPkNum + drawPkNum) / allNum);
 		return matrices;
 	}
 }

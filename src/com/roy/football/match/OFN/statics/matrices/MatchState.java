@@ -91,9 +91,17 @@ public class MatchState implements CalculateResult, MatchData {
 			this.matchMiss = matchMiss;
 		}
 
+		public Float getWinDrawPkRate() {
+			return winDrawPkRate;
+		}
+		public void setWinDrawPkRate(Float winDrawPkRate) {
+			this.winDrawPkRate = winDrawPkRate;
+		}
+
 		private Float winRate;
 		private Float winDrawRate;
 		private Float winPkRate;
+		private Float winDrawPkRate;
 		private Float matchGoal;
 		private Float matchMiss;
 	}
