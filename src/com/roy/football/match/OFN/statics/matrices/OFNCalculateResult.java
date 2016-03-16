@@ -1,6 +1,7 @@
 package com.roy.football.match.OFN.statics.matrices;
 
 import java.util.List;
+import java.util.Set;
 
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.base.ResultGroup;
@@ -89,36 +90,37 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	public void setEuroMatrices(EuroMatrices euroMatrices) {
 		this.euroMatrices = euroMatrices;
 	}
-	public ResultGroup getKillByPk() {
-		return killByPk;
-	}
 
-	public void setKillByPk(ResultGroup killByPk) {
-		this.killByPk = killByPk;
-	}
-
-	public ResultGroup getKillByPl() {
-		return killByPl;
-	}
-
-	public void setKillByPl(ResultGroup killByPl) {
-		this.killByPl = killByPl;
-	}
-
-	public ResultGroup getPromote() {
-		return promote;
-	}
-
-	public void setPromote(ResultGroup promote) {
-		this.promote = promote;
-	}
-
-	public ResultGroup getTooHot() {
+	public Set<ResultGroup> getTooHot() {
 		return tooHot;
 	}
 
-	public void setTooHot(ResultGroup tooHot) {
+	public void setTooHot(Set<ResultGroup> tooHot) {
 		this.tooHot = tooHot;
+	}
+
+	public Set<ResultGroup> getKillByPk() {
+		return killByPk;
+	}
+
+	public void setKillByPk(Set<ResultGroup> killByPk) {
+		this.killByPk = killByPk;
+	}
+
+	public Set<ResultGroup> getKillByPl() {
+		return killByPl;
+	}
+
+	public void setKillByPl(Set<ResultGroup> killByPl) {
+		this.killByPl = killByPl;
+	}
+
+	public Set<ResultGroup> getPromote() {
+		return promote;
+	}
+
+	public void setPromote(Set<ResultGroup> promote) {
+		this.promote = promote;
 	}
 
 	public long getLeagueId() {
@@ -140,8 +142,8 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private PankouMatrices pkMatrices;
 	private Float predictPanKou;
 	private EuroMatrices euroMatrices;
-	private ResultGroup tooHot;
-	private ResultGroup killByPk;
-	private ResultGroup killByPl;
-	private ResultGroup promote;
+	private Set<ResultGroup> tooHot;
+	private Set<ResultGroup> killByPk;
+	private Set<ResultGroup> killByPl;
+	private Set<ResultGroup> promote;
 }

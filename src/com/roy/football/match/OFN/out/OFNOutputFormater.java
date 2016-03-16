@@ -1,6 +1,10 @@
 package com.roy.football.match.OFN.out;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.OFNMatchData;
@@ -35,7 +39,9 @@ public class OFNOutputFormater {
 			excelData.setGuestLabel((calculateResult.getGuestLabels() == null || calculateResult.getGuestLabels().size() <= 0) ? "" : calculateResult.getGuestLabels().toString());
 		
 			JiaoShouMatrices jiaoshouMatrices = calculateResult.getJiaoShou();
-			excelData.setPredictPanKou(getPredictPankouString(calculateResult.getPredictPanKou(), jiaoshouMatrices.getLatestPankou()));
+			Float predictPk = calculateResult.getPredictPanKou();
+			Float latestPk = jiaoshouMatrices == null ? null : jiaoshouMatrices.getLatestPankou();
+			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
 
 			PankouMatrices pkmatrices = calculateResult.getPkMatrices();
 			Float origPk = pkmatrices.getOriginPk().getPanKou();
@@ -43,21 +49,21 @@ public class OFNOutputFormater {
 			excelData.setOriginPanKou(String.format("%.2f [%.2f, %.2f]",
 					origPk, MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk())));
 			
-			ResultGroup hot = calculateResult.getTooHot();
-			excelData.setTooHot(hot == null ? "" : hot.getNum());
-			ResultGroup killByPk = calculateResult.getKillByPk();
-			ResultGroup killByPl = calculateResult.getKillByPl();
+			Set<ResultGroup> hot = calculateResult.getTooHot();
+			excelData.setTooHot(getSetVals(hot));
+			Set<ResultGroup> killByPk = calculateResult.getKillByPk();
+			Set<ResultGroup> killByPl = calculateResult.getKillByPl();
 			String kill = "";
-			if (killByPk != null) {
-				kill = killByPk.getNum();
+			if (killByPk != null && killByPk.size() > 0) {
+				kill = getSetVals(killByPk);
 			}
 			
-			if (killByPl != null) {
-				kill = kill + " | "+ killByPl.getNum();
+			if (killByPl != null && killByPl.size() > 0) {
+				kill = kill + " | "+ getSetVals(killByPl);
 			}
 			excelData.setKill(kill);
-			ResultGroup promote = calculateResult.getPromote();
-			excelData.setPromote(promote == null ? "" : promote.getNum());
+			Set<ResultGroup> promote = calculateResult.getPromote();
+			excelData.setPromote(getSetVals(promote));
 //			excelData
 //			TODO
 		}
@@ -80,8 +86,30 @@ public class OFNOutputFormater {
 		return sb.toString();
 	}
 	
+	private String getSetVals (Set<ResultGroup> sets) {
+		String s = "";
+		
+		if (sets != null && sets.size() > 0) {
+			Iterator<ResultGroup> its = sets.iterator();
+			while (its.hasNext()) {
+				s += its.next();
+			}
+		}
+
+		return s;
+	}
+	
 	private String getPredictPankouString(Float predictPk, Float latestPk) {
-		return String.format("%.2f [%.2f]", predictPk == null ? -100f
-				: predictPk, latestPk == null ? -100f : latestPk);
+		String format = "";
+		List<Float> args = new ArrayList<Float>();
+		if (predictPk != null) {
+			format = "%.2f";
+			args.add(predictPk);
+		}
+		if (latestPk != null) {
+			format += " [%.2f]";
+			args.add(latestPk);
+		}
+		return String.format(format, args.toArray());
 	}
 }

@@ -1,45 +1,40 @@
 package com.roy.football.match.OFN.statics.matrices;
 
+import java.util.Set;
+
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.process.KillResult;
 import com.roy.football.match.process.PromoteResult;
 
 public class OFNKillPromoteResult implements KillResult, PromoteResult{
 
-	public ResultGroup getKillByPk() {
+	public Set<ResultGroup> getKillByPk() {
 		return killByPk;
 	}
-
-	public void setKillByPk(ResultGroup killByPk) {
+	public void setKillByPk(Set<ResultGroup> killByPk) {
 		this.killByPk = killByPk;
 	}
-
-	public ResultGroup getPromoteByPk() {
+	public Set<ResultGroup> getKillByPl() {
+		return killByPl;
+	}
+	public void setKillByPl(Set<ResultGroup> killByPl) {
+		this.killByPl = killByPl;
+	}
+	public Set<ResultGroup> getPromoteByPk() {
 		return promoteByPk;
 	}
-
-	public void setPromoteByPk(ResultGroup promoteByPk) {
+	public void setPromoteByPk(Set<ResultGroup> promoteByPk) {
 		this.promoteByPk = promoteByPk;
 	}
-
-	public ResultGroup getTooHot() {
+	public Set<ResultGroup> getTooHot() {
 		return tooHot;
 	}
-
-	public void setTooHot(ResultGroup tooHot) {
+	public void setTooHot(Set<ResultGroup> tooHot) {
 		this.tooHot = tooHot;
 	}
 
-	public ResultGroup getKillByPl() {
-		return killByPl;
-	}
-
-	public void setKillByPl(ResultGroup killByPl) {
-		this.killByPl = killByPl;
-	}
-
-	private ResultGroup killByPk;
-	private ResultGroup killByPl;
-	private ResultGroup promoteByPk;
-	private ResultGroup tooHot;
+	private Set<ResultGroup> killByPk;
+	private Set<ResultGroup> killByPl;
+	private Set<ResultGroup> promoteByPk;
+	private Set<ResultGroup> tooHot;
 }

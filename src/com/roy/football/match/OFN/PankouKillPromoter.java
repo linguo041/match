@@ -1,6 +1,8 @@
 package com.roy.football.match.OFN;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.EuroPl;
@@ -34,7 +36,7 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 	}
 	
 	public void checkHot(OFNKillPromoteResult killPromoteResult, OFNCalculateResult calResult) {
-		ResultGroup hot = checkHotMatch(calResult);
+		Set<ResultGroup> hot = checkHotMatch(calResult);
 		killPromoteResult.setTooHot(hot);
 	}
 
@@ -48,8 +50,8 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 			
 			if (pkMatrices != null) {
 				float currPk = pkMatrices.getCurrentPk().getPanKou();
-				ResultGroup pkRes = killZhuShangPan(pkMatrices, predictPk, hostLabels, guestLabels);
-				ResultGroup plRes = killByWillLabDiff(calResult.getEuroMatrices(), currPk);
+				Set<ResultGroup> pkRes = killZhuShangPan(pkMatrices, predictPk, hostLabels, guestLabels);
+				Set<ResultGroup> plRes = killByWillLabDiff(calResult.getEuroMatrices(), currPk);
 
 				killPromoteResult.setKillByPk(pkRes);
 				killPromoteResult.setKillByPl(plRes);
@@ -104,8 +106,10 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 		return killPromoteResult;
 	}
 	
-	private ResultGroup killZhuShangPan (PankouMatrices pkMatrices, Float predictPk,
+	private Set<ResultGroup> killZhuShangPan (PankouMatrices pkMatrices, Float predictPk,
 			List <TeamLabel> hostLabels, List <TeamLabel> guestLabels) {
+		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
+
 		if (pkMatrices != null && predictPk != null) {
 			AsiaPl origin = pkMatrices.getOriginPk();
 			AsiaPl main = pkMatrices.getMainPk();
@@ -120,9 +124,10 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 					&& currentPk <= mainPk
 					&& !MatchUtil.isHostHomeStrong(hostLabels)) {
 				if (mainPk <= -0.5) {
-					return ResultGroup.ThreeOne;
+					rgs.add(ResultGroup.Three);
+					rgs.add(ResultGroup.One);
 				} else if (mainPk < 0.75 && mainPk != 0) {
-					return ResultGroup.Three;
+					rgs.add(ResultGroup.Three);
 				}
 			}
 			
@@ -132,17 +137,20 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 					&& currentPk >= mainPk
 					&& !MatchUtil.isGuestDefensive(guestLabels)) {
 				if (mainPk >= 0.5) {
-					return ResultGroup.OneZero;
+					rgs.add(ResultGroup.One);
+					rgs.add(ResultGroup.Zero);
 				} else if (mainPk >= -0.5) {
-					return ResultGroup.Zero;
+					rgs.add(ResultGroup.Zero);
 				}
 			}
 		}
 
-		return null;
+		return rgs;
 	}
 	
-	private ResultGroup killByWillLabDiff (EuroMatrices euMatrices, Float aomenPk) {
+	private Set<ResultGroup> killByWillLabDiff (EuroMatrices euMatrices, Float aomenPk) {
+		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
+		
 		if (euMatrices != null) {
 			EuroMatrix will = euMatrices.getWilliamMatrix();
 			EuroMatrix lab = euMatrices.getLadMatrix();
@@ -159,41 +167,43 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 				float waLoseRt = MatchUtil.getEuDiff(mainWillEu.geteLose(), mainAomenEu.geteLose(), false);
 				if (aomenPk > 0.25) {
 					if (wlWinRt > 0.055) {
-						return ResultGroup.Three;
+						rgs.add(ResultGroup.Three);
 					}
 					if (waWinRt < 0.01 && aomenPk <= 1) {
-						return ResultGroup.Three;
+						rgs.add(ResultGroup.Three);
 					}
 				} else if (aomenPk >= 0) {
 					if (wlWinRt > 0.065) {
-						return ResultGroup.Three;
+						rgs.add(ResultGroup.Three);
 					}
 					if (waWinRt < 0.01) {
-						return ResultGroup.Three;
+						rgs.add(ResultGroup.Three);
 					}
 				} else if (aomenPk > -0.5) {
 					if (wlLoseRt > 0.065) {
-						return ResultGroup.Zero;
+						rgs.add(ResultGroup.Zero);
 					}
 					if (waLoseRt < 0.01) {
-						return ResultGroup.Zero;
+						rgs.add(ResultGroup.Zero);
 					}
 				} else {
 					if (wlLoseRt > 0.055) {
-						return ResultGroup.Zero;
+						rgs.add(ResultGroup.Zero);
 					}
 					if (waLoseRt < 0.01 && aomenPk <= -1) {
-						return ResultGroup.Zero;
+						rgs.add(ResultGroup.Zero);
 					}
 				}
 			}
 		}
 		
-		return null;
+		return rgs;
 	}
 	
-	private ResultGroup promoteByPk (PankouMatrices pkMatrices, Float predictPk,
+	private Set<ResultGroup> promoteByPk (PankouMatrices pkMatrices, Float predictPk,
 			List <TeamLabel> hostLabels, List <TeamLabel> guestLabels) {
+		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
+		
 		if (pkMatrices != null && predictPk != null) {
 			AsiaPl main = pkMatrices.getMainPk();
 			AsiaPl current = pkMatrices.getCurrentPk();
@@ -203,33 +213,34 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 
 			if (main.gethWin() <= 0.96
 					&& current.gethWin() <= 0.96
-					&& predictPk - mainPk >= 0.12
 					&& currentPk >= mainPk
 					&& !MatchUtil.isGuestDefensive(guestLabels)) {
-				if (mainPk >= 0.5) {
-					return ResultGroup.Three;
-				} else if (mainPk >= -0.5) {
-					return ResultGroup.ThreeOne;
+				if (mainPk >= 0.5 && predictPk - mainPk >= -0.12) {
+					rgs.add(ResultGroup.Three);
+				} else if (mainPk >= -0.5 && predictPk - mainPk >= 0.15) {
+					rgs.add(ResultGroup.Three);
+					rgs.add(ResultGroup.One);
 				}
 			}
 			
 			if (main.getaWin() <= 0.96
 					&& current.getaWin() <= 0.96
-					&& mainPk - predictPk >= 0.12
 					&& currentPk <= mainPk
 					&& !MatchUtil.isHostHomeStrong(hostLabels)) {
-				if (mainPk <= -0.5) {
-					return ResultGroup.Zero;
-				} else if (mainPk <= 0.5) {
-					return ResultGroup.OneZero;
+				if (mainPk <= -0.5 && mainPk - predictPk >= -0.12) {
+					rgs.add(ResultGroup.Zero);
+				} else if (mainPk <= 0.5 && mainPk - predictPk >= -0.12) {
+					rgs.add(ResultGroup.One);
+					rgs.add(ResultGroup.Zero);
 				}
 			}
 		}
 
-		return null;
+		return rgs;
 	}
 	
-	private ResultGroup checkHotMatch (OFNCalculateResult calResult) {
+	private Set<ResultGroup> checkHotMatch (OFNCalculateResult calResult) {
+		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
 		ResultGroup result = null;
 		
 		ClubMatrices clubs = calResult.getClubMatrices();
@@ -261,12 +272,12 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 		float waLoseRt = MatchUtil.getEuDiff(willCurrentEu.geteLose(), amCurrentEu.geteLose(), false);
 		
 		if (result == ResultGroup.Three && waWinRt >= 0.05) {
-			return ResultGroup.Three;
+			rgs.add(ResultGroup.Three);
 		} else if (result == ResultGroup.Zero && waLoseRt >= 0.05) {
-			return ResultGroup.Zero;
+			rgs.add(ResultGroup.Zero);
 		}
 
-		return null;
+		return rgs;
 	}
 	
 	private int compareClub (ClubMatrices clubs, Long lid) {

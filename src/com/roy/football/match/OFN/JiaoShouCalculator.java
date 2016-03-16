@@ -18,9 +18,8 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 		
 		if (matches != null && matches.size() > 0) {
 			Collections.sort(matches);
-			
 			JiaoShouMatrices matrices = new JiaoShouMatrices();
-			
+
 			Float latestPankou = null;
 			Float latestDaxiao = null;
 			Float tempPankou = null;
@@ -82,7 +81,7 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 				matrices.setWinRate((float)(winNum/allNum));
 				matrices.setWinDrawRate((float)((winNum + drawNum)/allNum));
 			}
-
+			
 			return matrices;
 		}
 		

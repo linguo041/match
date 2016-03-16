@@ -66,31 +66,37 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	
 	// TODO - refer to the team status
 	private Float getPredictPanKou (JiaoShouMatrices jsMatrices, MatchState matchState, TeamLevel hostLevel, TeamLevel guestlevel) {
-		if (jsMatrices == null || matchState == null) {
-			return null;
+		Float predictPk = null;
+		
+		Float weight = 0f;
+
+		if (matchState != null) {
+			predictPk = matchState.getCalculatePk();
+			
+			// add weight according to match state  -0.05 ~ 0.05
+			weight = getPankouWeightByState(matchState.getHostState6(), matchState.getGuestState6(),
+					hostLevel, guestlevel);
 		}
 		
-		Float predictPk = matchState.getCalculatePk();
-
-		Float weight = 0f;
-		// add weight according to jiao shou records  0.05 0r 0
-		if (predictPk != null) {
-			if (predictPk >= 0.25) {
-				if (predictPk < 2 && jsMatrices.getMatchNum() >= 2 && jsMatrices.getWinRate() > 0.4) {
-					weight += 0.05f;
-				}
-			} else {
-				if (jsMatrices.getMatchNum() >= 2 && jsMatrices.getWinDrawRate() > 0.6) {
-					weight += 0.05f;
+		if (jsMatrices != null) {
+			// add weight according to jiao shou records  0.05 0r 0
+			if (predictPk != null) {
+				if (predictPk >= 0.25) {
+					if (predictPk < 2 && jsMatrices.getMatchNum() >= 2 && jsMatrices.getWinRate() > 0.4) {
+						weight += 0.05f;
+					}
+				} else {
+					if (jsMatrices.getMatchNum() >= 2 && jsMatrices.getWinDrawRate() > 0.6) {
+						weight += 0.05f;
+					}
 				}
 			}
 		}
 
-		// add weight according to match state  -0.05 ~ 0.05
-		weight += getPankouWeightByState(matchState.getHostState6(), matchState.getGuestState6(),
-				hostLevel, guestlevel);
-		
-		return predictPk + weight;
+		if (predictPk != null) {
+			return predictPk + weight;
+		}
+		return null;
 	}
 	
 	private float getPankouWeightByState (LatestMatchMatrices hostMatrices,
