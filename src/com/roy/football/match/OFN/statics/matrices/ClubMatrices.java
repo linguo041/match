@@ -71,16 +71,15 @@ public class ClubMatrices implements CalculateResult, MatchData{
 	
 	public static class ClubMatrix {
 
-		
-
 		@Override
 		public String toString() {
 			return "ClubMatrix [num=" + num + ", winRt=" + winRt
 					+ ", winDrawRt=" + winDrawRt + ", drawLoseRt=" + drawLoseRt
 					+ ", goals=" + goals + ", misses=" + misses + ", winGoals="
 					+ winGoals + ", winLoseDiff=" + winLoseDiff + ", pm=" + pm
-					+ "]";
+					+ ", point=" + point + "]";
 		}
+
 		public Float getWinRt() {
 			return winRt;
 		}
@@ -142,6 +141,13 @@ public class ClubMatrices implements CalculateResult, MatchData{
 			this.misses = misses;
 		}
 
+		public Integer getPoint() {
+			return point;
+		}
+		public void setPoint(Integer point) {
+			this.point = point;
+		}
+
 		private Integer num;
 		private Float winRt;
 		private Float winDrawRt;
@@ -151,5 +157,6 @@ public class ClubMatrices implements CalculateResult, MatchData{
 		private Integer winGoals;
 		private Integer winLoseDiff;
 		private Integer pm;
+		private Integer point;
 	}
 }

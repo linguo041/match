@@ -1,7 +1,7 @@
 package com.roy.football.match.base;
 
 public enum ResultGroup {
-	Three(3), One(1), Zero(0);
+	Three(3), One(1), Zero(0), RangThree(5), RangZero(-5);
 	
 	@Override
 	public String toString() {

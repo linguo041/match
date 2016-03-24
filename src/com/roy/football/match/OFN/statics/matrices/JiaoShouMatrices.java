@@ -9,7 +9,8 @@ public class JiaoShouMatrices implements CalculateResult, MatchData {
 	public String toString() {
 		return "JiaoShouMatrices [latestPankou=" + latestPankou
 				+ ", latestDaxiao=" + latestDaxiao + ", winRate=" + winRate
-				+ ", winDrawRate=" + winDrawRate + ", matchNum=" + matchNum
+				+ ", winDrawRate=" + winDrawRate + ", winPkRate=" + winPkRate
+				+ ", winDrawPkRate=" + winDrawPkRate + ", matchNum=" + matchNum
 				+ "]";
 	}
 
@@ -44,9 +45,27 @@ public class JiaoShouMatrices implements CalculateResult, MatchData {
 		this.matchNum = matchNum;
 	}
 
+	public Float getWinPkRate() {
+		return winPkRate;
+	}
+
+	public void setWinPkRate(Float winPkRate) {
+		this.winPkRate = winPkRate;
+	}
+
+	public Float getWinDrawPkRate() {
+		return winDrawPkRate;
+	}
+
+	public void setWinDrawPkRate(Float winDrawPkRate) {
+		this.winDrawPkRate = winDrawPkRate;
+	}
+
 	private Float latestPankou;
 	private Float latestDaxiao;
 	private Float winRate;
 	private Float winDrawRate;
+	private Float winPkRate;
+	private Float winDrawPkRate;
 	private Integer matchNum;
 }

@@ -78,17 +78,13 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 					hostLevel, guestlevel);
 		}
 		
-		if (jsMatrices != null) {
+		if (jsMatrices != null && jsMatrices.getMatchNum() >= 2) {
 			// add weight according to jiao shou records  0.05 0r 0
 			if (predictPk != null) {
-				if (predictPk >= 0.25) {
-					if (predictPk < 2 && jsMatrices.getMatchNum() >= 2 && jsMatrices.getWinRate() > 0.4) {
-						weight += 0.05f;
-					}
+				if (predictPk >= 1 || predictPk <= -0.2) {
+					weight += (2*jsMatrices.getWinPkRate() + jsMatrices.getWinDrawPkRate() -1) * 0.16f;
 				} else {
-					if (jsMatrices.getMatchNum() >= 2 && jsMatrices.getWinDrawRate() > 0.6) {
-						weight += 0.05f;
-					}
+					weight += (2*jsMatrices.getWinRate() + jsMatrices.getWinDrawRate() -1) * 0.16f;
 				}
 			}
 		}
@@ -104,43 +100,28 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		float pkWeight = 0;
 		
 		if (hostMatrices != null && guestMatrices != null) {
-			float hostGoodRate = 0;
-			float guestGoodRate = 0;
+			Double hostWeight = null;
+			Double guestWeight = null;
+			 
 			
 			if (hostLevel != null) {
-				if (hostLevel.getPm() >= 4) {
-					hostGoodRate = hostMatrices.getWinRate();
-				} else {
-					hostGoodRate = hostMatrices.getWinDrawRate();
-				}
+				hostWeight = hostMatrices.getWinRate() * (0.135 + hostLevel.ordinal() * 0.035 / 3)
+						+ (hostMatrices.getWinDrawRate() - hostMatrices.getWinRate()) * (0.06 + hostLevel.ordinal() * 0.035 / 3) ;
 			}
 
 			if (guestLevel != null) {
-				if (guestLevel.getPm() >= 4) {
-					guestGoodRate = guestMatrices.getWinRate();
-				} else {
-					guestGoodRate = guestMatrices.getWinDrawRate();
-				}
+				guestWeight = guestMatrices.getWinRate() * (0.135 + guestLevel.ordinal() * 0.035 / 3)
+						+ (guestMatrices.getWinDrawRate()-guestMatrices.getWinRate()) * (0.06 + guestLevel.ordinal() * 0.035 / 3);
+			}
+			
+			if (hostWeight != null && guestWeight != null) {
+				pkWeight = (float)(hostWeight - guestWeight);
 			}
 
-			if (hostGoodRate - guestGoodRate > 0.15) {
-				pkWeight = 0.05f;
-			} else if (guestGoodRate - hostGoodRate > 0.15) {
-				pkWeight = -0.05f;
-			}
+			float winPkRateDiff = (hostMatrices.getWinPkRate() - guestMatrices.getWinPkRate()) * 0.075f;
+			float wdPkRateDiff = (hostMatrices.getWinDrawPkRate() - guestMatrices.getWinDrawPkRate()) * 0.075f;
 			
-			float winPkRateDiff = hostMatrices.getWinPkRate() - guestMatrices.getWinPkRate();
-			float wdPkRateDiff = hostMatrices.getWinDrawPkRate() - guestMatrices.getWinDrawPkRate();
-			
-			if (winPkRateDiff > 0.6) {
-				pkWeight += 0.1;
-			} else if (winPkRateDiff > 0.3 && wdPkRateDiff > 0.3) {
-				pkWeight += 0.05;
-			} else if (winPkRateDiff < -0.3 && wdPkRateDiff < -0.3) {
-				pkWeight -= 0.05;
-			} else if (winPkRateDiff < -0.6) {
-				pkWeight -= 0.1;
-			}
+			pkWeight += (winPkRateDiff + wdPkRateDiff);
 		}
 		
 		return pkWeight;

@@ -60,6 +60,15 @@ public class MatchState implements CalculateResult, MatchData {
 	private Float calculatePk;
 	
 	public static class LatestMatchMatrices {
+
+		@Override
+		public String toString() {
+			return "LatestMatchMatrices [winRate=" + winRate + ", winDrawRate="
+					+ winDrawRate + ", winPkRate=" + winPkRate
+					+ ", winDrawPkRate=" + winDrawPkRate + ", matchGoal="
+					+ matchGoal + ", matchMiss=" + matchMiss + "]";
+		}
+
 		public Float getWinRate() {
 			return winRate;
 		}

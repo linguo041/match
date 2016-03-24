@@ -7,6 +7,7 @@ import java.util.List;
 import com.roy.football.match.OFN.response.FinishedMatch;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
+import com.roy.football.match.base.League;
 import com.roy.football.match.process.Calculator;
 import com.roy.football.match.util.MatchUtil;
 
@@ -27,21 +28,34 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 			int drawNum = 0;     // otherwise check this one
 			int loseNum = 0;
 			int allNum = 0;
+			
+			int winPkNum = 0;
+			int drawPkNum = 0;
+			int losePkNum = 0;
 
 			Iterator<FinishedMatch> ite = matches.iterator();
 
 			while (ite.hasNext()) {
 				FinishedMatch match = ite.next();
 				
-				if (match.getLeagueId().equals(matchData.getLeagueId())) {
+				if (!match.getLeagueId().equals(League.Friendly.getLeagueId())
+						&& MatchUtil.isMatchInTwoYear(match.getMatchTime(), matchData.getMatchTime())) {
 					
 					if (match.getHostId().equals(matchData.getHostId())) {
-						if (latestPankou == null && MatchUtil.isMatchInAYear(match.getMatchTime(), matchData.getMatchTime())) {
+						if (latestPankou == null) {
 							try {
 								latestPankou = Float.parseFloat(match.getAsiaPanKou());
 							} catch (Exception e) {
 								// ignore..
 							}
+						}
+						
+						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
+							winPkNum ++;
+						} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
+							drawPkNum ++;
+						} else {
+							losePkNum ++;
 						}
 						
 						if (latestDaxiao == null ) {
@@ -50,7 +64,7 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 						
 						if (match.getHscore() > match.getAscore()) {
 							winNum ++;
-						} else if (match.getHscore() > match.getAscore()) {
+						} else if (match.getHscore() == match.getAscore()) {
 							drawNum ++;
 						} else {
 							loseNum ++;
@@ -58,13 +72,35 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 						
 						allNum ++;
 					} else {
-						if (tempPankou == null && MatchUtil.isMatchInAYear(match.getMatchTime(), matchData.getMatchTime())) {
+						if (latestPankou == null) {
 							try {
-								tempPankou = Float.parseFloat(match.getAsiaPanKou()) * -1 + 0.5f;
+								latestPankou = Float.parseFloat(match.getAsiaPanKou()) * -1 + 0.5f;
 							} catch (Exception e) {
 								// ignore..
 							}
 						}
+						
+						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
+							losePkNum ++;
+						} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
+							drawPkNum ++;
+						} else {
+							winPkNum ++;
+						}
+						
+						if (latestDaxiao == null ) {
+							latestDaxiao = MatchUtil.parsePankouString(match.getDaxiaoPanKou());
+						}
+						
+						if (match.getHscore() > match.getAscore()) {
+							loseNum ++;
+						} else if (match.getHscore() == match.getAscore()) {
+							drawNum ++;
+						} else {
+							winNum ++;
+						}
+						
+						allNum ++;
 					}
 				}
 			}
@@ -78,8 +114,10 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 			matrices.setMatchNum(allNum);
 			
 			if (allNum != 0) {
-				matrices.setWinRate((float)(winNum/allNum));
-				matrices.setWinDrawRate((float)((winNum + drawNum)/allNum));
+				matrices.setWinRate((float)winNum/allNum);
+				matrices.setWinDrawRate((float)(winNum + drawNum)/allNum);
+				matrices.setWinPkRate((float)winPkNum/allNum);
+				matrices.setWinDrawPkRate((float)(winPkNum + drawPkNum)/allNum);
 			}
 			
 			return matrices;

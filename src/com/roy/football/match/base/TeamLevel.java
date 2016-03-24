@@ -4,7 +4,7 @@ public enum TeamLevel {
 	Top(0.5f, 1.5f, 4, 0.7f, 1.4f, 1.4f),
 	Strong(0.38f, 1f, 10, 0.55f, 1.2f, 1.8f),
 	Nomal(0.25f, -2.5f, 15, 0.55f, 1f, 1.8f),
-	Weak(-1f, -100f, 100, -1f, 0.01f, 100f);
+	Weak(-1f, -1000f, 100, -1f, 0.001f, 1000f);
 	
 	TeamLevel(Float winRateStd, Float netGoalStd, Integer pm,
 			Float winDrawRateStd, Float goalStd, Float missStd) {

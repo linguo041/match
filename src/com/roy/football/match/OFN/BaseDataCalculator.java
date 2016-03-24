@@ -52,6 +52,7 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setGoals(clubData.getAllGoal());
 			matrix.setMisses(clubData.getAllMiss());
 			matrix.setPm(clubData.getPm().getAllPm());
+			matrix.setPoint(clubData.getAllScore());
 		} else if (type == MatrixType.Home) {
 			matrix.setNum(clubData.getHomeNum());
 			matrix.setWinRt((float)clubData.getHomeWin() / clubData.getHomeNum());
@@ -62,6 +63,7 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setGoals(clubData.getHomeGoal());
 			matrix.setMisses(clubData.getHomeMiss());
 			matrix.setPm(clubData.getPm().getHomePm());
+			matrix.setPoint(clubData.getHomeScore());
 		} else if (type == MatrixType.Away) {
 			matrix.setNum(clubData.getAwayNum());
 			matrix.setWinRt((float)clubData.getAwayWin() / clubData.getAwayNum());
@@ -72,6 +74,7 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setGoals(clubData.getAwayGoal());
 			matrix.setMisses(clubData.getAwayMiss());
 			matrix.setPm(clubData.getPm().getAwayPm());
+			matrix.setPoint(clubData.getAwayScore());
 		}
 
 		return matrix;

@@ -46,7 +46,7 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 
 		for (TeamLevel level : TeamLevel.values()) {
 			boolean result = matrix.getWinRt() >= level.getWinRateStd()
-					&& matrix.getWinGoals() >= (int)(matrix.getWinLoseDiff() * level.getNetGoalStd())
+//					&& matrix.getWinGoals() >= (int)((matrix.getWinLoseDiff()==0 ? 0.1 : matrix.getWinLoseDiff()) * level.getNetGoalStd())
 					&& matrix.getPm() <= level.getPm()
 					&& matrix.getWinDrawRt() >= level.getWinDrawRateStd()
 					&& matrix.getGoals() >= (int)(matrix.getNum() * level.getGoalStd())
