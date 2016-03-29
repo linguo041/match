@@ -82,9 +82,9 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			// add weight according to jiao shou records  0.05 0r 0
 			if (predictPk != null) {
 				if (predictPk >= 1 || predictPk <= -0.2) {
-					weight += (2*jsMatrices.getWinPkRate() + jsMatrices.getWinDrawPkRate() -1) * 0.16f;
+					weight += (jsMatrices.getWinPkRate() + jsMatrices.getWinDrawPkRate() -1) * 0.16f;
 				} else {
-					weight += (2*jsMatrices.getWinRate() + jsMatrices.getWinDrawRate() -1) * 0.16f;
+					weight += (jsMatrices.getWinRate() + jsMatrices.getWinDrawRate() -1) * 0.16f;
 				}
 			}
 		}

@@ -68,11 +68,18 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 
 			// home
 			if (hostId.equals(hMatch.getHostId())) {
-				opponentId = hMatch.getGuestId();
+				opponentId = hMatch.getGuestId();			
 				hPk = hPk - 0.25f;
 			} else { // away
-				opponentId = hMatch.getHostId();
+				opponentId = hMatch.getHostId();				
 				hPk = hPk * -1 + 0.25f;
+			}
+			
+			String hPl = hMatch.getAsiaPanLu();
+			if (MatchUtil.UNICODE_WIN.equalsIgnoreCase(hPl)) {
+				hPk = hPk + 0.05f;
+			} else if (MatchUtil.UNICODE_LOSE.equalsIgnoreCase(hPl)) {
+				hPk = hPk - 0.05f;
 			}
 			
 			for (int j = 0; j < gMatches.size() && j < comparedMatches; j++) {
@@ -83,13 +90,29 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				} catch (Exception e) {
 					continue;
 				}
-				
+
 				if (guestId.equals(gMatch.getHostId()) && opponentId.equals(gMatch.getGuestId())) {
 					gPk = gPk - 0.25f;
+					
+					String gPl = gMatch.getAsiaPanLu();
+					if (MatchUtil.UNICODE_WIN.equalsIgnoreCase(gPl)) {
+						gPk = gPk + 0.05f;
+					} else if (MatchUtil.UNICODE_LOSE.equalsIgnoreCase(gPl)) {
+						gPk = gPk - 0.05f;
+					}
+					
 					calPk = hPk - gPk;
 					calPankous.add(calPk);
 				} else if (guestId.equals(gMatch.getGuestId()) && opponentId.equals(gMatch.getHostId())){
 					gPk = gPk * -1 + 0.25f;
+					
+					String gPl = gMatch.getAsiaPanLu();
+					if (MatchUtil.UNICODE_WIN.equalsIgnoreCase(gPl)) {
+						gPk = gPk + 0.05f;
+					} else if (MatchUtil.UNICODE_LOSE.equalsIgnoreCase(gPl)) {
+						gPk = gPk - 0.05f;
+					}
+					
 					calPk = hPk - gPk;
 					calPankous.add(calPk);
 				}

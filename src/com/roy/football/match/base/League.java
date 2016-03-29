@@ -2,6 +2,7 @@ package com.roy.football.match.base;
 
 public enum League {
 	Friendly(166), YingChao(92, 20), YingGuang(177, 24), YingJia(178, 24),
+	XiJia(58, 20),
 	DeJia(39, 18), DeYi(140, 18),
 	YiJia(34, 20),
 	ShuChao(76, 12),
