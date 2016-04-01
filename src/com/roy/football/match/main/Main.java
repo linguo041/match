@@ -20,7 +20,7 @@ public class Main {
 		MatchContext context = OFHContext.getMatchContext();
 		SimpleOFNController simpleController = new SimpleOFNController(context);
 		
-		simpleController.process();
-//		simpleController.processMatch(943666l, League.RiLian);
+//		simpleController.process();
+		simpleController.processMatch(919432l, League.RiLian);
 	}
 }
