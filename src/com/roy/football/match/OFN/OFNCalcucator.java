@@ -33,6 +33,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 
 		OFNCalculateResult calResult = baseMatrixCalculator.calucate(matrices);
 		calResult.setLeagueId(matchData.getLeagueId());
+		calResult.setJinCai(matchData.getJinCai());
 		
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
 		calResult.setJiaoShou(jsMatrices);

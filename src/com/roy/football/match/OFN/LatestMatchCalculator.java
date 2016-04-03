@@ -144,6 +144,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			int losePkNum = 0;
 			int goals = 0;
 			int misses = 0;
+			float points = 0;
 			
 			for (int i = 0; i < matches.size(); i++) {
 				FinishedMatch match = matches.get(i);
@@ -154,13 +155,17 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 							|| matchDate.getTime() < match.getMatchTime().getTime()) {
 						break;
 					}
+					
+					float point = 0;
 
 					// home match
 					if (teamId.equals(match.getHostId())) {
 						if (match.getHscore() > match.getAscore()) {
 							winNum ++;
+							point = 3;
 						} else if (match.getHscore() == match.getAscore()) {
 							drawNum ++;
+							point = 1;
 						} else {
 							loseNum ++;
 						}
@@ -170,16 +175,24 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						
 						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 							winPkNum ++;
+							if (point != 3) {
+								point += 0.5;
+							}
 						} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
 							drawPkNum ++;
 						} else {
 							losePkNum ++;
+							if (point != 0) {
+								point -= 0.5;
+							}
 						}
 					} else { // away match
 						if (match.getAscore() > match.getHscore()) {
 							winNum ++;
+							point = 3;
 						} else if (match.getAscore() == match.getHscore()) {
 							drawNum ++;
+							point = 1;
 						} else {
 							loseNum ++;
 						}
@@ -189,31 +202,38 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						
 						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 							winPkNum ++;
+							if (point != 3) {
+								point += 0.5;
+							}
 						} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
 							drawPkNum ++;
 						} else {
 							losePkNum ++;
+							if (point != 0) {
+								point -= 0.5;
+							}
 						}
 					}
 					
 					allNum ++;
+					points += point;
 				}
 				
 				// calculate the latest 6 matches
 				if (allNum == 5) {
 					if (isHost) {
-						matchState.setHostState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
+						matchState.setHostState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
 					} else {
-						matchState.setGuestState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
+						matchState.setGuestState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
 					}
 				}
 				
 				// calculate the latest 10 matches
 				if (allNum == 9) {
 					if (isHost) {
-						matchState.setHostState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
+						matchState.setHostState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
 					} else {
-						matchState.setGuestState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum));
+						matchState.setGuestState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
 					}
 					
 					break;
@@ -223,7 +243,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 
 	private LatestMatchMatrices setMatchMatricesData (int winNum,
-			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum, int drawPkNum) {
+			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum, int drawPkNum, float points) {
 		LatestMatchMatrices matrices =  new LatestMatchMatrices();
 		matrices.setMatchGoal((float)goals/allNum);
 		matrices.setMatchMiss((float)misses/allNum);
@@ -231,6 +251,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matrices.setWinDrawRate((float) (winNum + drawNum)/allNum);
 		matrices.setWinPkRate((float) winPkNum / allNum);
 		matrices.setWinDrawPkRate((float) (winPkNum + drawPkNum) / allNum);
+		matrices.setPoint(points);
 		return matrices;
 	}
 }

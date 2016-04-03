@@ -66,7 +66,8 @@ public class MatchState implements CalculateResult, MatchData {
 			return "LatestMatchMatrices [winRate=" + winRate + ", winDrawRate="
 					+ winDrawRate + ", winPkRate=" + winPkRate
 					+ ", winDrawPkRate=" + winDrawPkRate + ", matchGoal="
-					+ matchGoal + ", matchMiss=" + matchMiss + "]";
+					+ matchGoal + ", matchMiss=" + matchMiss + ", point="
+					+ point + "]";
 		}
 
 		public Float getWinRate() {
@@ -107,11 +108,20 @@ public class MatchState implements CalculateResult, MatchData {
 			this.winDrawPkRate = winDrawPkRate;
 		}
 
+		public Float getPoint() {
+			return point;
+		}
+
+		public void setPoint(Float point) {
+			this.point = point;
+		}
+
 		private Float winRate;
 		private Float winDrawRate;
 		private Float winPkRate;
 		private Float winDrawPkRate;
 		private Float matchGoal;
 		private Float matchMiss;
+		private Float point;
 	}
 }

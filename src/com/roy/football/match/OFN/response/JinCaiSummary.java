@@ -85,6 +85,24 @@ public class JinCaiSummary {
 		public void setMtime(Date mtime) {
 			this.mtime = mtime;
 		}
+		public Float getOh() {
+			return oh;
+		}
+		public void setOh(Float oh) {
+			this.oh = oh;
+		}
+		public Float getOd() {
+			return od;
+		}
+		public void setOd(Float od) {
+			this.od = od;
+		}
+		public Float getOa() {
+			return oa;
+		}
+		public void setOa(Float oa) {
+			this.oa = oa;
+		}
 
 		private Long xid;  			// match Id
 		private Long oddsmid;   	// match Id
@@ -96,18 +114,21 @@ public class JinCaiSummary {
 		private Long htid;  		// host id
 		private Long gtid;			// guest id
 		private Date mtime;         // match time
+		private Float oh;           // win pay
+		private Float od;           // draw pay
+		private Float oa;           // lose pay
 
 		@Override
 		public int compareTo(JinCaiMatch o) {
 			return (int) (this.xid - o.xid);
 		}
-
 		@Override
 		public String toString() {
 			return "JinCaiMatch [xid=" + xid + ", oddsmid=" + oddsmid
 					+ ", lid=" + lid + ", ln=" + ln + ", sid=" + sid + ", hn="
 					+ hn + ", gn=" + gn + ", htid=" + htid + ", gtid=" + gtid
-					+ ", mtime=" + mtime + "]";
+					+ ", mtime=" + mtime + ", oh=" + oh + ", od=" + od
+					+ ", oa=" + oa + "]";
 		}
 	}
 }

@@ -53,7 +53,7 @@ public class MatchUtil {
 			temp = eu1 - eu2;
 		}
 		
-		return eu1 > eu2 ? temp/eu1 : temp/eu2;
+		return temp/eu2;
 	}
 	
 	public static float getCalculatedPk (AsiaPl asiaPk) {

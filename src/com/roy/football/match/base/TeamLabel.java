@@ -5,8 +5,8 @@ public enum TeamLabel {
 	Powerful(0.6f, 1.8f, 3, 0.8f, 2f, 1f, MatrixType.All),
 	HomeStrong(0.5f, 1.2f, 6, 0.8f, 1.2f, 1.2f, MatrixType.Home),
 	AwayWeak(0.2f, -0.3f, 15, 0.4f, 1f, 1.2f, MatrixType.Away),
-	Offensive(0.38f, 1f, 10, 0.6f, 1.5f, 100f, MatrixType.All),
-	Defensive(0.38f, 1f, 10, 0.6f, 0.01f, 1.1f, MatrixType.All);
+	Offensive(0.38f, 0.8f, 10, 0.55f, 1.5f, 100f, MatrixType.All),
+	Defensive(0.35f, 0.8f, 10, 0.6f, 0.01f, 1.4f, MatrixType.All);
 	
 	TeamLabel(Float winRateStd, Float netGoalStd, Integer pm,
 			Float winDrawRateStd, Float goalStd, Float loseStd) {

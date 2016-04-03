@@ -3,6 +3,7 @@ package com.roy.football.match.OFN.statics.matrices;
 import java.util.List;
 import java.util.Set;
 
+import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLabel;
@@ -16,12 +17,14 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		return "OFNCalculateResult [leagueId=" + leagueId + ", clubMatrices="
 				+ clubMatrices + ", hostLevel=" + hostLevel + ", hostLabels="
 				+ hostLabels + ", guestLevel=" + guestLevel + ", guestLabels="
-				+ guestLabels + ", jiaoShou=" + jiaoShou + ", matchState="
-				+ matchState + ", pkMatrices=" + pkMatrices
+				+ guestLabels + ", hostAttack=" + hostAttack + ", hostDefend="
+				+ hostDefend + ", guestAttack=" + guestAttack
+				+ ", guestDefend=" + guestDefend + ", jiaoShou=" + jiaoShou
+				+ ", matchState=" + matchState + ", pkMatrices=" + pkMatrices
 				+ ", predictPanKou=" + predictPanKou + ", euroMatrices="
-				+ euroMatrices + ", tooHot=" + tooHot + ", killByPk="
-				+ killByPk + ", killByPl=" + killByPl + ", promote=" + promote
-				+ "]";
+				+ euroMatrices + ", jinCai=" + jinCai + ", tooHot=" + tooHot
+				+ ", killByPk=" + killByPk + ", killByPl=" + killByPl
+				+ ", promote=" + promote + "]";
 	}
 
 	public ClubMatrices getClubMatrices() {
@@ -131,17 +134,64 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.leagueId = leagueId;
 	}
 
+	public EuroPl getJinCai() {
+		return jinCai;
+	}
+
+	public void setJinCai(EuroPl jinCai) {
+		this.jinCai = jinCai;
+	}
+	
+
+	public Float getHostAttack() {
+		return hostAttack;
+	}
+
+	public void setHostAttack(Float hostAttack) {
+		this.hostAttack = hostAttack;
+	}
+
+	public Float getHostDefend() {
+		return hostDefend;
+	}
+
+	public void setHostDefend(Float hostDefend) {
+		this.hostDefend = hostDefend;
+	}
+
+	public Float getGuestAttack() {
+		return guestAttack;
+	}
+
+	public void setGuestAttack(Float guestAttack) {
+		this.guestAttack = guestAttack;
+	}
+
+	public Float getGuestDefend() {
+		return guestDefend;
+	}
+
+	public void setGuestDefend(Float guestDefend) {
+		this.guestDefend = guestDefend;
+	}
+
+
 	private long leagueId;
 	private ClubMatrices clubMatrices;
 	private TeamLevel hostLevel;
 	private List<TeamLabel> hostLabels;
 	private TeamLevel guestLevel;
 	private List<TeamLabel> guestLabels;
+	private Float hostAttack;
+	private Float hostDefend;
+	private Float guestAttack;
+	private Float guestDefend;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
 	private PankouMatrices pkMatrices;
 	private Float predictPanKou;
 	private EuroMatrices euroMatrices;
+	private EuroPl jinCai;
 	private Set<ResultGroup> tooHot;
 	private Set<ResultGroup> killByPk;
 	private Set<ResultGroup> killByPl;

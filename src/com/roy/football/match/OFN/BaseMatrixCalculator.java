@@ -39,6 +39,15 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		
 	}
 	
+//	private void compareClubsAttackDefend (ClubMatrices matrices) {
+//		float hAttack = 0;
+//		float hDefend = 0;
+//		float gAttack = 0;
+//		float gDefend = 0;
+//		
+//		
+//	}
+	
 	private TeamLevel measureTeamLevel (ClubMatrix matrix) {
 		if (matrix == null) {
 			return null;

@@ -19,6 +19,6 @@ public enum ResultGroup {
 	public void setNum(Integer num) {
 		this.num = num;
 	}
-	
+
 	private Integer num;
 }
