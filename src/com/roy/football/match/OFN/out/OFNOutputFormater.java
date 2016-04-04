@@ -46,11 +46,12 @@ public class OFNOutputFormater {
 			PankouMatrices pkmatrices = calculateResult.getPkMatrices();
 			Float origPk = pkmatrices.getOriginPk().getPanKou();
 			
-			excelData.setOriginPanKou(String.format("%.2f [%.2f, %.2f]",
-					origPk, MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk())));
+			excelData.setOriginPanKou(String.format("%.2f, %.2f [%.2f]",
+					MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), origPk));
 			
-			Set<ResultGroup> hot = calculateResult.getTooHot();
-			excelData.setTooHot(getSetVals(hot));
+			Float hotPoint = calculateResult.getHotPoint();
+			excelData.setHotPoint(String.format("%.2f", hotPoint));
+			excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
 			Set<ResultGroup> killByPk = calculateResult.getKillByPk();
 			Set<ResultGroup> killByPl = calculateResult.getKillByPl();
 			String kill = "";

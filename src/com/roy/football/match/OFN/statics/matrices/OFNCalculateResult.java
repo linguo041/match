@@ -22,7 +22,7 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 				+ ", guestDefend=" + guestDefend + ", jiaoShou=" + jiaoShou
 				+ ", matchState=" + matchState + ", pkMatrices=" + pkMatrices
 				+ ", predictPanKou=" + predictPanKou + ", euroMatrices="
-				+ euroMatrices + ", jinCai=" + jinCai + ", tooHot=" + tooHot
+				+ euroMatrices + ", jinCai=" + jinCai + ", hotPoint=" + hotPoint
 				+ ", killByPk=" + killByPk + ", killByPl=" + killByPl
 				+ ", promote=" + promote + "]";
 	}
@@ -92,14 +92,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 
 	public void setEuroMatrices(EuroMatrices euroMatrices) {
 		this.euroMatrices = euroMatrices;
-	}
-
-	public Set<ResultGroup> getTooHot() {
-		return tooHot;
-	}
-
-	public void setTooHot(Set<ResultGroup> tooHot) {
-		this.tooHot = tooHot;
 	}
 
 	public Set<ResultGroup> getKillByPk() {
@@ -176,6 +168,15 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	}
 
 
+	public Float getHotPoint() {
+		return hotPoint;
+	}
+
+	public void setHotPoint(Float hotPoint) {
+		this.hotPoint = hotPoint;
+	}
+
+
 	private long leagueId;
 	private ClubMatrices clubMatrices;
 	private TeamLevel hostLevel;
@@ -188,11 +189,11 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private Float guestDefend;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
+	private Float hotPoint;
 	private PankouMatrices pkMatrices;
 	private Float predictPanKou;
 	private EuroMatrices euroMatrices;
 	private EuroPl jinCai;
-	private Set<ResultGroup> tooHot;
 	private Set<ResultGroup> killByPk;
 	private Set<ResultGroup> killByPl;
 	private Set<ResultGroup> promote;

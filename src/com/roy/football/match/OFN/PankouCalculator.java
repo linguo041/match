@@ -26,6 +26,9 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 				AsiaPl main = null;
 				float hours = 0;
 				AsiaPl temp = null;
+				float winWeight = 0;
+				float loseWeight = 0;
+				boolean changePk = false;
 
 				for (AsiaPl pk : pks) {
 					if (temp != null) {
@@ -40,7 +43,13 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 						if (lastTimeToMatch > 24) {
 							hours = 24 - thisTimeToMatch;
 							main = temp;
+							winWeight += (temp.gethWin() -1) * (hours > 0 ? hours : 0);
+							loseWeight += (temp.getaWin() -1) * (hours > 0 ? hours : 0);
 						} else {
+							if (temp.getPanKou() != pk.getPanKou()) {
+								changePk = true;
+							}
+
 							if (tempHours >= hours) {
 								hours = tempHours;
 								main = temp;
@@ -51,11 +60,24 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 					temp = pk;
 				}
 				
-				if (MatchUtil.getDiffHours(new Date(), temp.getPkDate()) >= hours) {
+				float currentHours = MatchUtil.getDiffHours(new Date(), temp.getPkDate());
+				
+				if (!changePk) {
+					winWeight += (temp.gethWin() -1) * currentHours;
+					loseWeight += (temp.getaWin() -1) * currentHours;
+				} else {
+					winWeight = 0;
+					loseWeight = 0;
+				}
+				
+				
+				if (currentHours >= hours) {
 					main = temp;
 				}
 
 				pkMatrices.setMainPk(main);
+				pkMatrices.setHwinChangeRate(winWeight);
+				pkMatrices.setAwinChangeRate(loseWeight);
 				return pkMatrices;
 			}
 		}

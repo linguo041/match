@@ -9,7 +9,8 @@ public class PankouMatrices implements CalculateResult, MatchData{
 	@Override
 	public String toString() {
 		return "PankouMatrices [originPk=" + originPk + ", mainPk=" + mainPk
-				+ ", currentPk=" + currentPk + "]";
+				+ ", currentPk=" + currentPk + ", hwinChangeRate="
+				+ hwinChangeRate + ", awinChangeRate=" + awinChangeRate + "]";
 	}
 
 	public AsiaPl getOriginPk() {
@@ -31,7 +32,25 @@ public class PankouMatrices implements CalculateResult, MatchData{
 		this.currentPk = currentPk;
 	}
 
+	public Float getHwinChangeRate() {
+		return hwinChangeRate;
+	}
+
+	public void setHwinChangeRate(Float hwinChangeRate) {
+		this.hwinChangeRate = hwinChangeRate;
+	}
+
+	public Float getAwinChangeRate() {
+		return awinChangeRate;
+	}
+
+	public void setAwinChangeRate(Float awinChangeRate) {
+		this.awinChangeRate = awinChangeRate;
+	}
+
 	private AsiaPl originPk;
 	private AsiaPl mainPk;
 	private AsiaPl currentPk;
+	private Float hwinChangeRate;
+	private Float awinChangeRate;
 }

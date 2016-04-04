@@ -26,15 +26,8 @@ public class OFNKillPromoteResult implements KillResult, PromoteResult{
 	public void setPromoteByPk(Set<ResultGroup> promoteByPk) {
 		this.promoteByPk = promoteByPk;
 	}
-	public Set<ResultGroup> getTooHot() {
-		return tooHot;
-	}
-	public void setTooHot(Set<ResultGroup> tooHot) {
-		this.tooHot = tooHot;
-	}
 
 	private Set<ResultGroup> killByPk;
 	private Set<ResultGroup> killByPl;
 	private Set<ResultGroup> promoteByPk;
-	private Set<ResultGroup> tooHot;
 }

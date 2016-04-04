@@ -14,8 +14,9 @@ public class OFNExcelData {
 				+ hostLevel + ", hostLabel=" + hostLabel + ", guestLevel="
 				+ guestLevel + ", guestLabel=" + guestLabel + ", originPanKou="
 				+ originPanKou + ", predictPanKou=" + predictPanKou
-				+ ", tooHot=" + tooHot + ", kill=" + kill + ", promote="
-				+ promote + "]";
+				+ ", hotPoint=" + hotPoint + ", pkKillRate=" + pkKillRate
+				+ ", kill=" + kill + ", promote=" + promote + ", result="
+				+ result + "]";
 	}
 
 	public Long getMatchDayId() {
@@ -96,13 +97,20 @@ public class OFNExcelData {
 	public void setPromote(String promote) {
 		this.promote = promote;
 	}
-	public String getTooHot() {
-		return tooHot;
+	public String getHotPoint() {
+		return hotPoint;
 	}
-	public void setTooHot(String tooHot) {
-		this.tooHot = tooHot;
+	public void setHotPoint(String hotPoint) {
+		this.hotPoint = hotPoint;
+	}
+	
+	public String getPkKillRate() {
+		return pkKillRate;
 	}
 
+	public void setPkKillRate(String pkKillRate) {
+		this.pkKillRate = pkKillRate;
+	}
 
 	public String getResult() {
 		return result;
@@ -131,16 +139,18 @@ public class OFNExcelData {
 	private String guestLevel;
 	@Header(order=90, title="Guest Label")
 	private String guestLabel;
-	@Header(order=100, title="Origin PK [Main, Latest]")
+	@Header(order=100, title="Main, Latest [PK]")
 	private String originPanKou;
 	@Header(order=110, title="Predict PK [Latest]")
 	private String predictPanKou;
 	@Header(order=120, title="Hot")
-	private String tooHot;
-	@Header(order=130, title="Kill[pk | pl]")
+	private String hotPoint;
+	@Header(order=130, title="K_PK[Up, Down]")
+	private String pkKillRate;
+	@Header(order=140, title="Kill[pk | pl]")
 	private String kill;
-	@Header(order=140, title="Promote")
+	@Header(order=150, title="Promote")
 	private String promote;
-	@Header(order=150, title="Result")
+	@Header(order=160, title="Result")
 	private String result;
 }
