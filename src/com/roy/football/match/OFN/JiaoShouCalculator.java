@@ -39,7 +39,8 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 				FinishedMatch match = ite.next();
 				
 				if (!match.getLeagueId().equals(League.Friendly.getLeagueId())
-						&& MatchUtil.isMatchInTwoYear(match.getMatchTime(), matchData.getMatchTime())) {
+						&& MatchUtil.isMatchInTwoYear(match.getMatchTime(), matchData.getMatchTime())
+						&& match.getMatchTime().getTime() < matchData.getMatchTime().getTime()) {
 					
 					if (match.getHostId().equals(matchData.getHostId())) {
 						if (latestPankou == null) {

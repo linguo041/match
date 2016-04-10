@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.roy.football.match.OFN.response.EuroPl;
+import com.roy.football.match.base.League;
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLabel;
@@ -14,7 +15,7 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 
 	@Override
 	public String toString() {
-		return "OFNCalculateResult [leagueId=" + leagueId + ", clubMatrices="
+		return "OFNCalculateResult [league=" + league + ", clubMatrices="
 				+ clubMatrices + ", hostLevel=" + hostLevel + ", hostLabels="
 				+ hostLabels + ", guestLevel=" + guestLevel + ", guestLabels="
 				+ guestLabels + ", hostAttack=" + hostAttack + ", hostDefend="
@@ -118,12 +119,12 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.promote = promote;
 	}
 
-	public long getLeagueId() {
-		return leagueId;
+	public League getLeague() {
+		return league;
 	}
 
-	public void setLeagueId(long leagueId) {
-		this.leagueId = leagueId;
+	public void setLeague(League league) {
+		this.league = league;
 	}
 
 	public EuroPl getJinCai() {
@@ -177,7 +178,7 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	}
 
 
-	private long leagueId;
+	private League league;
 	private ClubMatrices clubMatrices;
 	private TeamLevel hostLevel;
 	private List<TeamLabel> hostLabels;

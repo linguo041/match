@@ -152,8 +152,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				// not friendly
 				if (!match.getLeagueId().equals(League.Friendly.getLeagueId())) {
 					if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, i)
-							|| matchDate.getTime() < match.getMatchTime().getTime()) {
-						break;
+							|| matchDate.getTime() <= match.getMatchTime().getTime()) {
+						continue;
 					}
 					
 					float point = 0;

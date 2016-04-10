@@ -1,16 +1,31 @@
 package com.roy.football.match.base;
 
+import com.roy.football.match.OFN.response.Company;
+
 public enum League {
-	Friendly(166), YingChao(92, 20), YingGuang(177, 24), YingJia(178, 24),
-	XiJia(58, 20),
+	Friendly(166),
+	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William),
+	ShuChao(76, 12, Company.William),
+	XiJia(85, 20),
 	DeJia(39, 18), DeYi(140, 18),
-	YiJia(34, 20),
-	ShuChao(76, 12),
+	YiJia(34, 20, Company.SNAI),
 	FaJia(93, 20), FaYi(171, 20),
 	HeJia(99, 18), HeYi(202, 19), PuChao(88, 18),
-	RiLian(102, 18), AoChao(339, 10),
 	OuGuan(74, 16), OuLian(58, 16),
-	YaGuan(139, 16),
+	EChao(165, 16),
+	NorChao(104, 16),
+	Sweden(103, 16),
+
+	RiLian(102, 18, Company.Aomen), RiYi(347, 22, Company.Aomen),
+	HanZhiLian(250, 12, Company.Aomen),
+	AoChao(339, 10, Company.Aomen),
+	YaGuan(139, 16, Company.Aomen),
+
+	America(107, 20),
+	Argintina(108, 30),
+	Maxico(191, 18),
+	ChiLi(192, 16),
+	ShenBaoluo(261, 20),
 	JieFangZhe(159, 16)
 	;
 	
@@ -21,6 +36,12 @@ public enum League {
 	League(int leagueId, int clubNum) {
 		this.leagueId = leagueId;
 		this.clubNum = clubNum;
+	}
+	
+	League(int leagueId, int clubNum, Company comp) {
+		this.leagueId = leagueId;
+		this.clubNum = clubNum;
+		this.majorCompany = comp;
 	}
 	
 	public long getLeagueId() {
@@ -48,6 +69,15 @@ public enum League {
 		return null;
 	}
 
+	public Company getMajorCompany() {
+		return majorCompany;
+	}
+
+	public void setMajorCompany(Company majorCompany) {
+		this.majorCompany = majorCompany;
+	}
+
+	private Company majorCompany;
 	private long leagueId;
 	private int clubNum;
 }

@@ -9,6 +9,7 @@ import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.OFNKillPromoteResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
+import com.roy.football.match.base.League;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.process.Calculator;
 
@@ -32,7 +33,13 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		ClubMatrices matrices = baseCalculator.calucate(matchData);
 
 		OFNCalculateResult calResult = baseMatrixCalculator.calucate(matrices);
-		calResult.setLeagueId(matchData.getLeagueId());
+		
+		try {
+			League league = League.getLeagueById(matchData.getLeagueId());
+			calResult.setLeague(league);
+		} catch(Exception e) {
+			
+		}
 		calResult.setJinCai(matchData.getJinCai());
 		
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);

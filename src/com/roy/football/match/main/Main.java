@@ -21,6 +21,6 @@ public class Main {
 		SimpleOFNController simpleController = new SimpleOFNController(context);
 		
 		simpleController.process();
-//		simpleController.processMatch(885050l, League.PuChao);
+//		simpleController.processMatch(880904l, League.YiJia);
 	}
 }

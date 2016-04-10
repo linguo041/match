@@ -54,11 +54,20 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.interwettenMatrix = interwettenMatrix;
 	}
 
+	public EuroMatrix getSnaiMatrix() {
+		return snaiMatrix;
+	}
+
+	public void setSnaiMatrix(EuroMatrix snaiMatrix) {
+		this.snaiMatrix = snaiMatrix;
+	}
+
 	private EuroMatrix williamMatrix;
 	private EuroMatrix aomenMatrix;
 	private EuroMatrix ladMatrix;
 	private EuroMatrix yiShenBoMatrix;
 	private EuroMatrix interwettenMatrix;
+	private EuroMatrix snaiMatrix;
 
 	public static class EuroMatrix {
 		@Override

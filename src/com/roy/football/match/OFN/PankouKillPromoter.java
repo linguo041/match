@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.roy.football.match.OFN.response.AsiaPl;
+import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
@@ -53,11 +54,12 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 			}
 
 			Float hotPoint = calResult.getHotPoint();
+			League league = calResult.getLeague();
 
 			if (pkMatrices != null) {
 				float currPk = pkMatrices.getCurrentPk().getPanKou();
 				Set<ResultGroup> pkRes = killByPk(pkMatrices, hotPoint, predictPk, hostLabels, guestLabels, calResult.getClubMatrices());
-				Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai());
+				Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai(), league);
 
 				killPromoteResult.setKillByPk(pkRes);
 				killPromoteResult.setKillByPl(plRes);
@@ -79,11 +81,12 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 		}
 		
 		Float hotPoint = calResult.getHotPoint();
+		League league = calResult.getLeague();
 		
 		if (pkMatrices != null) {
 			float currPk = pkMatrices.getCurrentPk().getPanKou();
 			Set<ResultGroup> pkRes = killByPk(pkMatrices, hotPoint, predictPk, hostLabels, guestLabels, calResult.getClubMatrices());
-			Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai());
+			Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai(), league);
 			
 			killResult.setKillByPk(pkRes);
 			killResult.setKillByPl(plRes);
@@ -102,8 +105,10 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 			List <TeamLabel> guestLabels = calResult.getGuestLabels();
 			MatchState matchState = calResult.getMatchState();
 			
+			Float hotPoint = calResult.getHotPoint();
+			
 			if (pkMatrices != null) {
-				killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices, predictPk, hostLabels, guestLabels, matchState));
+				killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices, predictPk, hostLabels, guestLabels, hotPoint, matchState));
 			}
 		}
 	}
@@ -118,8 +123,10 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 		List <TeamLabel> guestLabels = calResult.getGuestLabels();
 		MatchState matchState = calResult.getMatchState();
 		
+		Float hotPoint = calResult.getHotPoint();
+		
 		if (pkMatrices != null) {
-			killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices, predictPk, hostLabels, guestLabels, matchState));
+			killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices, predictPk, hostLabels, guestLabels, hotPoint, matchState));
 		}
 		
 		return killPromoteResult;
@@ -205,75 +212,166 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 		return rgs;
 	}
 	
-	private Set<ResultGroup> killByEuro (EuroMatrices euMatrices, Float aomenPk, EuroPl jinCai) {
+	private Set<ResultGroup> killByEuro (EuroMatrices euMatrices, Float aomenPk, EuroPl jinCai, League league) {
 		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
 		
 		if (euMatrices != null) {
 			EuroMatrix will = euMatrices.getWilliamMatrix();
 			EuroMatrix lab = euMatrices.getLadMatrix();
 			EuroMatrix aomen = euMatrices.getAomenMatrix();
+			EuroMatrix majorComp = will;
+			
+			Company company = league.getMajorCompany();
+			if (company != null) {
+				switch (company) {
+					case Aomen:
+						majorComp = aomen;
+						break;
+					case SNAI:
+						majorComp = euMatrices.getSnaiMatrix();
+						break;
+					default:
+						majorComp = will;
+						break;
+				}
+			}
 			
 			if (will != null && lab != null) {
-				// use current since the main is not correct by the company changed frequently
 				EuroPl mainWillEu = will.getCurrentEuro();
 				EuroPl mainLabEu = lab.getCurrentEuro();
-				EuroPl mainAomenEu = aomen.getCurrentEuro();
-
-				float wlWinRt = MatchUtil.getEuDiff(mainWillEu.geteWin(), mainLabEu.geteWin(), true);
-				float wlLoseRt = MatchUtil.getEuDiff(mainWillEu.geteLose(), mainLabEu.geteLose(), true);
-				float waWinRt = MatchUtil.getEuDiff(mainWillEu.geteWin(), mainAomenEu.geteWin(), false);
-				float waLoseRt = MatchUtil.getEuDiff(mainWillEu.geteLose(), mainAomenEu.geteLose(), false);
-				float wjWinRt = 0;
-				float wjLoseRt = 0;
 				
-				if (jinCai != null) {
-					wjWinRt = MatchUtil.getEuDiff(mainWillEu.geteWin(), jinCai.geteWin(), false);
-					wjLoseRt = MatchUtil.getEuDiff(mainWillEu.geteLose(), jinCai.geteLose(), false);
-				}
-
-				if (aomenPk > 0.4) {
-					if (wjWinRt < 0.06 && aomenPk <= 1) {
-						if (wlWinRt > 0.063) {
-							rgs.add(ResultGroup.Three);
-						}
-						if (waWinRt < 0) {
-							rgs.add(ResultGroup.Three);
-						}
+				float wlWinRt = MatchUtil.getEuDiff(mainLabEu.geteWin(), mainWillEu.geteWin(), false);
+				float wlDrawRt = MatchUtil.getEuDiff(mainLabEu.geteDraw(), mainWillEu.geteDraw(), false);
+				float wlLoseRt = MatchUtil.getEuDiff(mainLabEu.geteLose(), mainWillEu.geteLose(), false);
+				
+				if (aomenPk >= 0.4) {
+					if (wlWinRt > 0.061) {
+						rgs.add(ResultGroup.Three);
+					}
+					if (wlDrawRt > 0.066) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.071) {
+						rgs.add(ResultGroup.Zero);
+					}
+				} else if (aomenPk >= 0.25) {
+					if (wlWinRt > 0.063) {
+						rgs.add(ResultGroup.Three);
+					}
+					if (wlDrawRt > 0.065) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.068) {
+						rgs.add(ResultGroup.Zero);
 					}
 				} else if (aomenPk >= 0) {
 					if (wlWinRt > 0.068) {
 						rgs.add(ResultGroup.Three);
 					}
-					if (waWinRt < 0) {
+					if (wlDrawRt > 0.065) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.068) {
+						rgs.add(ResultGroup.Zero);
+					}
+				} else if (aomenPk >= -0.25) {
+					if (wlWinRt > 0.068) {
 						rgs.add(ResultGroup.Three);
 					}
-				} else if (aomenPk > -0.5) {
-					if (wjLoseRt < 0.06) {
-						if (wlLoseRt > 0.068) {
-							rgs.add(ResultGroup.Zero);
-						}
-						if (waLoseRt < 0.01) {
-							rgs.add(ResultGroup.Zero);
-						}
+					if (wlDrawRt > 0.065) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.063) {
+						rgs.add(ResultGroup.Zero);
 					}
 				} else {
-					if (wjLoseRt < 0.07 && aomenPk <= 1) {
-						if (wlLoseRt > 0.06) {
-							rgs.add(ResultGroup.Zero);
-						}
-						if (waLoseRt < 0 && aomenPk <= -1) {
-							rgs.add(ResultGroup.Zero);
-						}
+					if (wlWinRt > 0.071) {
+						rgs.add(ResultGroup.Three);
+					}
+					if (wlDrawRt > 0.066) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.061) {
+						rgs.add(ResultGroup.Zero);
 					}
 				}
 			}
+			
+			if (majorComp != will && majorComp != null && will != null) {
+				// use current since the main is not correct by the company changed frequently
+				EuroPl willEu = will.getCurrentEuro();
+				EuroPl majorEu = majorComp.getCurrentEuro();
+
+				float wlWinRt = MatchUtil.getEuDiff(willEu.geteWin(), majorEu.geteWin(), true);
+				float wlDrawRt = MatchUtil.getEuDiff(willEu.geteDraw(), majorEu.geteDraw(), true);
+				float wlLoseRt = MatchUtil.getEuDiff(willEu.geteLose(), majorEu.geteLose(), true);
+				
+				if (aomenPk >= 0.4) {
+					if (wlWinRt > 0.05) {
+						rgs.add(ResultGroup.Three);
+					}
+					if (wlDrawRt > 0.06) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.07) {
+						rgs.add(ResultGroup.Zero);
+					}
+				} else if (aomenPk >= 0.25) {
+					if (wlWinRt > 0.05) {
+						rgs.add(ResultGroup.Three);
+					}
+					// will follows the major, but has big disagreement with the major
+					// and take big risk, so will must has more info, 
+					if (wlDrawRt > 0.055) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.06) {
+						rgs.add(ResultGroup.Zero);
+					}
+				} else if (aomenPk >= 0) {
+					if (wlWinRt > 0.055) {
+						rgs.add(ResultGroup.Three);
+					}
+					// will follows the major, but has big disagreement with the major
+					// and take big risk, so will must has more info, 
+					if (wlDrawRt > 0.04) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.055) {
+						rgs.add(ResultGroup.Zero);
+					}
+				}  else if (aomenPk >= -0.25) {
+					if (wlWinRt > 0.06) {
+						rgs.add(ResultGroup.Three);
+					}
+					// will follows the major, but has big disagreement with the major
+					// and take big risk, so will must has more info, 
+					if (wlDrawRt > 0.055) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.05) {
+						rgs.add(ResultGroup.Zero);
+					}
+				} else {
+					if (wlWinRt > 0.07) {
+						rgs.add(ResultGroup.Three);
+					}
+					if (wlDrawRt > 0.06) {
+						rgs.add(ResultGroup.One);
+					}
+					if (wlLoseRt > 0.05) {
+						rgs.add(ResultGroup.Zero);
+					}
+				}
+			}
+
 		}
 		
 		return rgs;
 	}
 	
 	private Set<ResultGroup> promoteByPk (PankouMatrices pkMatrices, Float predictPk,
-			List <TeamLabel> hostLabels, List <TeamLabel> guestLabels, MatchState matchState) {
+			List <TeamLabel> hostLabels, List <TeamLabel> guestLabels, Float hotPoint, MatchState matchState) {
 		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
 		
 		if (pkMatrices != null && predictPk != null && matchState != null) {
@@ -322,7 +420,7 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 					}
 				}
 			} else if (main.getPanKou() > 0.4) {
-				if (main.gethWin() <= 0.94 && current.gethWin() <= 0.94) {
+				if (main.gethWin() <= 0.92 && current.gethWin() <= 0.92) {
 					// company think high of the host
 					if (mainPk - predictPk > 0.25) {
 						// host is pretty good, or guest is pretty bad (this is not matter,
@@ -334,15 +432,17 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 							rgs.add(ResultGroup.Three);
 						}
 					}
-					else if (Math.abs(predictPk - mainPk) < 0.19) {
+					else if (mainPk - predictPk > -0.08) {
 						// host is good and stable, guest is not good
 						if (host6Match.getWinRate() >= 0.5 && host6Match.getWinDrawRate() >= 0.6
 								&& host6Match.getMatchGoal() > host6Match.getMatchMiss()
+								&& isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& guest6Match.getWinPkRate() <= 0.5 && guest6Match.getWinDrawPkRate() <= 0.7) {
 							rgs.add(ResultGroup.Three);
 						}
 						// pk is support, and host is good or guest is bad
 						else if ((currentPk - mainPk >= 0.08 || main.gethWin() <= 0.9 && current.gethWin() <= 0.9)
+								&& isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& (host6Match.getWinRate() >= 0.5 || host6Match.getWinDrawRate() >= 0.6)
 									&& (guest6Match.getWinRate() <= 0.5 && guest6Match.getWinDrawRate() <= 0.7)) {
 							rgs.add(ResultGroup.Three);
@@ -364,8 +464,8 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 							rgs.add(ResultGroup.Zero);
 						}
 					}
-					else if (Math.abs(predictPk - mainPk) < 0.19) {
-						if (!MatchUtil.isHostHomeStrong(hostLabels) 
+					else if (predictPk - mainPk > -0.12) {
+						if (!MatchUtil.isHostHomeStrong(hostLabels) && isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& (mainPk - currentPk > 0.08 || main.getaWin() <= 0.88 && current.getaWin() <= 0.88)
 								&& ((guest6Match.getWinPkRate() >= 0.5 && guest6Match.getWinDrawPkRate() >= 0.6)
 									|| (host6Match.getWinRate() <= 0.5 && host6Match.getWinDrawRate() <= 0.7))) {
@@ -387,9 +487,10 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 							rgs.add(ResultGroup.Three);
 							rgs.add(ResultGroup.One);
 						}
-					} else if (Math.abs(predictPk - mainPk) < 0.15) {
+					} else if (mainPk - predictPk > -0.1) {
 						// host performs good or guest performs bad
 						if ((currentPk > mainPk || main.gethWin() <= 0.88 && current.gethWin() <= 0.88)
+								&& isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& ((host6Match.getWinPkRate() >= 0.5 && host6Match.getWinDrawPkRate() >= 0.6)
 										&& (guest6Match.getWinPkRate() <= 0.5 && guest6Match.getWinDrawPkRate() <= 0.7))) {
 							rgs.add(ResultGroup.Three);
@@ -409,9 +510,9 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 							rgs.add(ResultGroup.Zero);
 						}
 					}
-					else if (Math.abs(predictPk - mainPk) < 0.15) {
+					else if (predictPk - mainPk > -0.12) {
 						// host performs good or guest performs bad
-						if (mainPk >= currentPk
+						if (mainPk >= currentPk && isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& ((guest6Match.getWinPkRate() >= 0.5 && guest6Match.getWinDrawPkRate() >= 0.6)
 										&& (host6Match.getWinPkRate() <= 0.5 && host6Match.getWinDrawPkRate() <= 0.7))) {
 							rgs.add(ResultGroup.One);
@@ -434,7 +535,7 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 					}
 					else if (Math.abs(predictPk - mainPk) < 0.19) {
 						// host performs good or guest performs bad
-						if (currentPk >= mainPk
+						if (currentPk >= mainPk && isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& ((host6Match.getWinPkRate() >= 0.5 && host6Match.getWinDrawPkRate() >= 0.6)
 										&& (guest6Match.getWinPkRate() <= 0.5 && guest6Match.getWinDrawPkRate() <= 0.7))) {
 							rgs.add(ResultGroup.Three);
@@ -455,8 +556,8 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 							rgs.add(ResultGroup.Zero);
 						}
 					}
-					else if (Math.abs(predictPk - mainPk) < 0.19) {
-						if (currentPk <= mainPk
+					else if (predictPk - mainPk > -0.1) {
+						if (currentPk <= mainPk && isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& ((guest6Match.getWinRate() >= 0.5 || guest6Match.getWinDrawPkRate() >= 0.6)
 										&& (host6Match.getWinPkRate() <= 0.5 && host6Match.getWinDrawPkRate() <= 0.7))) {
 							rgs.add(ResultGroup.Zero);
@@ -497,6 +598,16 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 
 		return rgs;
 	}
+	
+	private boolean isPkSupportHot (Float predictPk, Float mainPk, Float hotPoint) {
+		if (hotPoint >= 5 && mainPk < predictPk) {
+			return false;
+		} else if (hotPoint <= -5 && predictPk > mainPk) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
 	private int compareClub (ClubMatrices clubs, Long lid) {
 		int clubNum = 18;
@@ -536,25 +647,5 @@ public class PankouKillPromoter implements KillPromoter<OFNKillPromoteResult, OF
 		}
 		
 		return 0;
-	}
-	
-	private float calKillRate (PankouMatrices pkMatrices, Float hotPoint, Float mainPk, Float predictPk, ClubMatrices clubMs, boolean killWin) {
-		Float rate = 0f;
-		
-		/*
-		 * host is hot, and hwin is high -> possibly can't avoid win -> mainPk > predictPk -> good
-		 * host is hot, and awin is high ->  mainPk < predictPk -> good
-		 */
-		if (killWin) {
-			rate += pkMatrices.getHwinChangeRate();
-			
-			if (hotPoint >= 5) {
-				
-			}
-		} else {
-			rate += pkMatrices.getAwinChangeRate();
-		}
-		
-		return rate;
 	}
 }

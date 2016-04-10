@@ -34,10 +34,14 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 					if (temp != null) {
 						Date thisDt = pk.getPkDate();
 						Date lastDt = temp.getPkDate();
-						
+
 						float tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
 						float lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
 						float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
+
+						if (!temp.getPanKou().equals(pk.getPanKou())) {
+							changePk = true;
+						}
 
 						// the latest(in 24h) long hours's pankou
 						if (lastTimeToMatch > 24) {
@@ -46,10 +50,6 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 							winWeight += (temp.gethWin() -1) * (hours > 0 ? hours : 0);
 							loseWeight += (temp.getaWin() -1) * (hours > 0 ? hours : 0);
 						} else {
-							if (temp.getPanKou() != pk.getPanKou()) {
-								changePk = true;
-							}
-
 							if (tempHours >= hours) {
 								hours = tempHours;
 								main = temp;
@@ -60,11 +60,13 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 					temp = pk;
 				}
 				
-				float currentHours = MatchUtil.getDiffHours(new Date(), temp.getPkDate());
+				float currentHours = MatchUtil.getDiffHours(matchDt, temp.getPkDate());
 				
 				if (!changePk) {
-					winWeight += (temp.gethWin() -1) * currentHours;
-					loseWeight += (temp.getaWin() -1) * currentHours;
+					if (currentHours >= 0.5) {
+						winWeight += (temp.gethWin() -1) * currentHours;
+						loseWeight += (temp.getaWin() -1) * currentHours;
+					}
 				} else {
 					winWeight = 0;
 					loseWeight = 0;
