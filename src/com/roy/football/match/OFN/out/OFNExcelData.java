@@ -120,6 +120,14 @@ public class OFNExcelData {
 		this.result = result;
 	}
 
+	public String getPredictScore() {
+		return predictScore;
+	}
+
+	public void setPredictScore(String predictScore) {
+		this.predictScore = predictScore;
+	}
+
 
 	@Header(order=10, title="Match Id")
 	private Long matchDayId;
@@ -143,7 +151,7 @@ public class OFNExcelData {
 	private String originPanKou;
 	@Header(order=110, title="Predict PK [Latest]")
 	private String predictPanKou;
-	@Header(order=120, title="Hot")
+	@Header(order=120, title="Hot|Att, Def")
 	private String hotPoint;
 	@Header(order=130, title="K_PK[Up, Down]")
 	private String pkKillRate;
@@ -153,4 +161,6 @@ public class OFNExcelData {
 	private String promote;
 	@Header(order=160, title="Result")
 	private String result;
+	@Header(order=170, title="Predict_S")
+	private String predictScore;
 }

@@ -148,15 +148,15 @@ public class ClubMatrices implements CalculateResult, MatchData{
 			this.point = point;
 		}
 
-		private Integer num;
-		private Float winRt;
-		private Float winDrawRt;
-		private Float drawLoseRt;
-		private Integer goals;
-		private Integer misses;
-		private Integer winGoals;
-		private Integer winLoseDiff;
-		private Integer pm;
-		private Integer point;
+		private Integer num;            // total match number
+		private Float winRt;            // win / num
+		private Float winDrawRt;        // (win + draw) / num
+		private Float drawLoseRt;       // (draw + lose) / num
+		private Integer goals;          // total goaled goals
+		private Integer misses;         // total missed goals
+		private Integer winGoals;       // win goals = goal - miss
+		private Integer winLoseDiff;    // |win - lose|
+		private Integer pm;             // pai ming
+		private Integer point;          // scores(win-3, draw-1, lose-0)
 	}
 }

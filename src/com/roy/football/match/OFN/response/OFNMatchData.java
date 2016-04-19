@@ -147,6 +147,15 @@ public class OFNMatchData implements MatchData{
 	}
 
 
+	public List<AsiaPl> getDaxiao() {
+		return daxiao;
+	}
+
+	public void setDaxiao(List<AsiaPl> daxiao) {
+		this.daxiao = daxiao;
+	}
+
+
 	private Long matchDayId;
 	private Long matchId;
 	private Date matchTime;
@@ -163,4 +172,5 @@ public class OFNMatchData implements MatchData{
 	private List<FinishedMatch> guestMatches;
 	private Map<Company, List<EuroPl>> euroPls;
 	private List<AsiaPl> aoMen;
+	private List<AsiaPl> daxiao;
 }

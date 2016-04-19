@@ -50,10 +50,10 @@ public class OFNOutputFormater {
 					MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), origPk));
 			
 			Float hotPoint = calculateResult.getHotPoint();
-			excelData.setHotPoint(String.format("%.2f", hotPoint));
+			excelData.setHotPoint(String.format("%.1f | %.1f, %.1f", hotPoint, calculateResult.getAttackComp(), calculateResult.getDefendComp()));
 			excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
-			Set<ResultGroup> killByPk = calculateResult.getKillByPk();
-			Set<ResultGroup> killByPl = calculateResult.getKillByPl();
+			Set<ResultGroup> killByPk = calculateResult.getPredictResult().getKpResult().getKillByPk();
+			Set<ResultGroup> killByPl = calculateResult.getPredictResult().getKpResult().getKillByPl();
 			String kill = "";
 			if (killByPk != null && killByPk.size() > 0) {
 				kill = getSetVals(killByPk);
@@ -63,8 +63,11 @@ public class OFNOutputFormater {
 				kill = kill + " | "+ getSetVals(killByPl);
 			}
 			excelData.setKill(kill);
-			Set<ResultGroup> promote = calculateResult.getPromote();
+			Set<ResultGroup> promote = calculateResult.getPredictResult().getKpResult().getPromoteByPk();
 			excelData.setPromote(getSetVals(promote));
+			
+			excelData.setPredictScore(String.format("%.1f : %.1f",
+					calculateResult.getPredictResult().getHostScore(), calculateResult.getPredictResult().getGuestScore()));
 //			excelData
 //			TODO
 		}

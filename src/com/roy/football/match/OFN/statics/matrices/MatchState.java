@@ -67,7 +67,8 @@ public class MatchState implements CalculateResult, MatchData {
 					+ winDrawRate + ", winPkRate=" + winPkRate
 					+ ", winDrawPkRate=" + winDrawPkRate + ", matchGoal="
 					+ matchGoal + ", matchMiss=" + matchMiss + ", point="
-					+ point + "]";
+					+ point + ", gVariation=" + gVariation + ", mVariation="
+					+ mVariation + "]";
 		}
 
 		public Float getWinRate() {
@@ -116,6 +117,22 @@ public class MatchState implements CalculateResult, MatchData {
 			this.point = point;
 		}
 
+		public Float getgVariation() {
+			return gVariation;
+		}
+
+		public void setgVariation(Float gVariation) {
+			this.gVariation = gVariation;
+		}
+
+		public Float getmVariation() {
+			return mVariation;
+		}
+
+		public void setmVariation(Float mVariation) {
+			this.mVariation = mVariation;
+		}
+
 		private Float winRate;
 		private Float winDrawRate;
 		private Float winPkRate;
@@ -123,5 +140,7 @@ public class MatchState implements CalculateResult, MatchData {
 		private Float matchGoal;
 		private Float matchMiss;
 		private Float point;
+		private Float gVariation;
+		private Float mVariation;
 	}
 }

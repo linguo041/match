@@ -36,7 +36,7 @@ import com.roy.football.match.util.XmlParser;
 public class OFNParser {
 	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.159cai.com/match/analysis/";
-	private final static String EURO_URL_PREIX = "http://odds.159cai.com/match/detial";
+	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/match/detial";
 
 	private final static Pattern KEY_VALUE_REG = Pattern.compile("\\b(\\w+)\\b\\s*=\\s*(.+?);");
 	
@@ -95,7 +95,7 @@ public class OFNParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = this.httpService.doHttpRequest(EURO_URL_PREIX
+			String resData = this.httpService.doHttpRequest(DETAIL_URL_PREIX
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.eruo,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -128,7 +128,7 @@ public class OFNParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = this.httpService.doHttpRequest(EURO_URL_PREIX
+			String resData = this.httpService.doHttpRequest(DETAIL_URL_PREIX
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.asia,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -151,6 +151,42 @@ public class OFNParser {
 					}
 					
 					asia.setPkDate(MatchUtil.parseFromOFHString(as[4]));
+					
+					asiaPls.add(asia);
+				}
+				
+				return asiaPls;
+			}
+			
+		} catch (HttpRequestException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public List<AsiaPl> parseDaxiaoData (Long oddsmid, Company company) {
+		try {
+			Map<String, String> headers = new HashMap<String, String>();
+
+			String resData = this.httpService.doHttpRequest(DETAIL_URL_PREIX
+						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.shangxia,
+					HttpRequestService.GET_METHOD, null, headers);
+			
+			String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[][]>(){});
+			
+			if (datas != null && datas.length > 0) {
+				List <AsiaPl> asiaPls = new ArrayList<AsiaPl>();
+				
+				for (String[] as : datas) {
+					AsiaPl asia = new AsiaPl();
+					asia.sethWin(Float.parseFloat(as[0]));
+					asia.setaWin(Float.parseFloat(as[2]) - 1);
+					
+					Float pankouVal = Float.parseFloat(as[1]) / 4;
+					asia.setPanKou(pankouVal);
+					
+					asia.setPkDate(MatchUtil.parseFromOFHString(as[3]));
 					
 					asiaPls.add(asia);
 				}

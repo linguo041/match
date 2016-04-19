@@ -4,14 +4,14 @@ import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.process.CalculateResult;
 
-public class PankouMatrices implements CalculateResult, MatchData{
+public class DaxiaoMatrices implements CalculateResult, MatchData{
 
 	@Override
 	public String toString() {
-		return "PankouMatrices [originPk=" + originPk + ", mainPk=" + mainPk
-				+ ", currentPk=" + currentPk + ", hwinChangeRate="
-				+ hwinChangeRate + ", awinChangeRate=" + awinChangeRate
-				+ ", hours=" + hours + "]";
+		return "DaxiaoMatrices [originPk=" + originPk + ", mainPk=" + mainPk
+				+ ", currentPk=" + currentPk + ", daChangeRate=" + daChangeRate
+				+ ", xiaoChangeRate=" + xiaoChangeRate + ", hours=" + hours
+				+ "]";
 	}
 
 	public AsiaPl getOriginPk() {
@@ -32,22 +32,19 @@ public class PankouMatrices implements CalculateResult, MatchData{
 	public void setCurrentPk(AsiaPl currentPk) {
 		this.currentPk = currentPk;
 	}
-
-	public Float getHwinChangeRate() {
-		return hwinChangeRate;
+	public Float getDaChangeRate() {
+		return daChangeRate;
+	}
+	public void setDaChangeRate(Float daChangeRate) {
+		this.daChangeRate = daChangeRate;
+	}
+	public Float getXiaoChangeRate() {
+		return xiaoChangeRate;
+	}
+	public void setXiaoChangeRate(Float xiaoChangeRate) {
+		this.xiaoChangeRate = xiaoChangeRate;
 	}
 
-	public void setHwinChangeRate(Float hwinChangeRate) {
-		this.hwinChangeRate = hwinChangeRate;
-	}
-
-	public Float getAwinChangeRate() {
-		return awinChangeRate;
-	}
-
-	public void setAwinChangeRate(Float awinChangeRate) {
-		this.awinChangeRate = awinChangeRate;
-	}
 
 	public Float getHours() {
 		return hours;
@@ -57,10 +54,11 @@ public class PankouMatrices implements CalculateResult, MatchData{
 		this.hours = hours;
 	}
 
+
 	private AsiaPl originPk;
 	private AsiaPl mainPk;
 	private AsiaPl currentPk;
-	private Float hwinChangeRate;
-	private Float awinChangeRate;
+	private Float daChangeRate;
+	private Float xiaoChangeRate;
 	private Float hours;
 }

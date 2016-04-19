@@ -65,6 +65,9 @@ public class OFNTask implements Callable<OFNExcelData>{
 			// get asia peilv
 			List<AsiaPl> asiapls = parser.parseAsiaData(oddsmid, Company.Aomen);
 			ofnMatch.setAoMen(asiapls);
+			
+			List<AsiaPl> daxiaopls = parser.parseDaxiaoData(oddsmid, Company.Aomen);
+			ofnMatch.setDaxiao(daxiaopls);
 
 			// calculate
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);

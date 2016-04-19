@@ -2,6 +2,7 @@ package com.roy.football.match.OFN;
 
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
+import com.roy.football.match.OFN.statics.matrices.DaxiaoMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
@@ -9,6 +10,7 @@ import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.OFNKillPromoteResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
+import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.process.Calculator;
@@ -19,6 +21,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	private final static JiaoShouCalculator jiaoshouCalculator = new JiaoShouCalculator();
 	private final static LatestMatchCalculator latestMatchCalculator = new LatestMatchCalculator();
 	private final static PankouCalculator pankouCalculator = new PankouCalculator();
+	private final static DaxiaoCalculator dxCalculator = new DaxiaoCalculator();
 	private final static EuroCalculator euroCalculator = new EuroCalculator();
 	private final static PankouKillPromoter pankouKiller = new PankouKillPromoter();
 	// more....
@@ -52,16 +55,17 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		PankouMatrices pkMatrices = pankouCalculator.calucate(matchData);
 		calResult.setPkMatrices(pkMatrices);
 		
+		DaxiaoMatrices dxMatrices = dxCalculator.calucate(matchData);
+		calResult.setDxMatrices(dxMatrices);
+		
 		Float predictPanKou = getPredictPanKou(jsMatrices, matchState, calResult.getHostLevel(), calResult.getGuestLevel());
 		calResult.setPredictPanKou(predictPanKou);
 		
 		EuroMatrices euroMatrices = euroCalculator.calucate(matchData);
 		calResult.setEuroMatrices(euroMatrices);
 		
-		OFNKillPromoteResult killPromoteRes = pankouKiller.calculate(calResult);
-		calResult.setKillByPk(killPromoteRes.getKillByPk());
-		calResult.setKillByPl(killPromoteRes.getKillByPl());
-		calResult.setPromote(killPromoteRes.getPromoteByPk());
+		PredictResult predictRes = pankouKiller.calculate(calResult);
+		calResult.setPredictResult(predictRes);
 
 		return calResult;
 	}

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.roy.football.match.OFN.response.ClubDatas;
+import com.roy.football.match.OFN.response.ClubDatas.ClubData;
 import com.roy.football.match.OFN.response.FinishedMatch;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
@@ -19,8 +21,10 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		if (matchData != null) {
 			MatchState matchState = new MatchState();
 			
-			calculateMatchMatrices(matchState, matchData.getHostMatches(), matchData.getHostId(), matchData.getMatchTime(), true);
-			calculateMatchMatrices(matchState, matchData.getGuestMatches(), matchData.getGuestId(), matchData.getMatchTime(), false);
+			ClubDatas clubData = matchData.getBaseData();
+			
+			calculateMatchMatrices(matchState, matchData.getHostMatches(), matchData.getHostId(), matchData.getMatchTime(), clubData.getHostData(), true);
+			calculateMatchMatrices(matchState, matchData.getGuestMatches(), matchData.getGuestId(), matchData.getMatchTime(), clubData.getGuestData(), false);
 			matchState.setCalculatePk(getPankouByFinishedMatches(matchData));
 			
 			return matchState;
@@ -133,7 +137,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 	
 	private void calculateMatchMatrices (MatchState matchState,
-			List<FinishedMatch> matches, Long teamId, Date matchDate, boolean isHost) {
+			List<FinishedMatch> matches, Long teamId, Date matchDate, ClubData club, boolean isHost) {
 		if (matchState != null && matches != null && matches.size() > 0) {
 			int winNum = 0;
 			int drawNum = 0;
@@ -145,6 +149,18 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			int goals = 0;
 			int misses = 0;
 			float points = 0;
+
+			boolean checkVariation = false;
+			float goalPerMatch = 0;
+			float missPerMatch = 0;
+			float gVariation = 0;
+			float mVariation = 0;
+			
+			if (club != null) {
+				goalPerMatch = club.getAllGoal() / club.getAllNum();
+				missPerMatch = club.getAllMiss() / club.getAllNum();
+				checkVariation = true;
+			}
 			
 			for (int i = 0; i < matches.size(); i++) {
 				FinishedMatch match = matches.get(i);
@@ -173,6 +189,11 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						goals += match.getHscore();
 						misses += match.getAscore();
 						
+						if (checkVariation) {
+							gVariation += Math.abs(match.getHscore() - goalPerMatch);
+							mVariation += Math.abs(match.getAscore() - missPerMatch);
+						}
+						
 						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 							winPkNum ++;
 							if (point != 3) {
@@ -200,6 +221,11 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						goals += match.getAscore();
 						misses += match.getHscore();
 						
+						if (checkVariation) {
+							gVariation += Math.abs(match.getAscore() - goalPerMatch);
+							mVariation += Math.abs(match.getHscore() - missPerMatch);
+						}
+						
 						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 							winPkNum ++;
 							if (point != 3) {
@@ -222,18 +248,30 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				// calculate the latest 6 matches
 				if (allNum == 5) {
 					if (isHost) {
-						matchState.setHostState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
+						matchState.setHostState6(setMatchMatricesData(winNum,
+								drawNum, loseNum, allNum, goals, misses,
+								winPkNum, drawPkNum, points, gVariation,
+								mVariation));
 					} else {
-						matchState.setGuestState6(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
+						matchState.setGuestState6(setMatchMatricesData(winNum,
+								drawNum, loseNum, allNum, goals, misses,
+								winPkNum, drawPkNum, points, gVariation,
+								mVariation));
 					}
 				}
 				
 				// calculate the latest 10 matches
 				if (allNum == 9) {
 					if (isHost) {
-						matchState.setHostState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
+						matchState.setHostState10(setMatchMatricesData(winNum,
+								drawNum, loseNum, allNum, goals, misses,
+								winPkNum, drawPkNum, points, gVariation,
+								mVariation));
 					} else {
-						matchState.setGuestState10(setMatchMatricesData(winNum, drawNum, loseNum, allNum, goals, misses, winPkNum, drawPkNum, points));
+						matchState.setGuestState10(setMatchMatricesData(winNum,
+								drawNum, loseNum, allNum, goals, misses,
+								winPkNum, drawPkNum, points, gVariation,
+								mVariation));
 					}
 					
 					break;
@@ -243,7 +281,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 
 	private LatestMatchMatrices setMatchMatricesData (int winNum,
-			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum, int drawPkNum, float points) {
+			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum, int drawPkNum, float points, float gVariation, float mVariation) {
 		LatestMatchMatrices matrices =  new LatestMatchMatrices();
 		matrices.setMatchGoal((float)goals/allNum);
 		matrices.setMatchMiss((float)misses/allNum);
@@ -251,6 +289,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matrices.setWinDrawRate((float) (winNum + drawNum)/allNum);
 		matrices.setWinPkRate((float) winPkNum / allNum);
 		matrices.setWinDrawPkRate((float) (winPkNum + drawPkNum) / allNum);
+		matrices.setgVariation(gVariation / allNum);
+		matrices.setmVariation(mVariation / allNum);
 		matrices.setPoint(points);
 		return matrices;
 	}

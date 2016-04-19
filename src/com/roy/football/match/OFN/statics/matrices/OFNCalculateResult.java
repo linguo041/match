@@ -18,14 +18,13 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		return "OFNCalculateResult [league=" + league + ", clubMatrices="
 				+ clubMatrices + ", hostLevel=" + hostLevel + ", hostLabels="
 				+ hostLabels + ", guestLevel=" + guestLevel + ", guestLabels="
-				+ guestLabels + ", hostAttack=" + hostAttack + ", hostDefend="
-				+ hostDefend + ", guestAttack=" + guestAttack
-				+ ", guestDefend=" + guestDefend + ", jiaoShou=" + jiaoShou
-				+ ", matchState=" + matchState + ", pkMatrices=" + pkMatrices
-				+ ", predictPanKou=" + predictPanKou + ", euroMatrices="
-				+ euroMatrices + ", jinCai=" + jinCai + ", hotPoint=" + hotPoint
-				+ ", killByPk=" + killByPk + ", killByPl=" + killByPl
-				+ ", promote=" + promote + "]";
+				+ guestLabels + ", attackComp=" + attackComp + ", defendComp="
+				+ defendComp + ", jiaoShou=" + jiaoShou + ", matchState="
+				+ matchState + ", hotPoint=" + hotPoint + ", pkMatrices="
+				+ pkMatrices + ", dxMatrices=" + dxMatrices
+				+ ", predictPanKou=" + predictPanKou + ", predictResult="
+				+ predictResult + ", euroMatrices=" + euroMatrices
+				+ ", jinCai=" + jinCai + "]";
 	}
 
 	public ClubMatrices getClubMatrices() {
@@ -95,30 +94,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.euroMatrices = euroMatrices;
 	}
 
-	public Set<ResultGroup> getKillByPk() {
-		return killByPk;
-	}
-
-	public void setKillByPk(Set<ResultGroup> killByPk) {
-		this.killByPk = killByPk;
-	}
-
-	public Set<ResultGroup> getKillByPl() {
-		return killByPl;
-	}
-
-	public void setKillByPl(Set<ResultGroup> killByPl) {
-		this.killByPl = killByPl;
-	}
-
-	public Set<ResultGroup> getPromote() {
-		return promote;
-	}
-
-	public void setPromote(Set<ResultGroup> promote) {
-		this.promote = promote;
-	}
-
 	public League getLeague() {
 		return league;
 	}
@@ -134,40 +109,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	public void setJinCai(EuroPl jinCai) {
 		this.jinCai = jinCai;
 	}
-	
-
-	public Float getHostAttack() {
-		return hostAttack;
-	}
-
-	public void setHostAttack(Float hostAttack) {
-		this.hostAttack = hostAttack;
-	}
-
-	public Float getHostDefend() {
-		return hostDefend;
-	}
-
-	public void setHostDefend(Float hostDefend) {
-		this.hostDefend = hostDefend;
-	}
-
-	public Float getGuestAttack() {
-		return guestAttack;
-	}
-
-	public void setGuestAttack(Float guestAttack) {
-		this.guestAttack = guestAttack;
-	}
-
-	public Float getGuestDefend() {
-		return guestDefend;
-	}
-
-	public void setGuestDefend(Float guestDefend) {
-		this.guestDefend = guestDefend;
-	}
-
 
 	public Float getHotPoint() {
 		return hotPoint;
@@ -178,24 +119,55 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	}
 
 
+	public Float getAttackComp() {
+		return attackComp;
+	}
+
+	public void setAttackComp(Float attackComp) {
+		this.attackComp = attackComp;
+	}
+
+
+	public Float getDefendComp() {
+		return defendComp;
+	}
+
+	public void setDefendComp(Float defendComp) {
+		this.defendComp = defendComp;
+	}
+
+
+	public DaxiaoMatrices getDxMatrices() {
+		return dxMatrices;
+	}
+
+	public void setDxMatrices(DaxiaoMatrices dxMatrices) {
+		this.dxMatrices = dxMatrices;
+	}
+
+	public PredictResult getPredictResult() {
+		return predictResult;
+	}
+
+	public void setPredictResult(PredictResult predictResult) {
+		this.predictResult = predictResult;
+	}
+
 	private League league;
 	private ClubMatrices clubMatrices;
 	private TeamLevel hostLevel;
 	private List<TeamLabel> hostLabels;
 	private TeamLevel guestLevel;
 	private List<TeamLabel> guestLabels;
-	private Float hostAttack;
-	private Float hostDefend;
-	private Float guestAttack;
-	private Float guestDefend;
+	private Float attackComp;
+	private Float defendComp;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
 	private Float hotPoint;
 	private PankouMatrices pkMatrices;
+	private DaxiaoMatrices dxMatrices;
 	private Float predictPanKou;
+	private PredictResult predictResult;
 	private EuroMatrices euroMatrices;
 	private EuroPl jinCai;
-	private Set<ResultGroup> killByPk;
-	private Set<ResultGroup> killByPl;
-	private Set<ResultGroup> promote;
 }

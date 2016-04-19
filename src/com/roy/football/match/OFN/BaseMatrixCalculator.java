@@ -29,6 +29,8 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		List<TeamLabel> guestLabels = measureTeamPositiveLabel(matrices.getGuestAllMatrix(), MatrixType.All);
 		measureTeamNegativeLabel(matrices.getGuestAwayMatrix(), MatrixType.Away, guestLabels);
 		calResult.setGuestLabels(guestLabels);
+		
+		compareClubsAttackDefend(matrices, calResult);
 
 		return calResult;
 	}
@@ -39,14 +41,24 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		
 	}
 	
-//	private void compareClubsAttackDefend (ClubMatrices matrices) {
-//		float hAttack = 0;
-//		float hDefend = 0;
-//		float gAttack = 0;
-//		float gDefend = 0;
-//		
-//		
-//	}
+	private void compareClubsAttackDefend (ClubMatrices matrices, OFNCalculateResult calResult) {
+		if (matrices == null) {
+			return;
+		}
+		
+		ClubMatrix hostMatrix = matrices.getHostHomeMatrix();
+		ClubMatrix guestMatrix = matrices.getGuestAwayMatrix();
+
+		if (hostMatrix != null && hostMatrix.getNum() <= 5) {
+			hostMatrix = matrices.getHostAllMatrix();
+			guestMatrix = matrices.getGuestAllMatrix();
+		}
+		
+		if (hostMatrix != null && guestMatrix != null) {
+			calResult.setAttackComp(guestMatrix.getGoals() == 0 ? 0 : (float)hostMatrix.getGoals() / guestMatrix.getGoals());
+			calResult.setDefendComp(hostMatrix.getMisses() == 0 ? 0 : (float)guestMatrix.getMisses() / hostMatrix.getMisses());
+		}
+	}
 	
 	private TeamLevel measureTeamLevel (ClubMatrix matrix) {
 		if (matrix == null) {
