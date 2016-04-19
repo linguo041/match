@@ -42,7 +42,7 @@ public class SimpleOFNController {
 		if (jinCaiMatches != null && jinCaiMatches.size() > 0) {
 			Date now = new Date();
 			List<Future <OFNExcelData>> futures = new ArrayList<Future <OFNExcelData>>();
-			ExecutorService executor = Executors.newFixedThreadPool(4);
+			ExecutorService executor = Executors.newFixedThreadPool(8);
 			
 			try {
 				for (JinCaiMatch jcMatch : jinCaiMatches) {
