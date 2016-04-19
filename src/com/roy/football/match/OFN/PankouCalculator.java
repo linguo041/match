@@ -23,6 +23,8 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 				pkMatrices.setOriginPk(pks.get(0));
 				AsiaPl latestPl = pks.get(pks.size() - 1);
 				pkMatrices.setCurrentPk(latestPl);
+				
+				// don't use the median, since company paid pk is not equals 2 but less than 2, usally 1.86
 				float medianPk = 0.5f * (latestPl.gethWin() + latestPl.getaWin());
 				
 				AsiaPl main = null;
@@ -41,7 +43,6 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 						float tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
 						float lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
 						float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
-						int ii = 0;
 						float pkWeightByHours = getPkWeightByHours(lastTimeToMatch, thisTimeToMatch);
 
 						// the latest(in 24h) long hours's pankou
@@ -71,7 +72,7 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 							changePk = -0.125f;
 						} else {
 							// week the change
-							changePk = changePk * 0.8f;
+							changePk = changePk * 0.9f;
 						}
 					}
 
@@ -92,8 +93,8 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 				}
 
 				pkMatrices.setMainPk(main);
-				pkMatrices.setHwinChangeRate(winWeight);
-				pkMatrices.setAwinChangeRate(loseWeight);
+				pkMatrices.setHwinChangeRate(winWeight / (totalHours * 0.85f));
+				pkMatrices.setAwinChangeRate(loseWeight / (totalHours * 0.85f));
 				pkMatrices.setHours(totalHours);
 				return pkMatrices;
 			}

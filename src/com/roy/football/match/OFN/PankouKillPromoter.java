@@ -106,7 +106,7 @@ public class PankouKillPromoter {
 		
 		JiaoShouMatrices jiaoShou = calResult.getJiaoShou();
 		if (jiaoShou != null && jiaoShou.getMatchNum() >= 3) {
-			jsWeight = jiaoShou.getWinPkRate() + jiaoShou.getWinDrawPkRate() - 1;
+			jsWeight = jiaoShou.getWinRate() + jiaoShou.getWinDrawRate() - 1;
 			
 			// Multiple 0.5 to avoid duplicate adding weight
 			hgoal += jsWeight * 0.2;
@@ -135,7 +135,8 @@ public class PankouKillPromoter {
 			hgoal -= predictDiff;
 			ggoal += predictDiff;
 
-			float pkComp = (pkMatrices.getHwinChangeRate() - pkMatrices.getAwinChangeRate()) / pkMatrices.getHours();
+			// mutiple 0.85 is because the change rate is counted according to different weight (0.7~1) or (1-0.1*t/8)
+			float pkComp = pkMatrices.getHwinChangeRate() - pkMatrices.getAwinChangeRate();
 			hAdjRate = -1 * pkComp;
 			gAdjRate = pkComp;
 
@@ -145,7 +146,7 @@ public class PankouKillPromoter {
 		DaxiaoMatrices dxMatrices = calResult.getDxMatrices();
 		float dxWeight = 0;
 		if (dxMatrices != null && dxMatrices.getHours() > 0) {
-			dxWeight = (dxMatrices.getXiaoChangeRate() - dxMatrices.getDaChangeRate()) / dxMatrices.getHours();
+			dxWeight = dxMatrices.getXiaoChangeRate() - dxMatrices.getDaChangeRate();
 //			float dxPk = MatchUtil.getCalculatedPk(dxMatrices.getCurrentPk());
 			
 			System.out.println(String.format("Host [ goal: %.2f, variation: %.2f, AdjRate: %.2f, dxWeight %.2f]", hgoal, hvariation, hAdjRate, dxWeight));
