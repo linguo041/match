@@ -12,6 +12,7 @@ import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
+import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
@@ -33,11 +34,27 @@ public class OFNOutputFormater {
 
 		if (calculateResult != null) {
 			ClubMatrices matrices = calculateResult.getClubMatrices();
-			excelData.setHostLevel(getHostLevel(calculateResult.getHostLevel(), matrices.getHostAllMatrix()));
-			excelData.setHostLabel((calculateResult.getHostLabels() == null || calculateResult.getHostLabels().size() <= 0) ? "" : calculateResult.getHostLabels().toString());
-			excelData.setGuestLevel(getHostLevel(calculateResult.getGuestLevel(), matrices.getGuestAllMatrix()));
-			excelData.setGuestLabel((calculateResult.getGuestLabels() == null || calculateResult.getGuestLabels().size() <= 0) ? "" : calculateResult.getGuestLabels().toString());
-		
+			if (matrices != null) {
+				excelData.setHostLevel(getHostLevel(matrices.getHostLevel(), matrices.getHostAllMatrix()));
+				excelData.setGuestLevel(getHostLevel(matrices.getGuestLevel(), matrices.getGuestAllMatrix()));
+
+				excelData.setBaseComp(String.format("%.1f : %.1f",
+						matrices.getHostAttGuestDefInx(),
+						matrices.getGuestAttHostDefInx()));
+			}
+
+			MatchState matchState = calculateResult.getMatchState();
+			if (matchState != null) {
+				excelData.setStateComp(String.format("%.1f : %.1f",
+						matchState.getHostAttackToGuest(),
+						matchState.getGuestAttackToHost()));
+				
+				Float hotPoint = calculateResult.getHotPoint();
+				excelData.setStateVariation(String.format("%.1f | %.1f, %.1f",
+						hotPoint, matchState.getHostAttackVariationToGuest(),
+						matchState.getGuestAttackVariationToHost()));
+			}
+
 			JiaoShouMatrices jiaoshouMatrices = calculateResult.getJiaoShou();
 			Float predictPk = calculateResult.getPredictPanKou();
 			Float latestPk = jiaoshouMatrices == null ? null : jiaoshouMatrices.getLatestPankou();
@@ -48,26 +65,29 @@ public class OFNOutputFormater {
 			
 			excelData.setOriginPanKou(String.format("%.2f, %.2f [%.2f]",
 					MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), origPk));
-			
-			Float hotPoint = calculateResult.getHotPoint();
-			excelData.setHotPoint(String.format("%.1f | %.1f, %.1f", hotPoint, calculateResult.getAttackComp(), calculateResult.getDefendComp()));
+
 			excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
-			Set<ResultGroup> killByPk = calculateResult.getPredictResult().getKpResult().getKillByPk();
-			Set<ResultGroup> killByPl = calculateResult.getPredictResult().getKpResult().getKillByPl();
-			String kill = "";
-			if (killByPk != null && killByPk.size() > 0) {
-				kill = getSetVals(killByPk);
-			}
 			
-			if (killByPl != null && killByPl.size() > 0) {
-				kill = kill + " | "+ getSetVals(killByPl);
+			PredictResult predictRes = calculateResult.getPredictResult();
+			if (predictRes != null) {
+				Set<ResultGroup> killByPk = predictRes.getKpResult().getKillByPk();
+				Set<ResultGroup> killByPl = predictRes.getKpResult().getKillByPl();
+				String kill = "";
+				if (killByPk != null && killByPk.size() > 0) {
+					kill = getSetVals(killByPk);
+				}
+				
+				if (killByPl != null && killByPl.size() > 0) {
+					kill = kill + " | "+ getSetVals(killByPl);
+				}
+				excelData.setKill(kill);
+				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByPk();
+				excelData.setPromote(getSetVals(promote));
+				
+				excelData.setPredictScore(String.format("%.1f : %.1f",
+						predictRes.getHostScore(), predictRes.getGuestScore()));
 			}
-			excelData.setKill(kill);
-			Set<ResultGroup> promote = calculateResult.getPredictResult().getKpResult().getPromoteByPk();
-			excelData.setPromote(getSetVals(promote));
-			
-			excelData.setPredictScore(String.format("%.1f : %.1f",
-					calculateResult.getPredictResult().getHostScore(), calculateResult.getPredictResult().getGuestScore()));
+
 //			excelData
 //			TODO
 		}

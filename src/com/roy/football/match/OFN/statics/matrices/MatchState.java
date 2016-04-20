@@ -9,8 +9,12 @@ public class MatchState implements CalculateResult, MatchData {
 	public String toString() {
 		return "MatchState [hostState6=" + hostState6 + ", guestState6="
 				+ guestState6 + ", hostState10=" + hostState10
-				+ ", guestState10=" + guestState10 + ", calculatePk="
-				+ calculatePk + "]";
+				+ ", guestState10=" + guestState10 + ", hostAttackToGuest="
+				+ hostAttackToGuest + ", guestAttackToHost="
+				+ guestAttackToHost + ", hostAttackVariationToGuest="
+				+ hostAttackVariationToGuest + ", guestAttackVariationToHost="
+				+ guestAttackVariationToHost + ", calculatePk=" + calculatePk
+				+ "]";
 	}
 
 	public LatestMatchMatrices getHostState6() {
@@ -52,11 +56,49 @@ public class MatchState implements CalculateResult, MatchData {
 	public void setCalculatePk(Float calculatePk) {
 		this.calculatePk = calculatePk;
 	}
+	
+
+	public Float getHostAttackToGuest() {
+		return hostAttackToGuest;
+	}
+
+	public void setHostAttackToGuest(Float hostAttackToGuest) {
+		this.hostAttackToGuest = hostAttackToGuest;
+	}
+
+	public Float getGuestAttackToHost() {
+		return guestAttackToHost;
+	}
+
+	public void setGuestAttackToHost(Float guestAttackToHost) {
+		this.guestAttackToHost = guestAttackToHost;
+	}
+
+	public Float getHostAttackVariationToGuest() {
+		return hostAttackVariationToGuest;
+	}
+
+	public void setHostAttackVariationToGuest(Float hostAttackVariationToGuest) {
+		this.hostAttackVariationToGuest = hostAttackVariationToGuest;
+	}
+
+	public Float getGuestAttackVariationToHost() {
+		return guestAttackVariationToHost;
+	}
+
+	public void setGuestAttackVariationToHost(Float guestAttackVariationToHost) {
+		this.guestAttackVariationToHost = guestAttackVariationToHost;
+	}
+
 
 	private LatestMatchMatrices hostState6;
 	private LatestMatchMatrices guestState6;
 	private LatestMatchMatrices hostState10;
 	private LatestMatchMatrices guestState10;
+	private Float hostAttackToGuest;
+	private Float guestAttackToHost;
+	private Float hostAttackVariationToGuest;
+	private Float guestAttackVariationToHost;
 	private Float calculatePk;
 	
 	public static class LatestMatchMatrices {

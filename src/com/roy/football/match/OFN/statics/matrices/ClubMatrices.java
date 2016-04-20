@@ -1,6 +1,10 @@
 package com.roy.football.match.OFN.statics.matrices;
 
+import java.util.List;
+
 import com.roy.football.match.base.MatchData;
+import com.roy.football.match.base.TeamLabel;
+import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.process.CalculateResult;
 
 public class ClubMatrices implements CalculateResult, MatchData{
@@ -11,7 +15,11 @@ public class ClubMatrices implements CalculateResult, MatchData{
 				+ ", hostHomeMatrix=" + hostHomeMatrix + ", hostAwayMatrix="
 				+ hostAwayMatrix + ", guestAllMatrix=" + guestAllMatrix
 				+ ", guestHomeMatrix=" + guestHomeMatrix + ", guestAwayMatrix="
-				+ guestAwayMatrix + "]";
+				+ guestAwayMatrix + ", hostLevel=" + hostLevel
+				+ ", hostLabels=" + hostLabels + ", guestLevel=" + guestLevel
+				+ ", guestLabels=" + guestLabels + ", hostAttGuestDefInx="
+				+ hostAttGuestDefInx + ", guestAttHostDefInx="
+				+ guestAttHostDefInx + "]";
 	}
 
 	public ClubMatrix getHostAllMatrix() {
@@ -61,6 +69,55 @@ public class ClubMatrices implements CalculateResult, MatchData{
 	public void setGuestAwayMatrix(ClubMatrix guestAwayMatrix) {
 		this.guestAwayMatrix = guestAwayMatrix;
 	}
+	
+
+	public TeamLevel getHostLevel() {
+		return hostLevel;
+	}
+
+	public void setHostLevel(TeamLevel hostLevel) {
+		this.hostLevel = hostLevel;
+	}
+
+	public List<TeamLabel> getHostLabels() {
+		return hostLabels;
+	}
+
+	public void setHostLabels(List<TeamLabel> hostLabels) {
+		this.hostLabels = hostLabels;
+	}
+
+	public TeamLevel getGuestLevel() {
+		return guestLevel;
+	}
+
+	public void setGuestLevel(TeamLevel guestLevel) {
+		this.guestLevel = guestLevel;
+	}
+
+	public List<TeamLabel> getGuestLabels() {
+		return guestLabels;
+	}
+
+	public void setGuestLabels(List<TeamLabel> guestLabels) {
+		this.guestLabels = guestLabels;
+	}
+
+	public Float getHostAttGuestDefInx() {
+		return hostAttGuestDefInx;
+	}
+
+	public void setHostAttGuestDefInx(Float hostAttGuestDefInx) {
+		this.hostAttGuestDefInx = hostAttGuestDefInx;
+	}
+
+	public Float getGuestAttHostDefInx() {
+		return guestAttHostDefInx;
+	}
+
+	public void setGuestAttHostDefInx(Float guestAttHostDefInx) {
+		this.guestAttHostDefInx = guestAttHostDefInx;
+	}
 
 	private ClubMatrix hostAllMatrix;
 	private ClubMatrix hostHomeMatrix;
@@ -68,6 +125,12 @@ public class ClubMatrices implements CalculateResult, MatchData{
 	private ClubMatrix guestAllMatrix;
 	private ClubMatrix guestHomeMatrix;
 	private ClubMatrix guestAwayMatrix;
+	private TeamLevel hostLevel;
+	private List<TeamLabel> hostLabels;
+	private TeamLevel guestLevel;
+	private List<TeamLabel> guestLabels;
+	private Float hostAttGuestDefInx;
+	private Float guestAttHostDefInx;
 	
 	public static class ClubMatrix {
 

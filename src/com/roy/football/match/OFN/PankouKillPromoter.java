@@ -27,15 +27,17 @@ import com.roy.football.match.process.KillPromoter;
 import com.roy.football.match.util.MatchUtil;
 
 public class PankouKillPromoter {
+	private final static float LOW_PK_POINT = -0.02f;
 	
 	public PredictResult calculate (OFNCalculateResult calResult) {
 		PredictResult predictRes = new PredictResult();
 		OFNKillPromoteResult killPromoteResult = new OFNKillPromoteResult();
 		
 		ClubMatrices clubMs = calResult.getClubMatrices();
-		if (clubMs != null) {
-//			float attackDiff = compareAttack(clubMs.g);
+		if (clubMs == null) {
+			return null;
 		}
+
 		predict(predictRes, calResult);
 		
 		kill(killPromoteResult, calResult);
@@ -50,48 +52,27 @@ public class PankouKillPromoter {
 		float hgoal = 0;
 		float ggoal = 0;
 		
-		float hvariation = 0;
-		float gvariation = 0;
+		// default to 1
+		float hvariation = 1;
+		float gvariation = 1;
 		
 		float jsWeight = 0;
 
 		/*<<<<  calculate the score according to the base data & latest matches  <<<< */
-		ClubMatrices clubDatas = calResult.getClubMatrices();
+		ClubMatrices clubMatrices = calResult.getClubMatrices();
 
-		if (clubDatas != null) {
-			ClubMatrix hostClub = clubDatas.getHostHomeMatrix();
-			ClubMatrix guestClub = clubDatas.getGuestAwayMatrix();
-
-			if (hostClub != null && hostClub.getNum() > 5) {
-				hostClub = clubDatas.getHostHomeMatrix();
-			} else {
-				hostClub = clubDatas.getHostAllMatrix();
-			}
-			
-			if (guestClub != null && guestClub.getNum() > 5) {
-				guestClub = clubDatas.getGuestAwayMatrix();
-			} else {
-				guestClub = clubDatas.getGuestAllMatrix();
-			}
-
-			// goal is main key here
-			hgoal = 0.6f * hostClub.getGoals() / hostClub.getNum() + 0.4f * guestClub.getMisses() / guestClub.getNum();
-			ggoal = 0.6f * guestClub.getGoals() / guestClub.getNum() + 0.4f * hostClub.getMisses() / hostClub.getNum();
+		if (clubMatrices != null) {
+			hgoal = clubMatrices.getHostAttGuestDefInx();
+			ggoal = clubMatrices.getGuestAttHostDefInx();
 		}
 
 		// latest Match
 		MatchState matchState = calResult.getMatchState();
-		LatestMatchMatrices hostMatches = null;
-		LatestMatchMatrices guestMatches = null;
 
 		if (matchState != null) {
-			hostMatches = matchState.getHostState6();
-			guestMatches = matchState.getGuestState6();
-			
-			// 0.5 * 0.8 to week the latest state
-			float lhgoal = 0.48f * hostMatches.getMatchGoal() + 0.32f * guestMatches.getMatchMiss();
-			float lggoal = 0.48f * guestMatches.getMatchGoal() + 0.32f * hostMatches.getMatchMiss();
-			
+			float lhgoal = matchState.getHostAttackToGuest();
+			float lggoal = matchState.getGuestAttackToHost();
+
 			if (hgoal == 0 && ggoal == 0) {
 				hgoal = lhgoal;
 				ggoal = lggoal;
@@ -99,9 +80,9 @@ public class PankouKillPromoter {
 				hgoal = 0.6f * hgoal + 0.4f * lhgoal;
 				ggoal = 0.6f * ggoal + 0.4f * lggoal;
 			}
-			
-			hvariation = 0.6f * hostMatches.getgVariation() + 0.4f * guestMatches.getmVariation();
-			gvariation = 0.6f * guestMatches.getgVariation() + 0.4f * hostMatches.getmVariation();
+
+			hvariation = matchState.getHostAttackVariationToGuest();
+			gvariation = matchState.getGuestAttackVariationToHost();
 		}
 		
 		JiaoShouMatrices jiaoShou = calResult.getJiaoShou();
@@ -135,7 +116,6 @@ public class PankouKillPromoter {
 			hgoal -= predictDiff;
 			ggoal += predictDiff;
 
-			// mutiple 0.85 is because the change rate is counted according to different weight (0.7~1) or (1-0.1*t/8)
 			float pkComp = pkMatrices.getHwinChangeRate() - pkMatrices.getAwinChangeRate();
 			hAdjRate = -1 * pkComp;
 			gAdjRate = pkComp;
@@ -167,8 +147,10 @@ public class PankouKillPromoter {
 		if (killPromoteResult != null) {
 			PankouMatrices pkMatrices = calResult.getPkMatrices();
 			Float predictPk = calResult.getPredictPanKou();
-			List <TeamLabel> hostLabels = calResult.getHostLabels();
-			List <TeamLabel> guestLabels = calResult.getGuestLabels();
+
+			ClubMatrices clubMatrices = calResult.getClubMatrices();
+			List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 			
 			if (predictPk == null && calResult.getJiaoShou() != null) {
 				predictPk = calResult.getJiaoShou().getLatestPankou();
@@ -193,8 +175,9 @@ public class PankouKillPromoter {
 		
 		PankouMatrices pkMatrices = calResult.getPkMatrices();
 		Float predictPk = calResult.getPredictPanKou();
-		List <TeamLabel> hostLabels = calResult.getHostLabels();
-		List <TeamLabel> guestLabels = calResult.getGuestLabels();
+		ClubMatrices clubMatrices = calResult.getClubMatrices();
+		List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+		List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 		
 		if (predictPk == null && calResult.getJiaoShou() != null) {
 			predictPk = calResult.getJiaoShou().getLatestPankou();
@@ -220,8 +203,9 @@ public class PankouKillPromoter {
 		if (killPromoteResult != null) {
 			PankouMatrices pkMatrices = calResult.getPkMatrices();
 			Float predictPk = calResult.getPredictPanKou();
-			List <TeamLabel> hostLabels = calResult.getHostLabels();
-			List <TeamLabel> guestLabels = calResult.getGuestLabels();
+			ClubMatrices clubMatrices = calResult.getClubMatrices();
+			List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 			MatchState matchState = calResult.getMatchState();
 			
 			Float hotPoint = calResult.getHotPoint();
@@ -229,8 +213,8 @@ public class PankouKillPromoter {
 			if (pkMatrices != null) {
 				killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices,
 						predictPk, hostLabels, guestLabels, hotPoint,
-						matchState, calResult.getAttackComp(),
-						calResult.getDefendComp()));
+						matchState, clubMatrices.getHostAttGuestDefInx(),
+						clubMatrices.getGuestAttHostDefInx()));
 			}
 		}
 	}
@@ -240,8 +224,9 @@ public class PankouKillPromoter {
 		
 		PankouMatrices pkMatrices = calResult.getPkMatrices();
 		Float predictPk = calResult.getPredictPanKou();
-		List <TeamLabel> hostLabels = calResult.getHostLabels();
-		List <TeamLabel> guestLabels = calResult.getGuestLabels();
+		ClubMatrices clubMatrices = calResult.getClubMatrices();
+		List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+		List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 		MatchState matchState = calResult.getMatchState();
 		
 		Float hotPoint = calResult.getHotPoint();
@@ -249,8 +234,8 @@ public class PankouKillPromoter {
 		if (pkMatrices != null) {
 			killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices,
 					predictPk, hostLabels, guestLabels, hotPoint,
-					matchState, calResult.getAttackComp(),
-					calResult.getDefendComp()));
+					matchState, clubMatrices.getHostAttGuestDefInx(),
+					clubMatrices.getGuestAttHostDefInx()));
 		}
 		
 		return killPromoteResult;
@@ -264,6 +249,8 @@ public class PankouKillPromoter {
 			AsiaPl origin = pkMatrices.getOriginPk();
 			AsiaPl main = pkMatrices.getMainPk();
 			AsiaPl current = pkMatrices.getCurrentPk();
+			Float hWinChgRtFloat = pkMatrices.getHwinChangeRate();
+			Float gWinChgRtFloat = pkMatrices.getAwinChangeRate();
 			
 			float mainPk = MatchUtil.getCalculatedPk(main);
 			float currentPk = MatchUtil.getCalculatedPk(current);
@@ -287,14 +274,11 @@ public class PankouKillPromoter {
 			} catch (Exception e) {
 				// ignore..
 			}
-			
-//			Float hWinWeight = pkMatrices.getHwinChangeRate();
 
 			// the predict and main is nearly same, but the company chooses high pay to stop betting on win/lose.
-			if (main.gethWin() > 1.01
-					&& current.gethWin() > 1.01
+			if ((hWinChgRtFloat > 0.12 || hWinChgRtFloat >= 0.07 && current.gethWin() > 1.05)
 					&& current.gethWin() - main.gethWin() >= -0.04
-					&& Math.abs(predictPk - mainPk) < 0.21
+					&& Math.abs(predictPk - mainPk) < 0.25
 					&& !MatchUtil.isHostHomeStrong(hostLabels)) {
 
 				if (asiaPk >= 1) {
@@ -311,10 +295,9 @@ public class PankouKillPromoter {
 				}
 			}
 			
-			if (main.getaWin() > 1.01
-					&& current.getaWin() > 1.01
+			if ((gWinChgRtFloat >= 0.12 || gWinChgRtFloat >= 0.07 && current.getaWin() > 1.05)
 					&& current.getaWin() - main.getaWin() >= -0.04
-					&& Math.abs(predictPk - mainPk) < 0.21
+					&& Math.abs(predictPk - mainPk) < 0.25
 					&& !MatchUtil.isGuestDefensive(guestLabels)) {
 				if (asiaPk <= -1) {
 					if (!skipLose) {
@@ -512,52 +495,82 @@ public class PankouKillPromoter {
 		return rgs;
 	}
 	
-	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, Float attackComp, Float defendComp,
+	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, Float hostAttGuestDefComp, Float guestAttHostDefComp,
 			float currentPk, Float predictPk, AsiaPl main, AsiaPl current) {
 		if (rgs == null) {
 			rgs = new TreeSet<ResultGroup> ();
 		}
-		
-		if (hotPoint >= 6 && (attackComp > 1 && defendComp > 1)) {
+
+		// host performed good lately
+		if (hotPoint >= 6) {
+			// host is so good --> win
+			if (hostAttGuestDefComp - guestAttHostDefComp > 0.8) {
+				if (main.gethWin() < 0.90 && current.gethWin() <= main.gethWin()) {
+					rgs.add(ResultGroup.Three);
+				}
+			}
+			// host is not so good and guest is not so good
+			else if (hostAttGuestDefComp - guestAttHostDefComp <= 0.5 && hostAttGuestDefComp - guestAttHostDefComp > -0.2){
+				// but the company think low of host -- lose
+				if (currentPk < predictPk - 0.15 && main.getaWin() <= 0.93 && current.getaWin() <= main.getaWin()) {
+					rgs.add(ResultGroup.One);
+					rgs.add(ResultGroup.Zero);
+				}
+			}
+		}
+		// guest performed good lately
+		else if (hotPoint <= -6) {
+			// guest is so good
+			if (guestAttHostDefComp - hostAttGuestDefComp >= 0.35) {
+				if (main.getaWin() < 0.90 && current.getaWin() <= main.getaWin()) {
+					rgs.add(ResultGroup.Zero);
+				}
+			}
+			// guest is not so good and host is not so good
+			else if (guestAttHostDefComp - hostAttGuestDefComp <= 0.1 && guestAttHostDefComp - hostAttGuestDefComp > -0.5) {
+				// but the company think low of guest -- win
+				if (currentPk > predictPk + 0.15 && main.gethWin() <= 0.93 && current.gethWin() <= main.gethWin()) {
+					rgs.add(ResultGroup.Three);
+					rgs.add(ResultGroup.One);
+				}
+			}
+		}
+
+		// host is good (not very good), and host didn't perform bad
+		if (hostAttGuestDefComp - guestAttHostDefComp < 0.6 && hostAttGuestDefComp - guestAttHostDefComp > 0.3 && hotPoint >= -3) {
+			// but the company think low of host -- lose
 			if (currentPk < predictPk - 0.15 && main.getaWin() < 0.94 && current.getaWin() <= main.getaWin()) {
 				rgs.add(ResultGroup.One);
 				rgs.add(ResultGroup.Zero);
 			}
-		} else if (hotPoint <= 6 && (attackComp < 1 && defendComp < 1)) {
+		}
+		// guest is good (not very good), and guest didn't perform bad 
+		else if ((guestAttHostDefComp - hostAttGuestDefComp >= -0.1) && hotPoint <= 3) {
+			// but the company think low of guest -- win
 			if (currentPk > predictPk + 0.15 && main.gethWin() < 0.94 && current.gethWin() <= main.gethWin()) {
 				rgs.add(ResultGroup.Three);
 				rgs.add(ResultGroup.One);
 			}
 		}
-		
-		if ((attackComp + defendComp > 2.4) && hotPoint >= -1.5) {
-			if (currentPk < predictPk - 0.15 && main.getaWin() < 0.94 && current.getaWin() <= main.getaWin()) {
-				rgs.add(ResultGroup.One);
-				rgs.add(ResultGroup.Zero);
-			}
-		} else if ((attackComp + defendComp < 1.6) && hotPoint <= 1.5) {
-			if (currentPk > predictPk + 0.15 && main.gethWin() < 0.94 && current.gethWin() <= main.gethWin()) {
-				rgs.add(ResultGroup.Three);
-				rgs.add(ResultGroup.One);
-			}
-		}
-		
+
 		return rgs;
 	}
 	
 	private Set<ResultGroup> promoteByPk (PankouMatrices pkMatrices, Float predictPk,
 			List <TeamLabel> hostLabels, List <TeamLabel> guestLabels, Float hotPoint,
-			MatchState matchState, Float attackComp, Float defendComp) {
+			MatchState matchState, Float hostAttGuestDefComp, Float guestAttHostDefComp) {
 		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
 		
 		if (pkMatrices != null && predictPk != null && matchState != null) {
 			AsiaPl main = pkMatrices.getMainPk();
 			AsiaPl current = pkMatrices.getCurrentPk();
+			Float hWinChgRtFloat = pkMatrices.getHwinChangeRate();
+			Float gWinChgRtFloat = pkMatrices.getAwinChangeRate();
 
 			float mainPk = MatchUtil.getCalculatedPk(main);
 			float currentPk = MatchUtil.getCalculatedPk(current);
 			
-			promoteByBase(rgs, hotPoint, attackComp, defendComp,
+			promoteByBase(rgs, hotPoint, hostAttGuestDefComp, guestAttHostDefComp,
 					currentPk, predictPk, main, current);
 			
 			LatestMatchMatrices host6Match = matchState.getHostState6();
@@ -569,7 +582,7 @@ public class PankouKillPromoter {
 
 			if (main.getPanKou() >= 1) {
 				// a1. host pay is low
-				if (main.gethWin() <= 0.92 && current.gethWin() <= 0.92) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.92) {
 					// b1. company think high of the host
 					if (mainPk - predictPk > 0.29) {
 						// c1. host is good
@@ -591,7 +604,7 @@ public class PankouKillPromoter {
 					}
 				}
 				// a2. guest pay is low
-				else if (main.getaWin() <= 0.9 && current.getaWin() <= 0.9) {
+				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.9) {
 					// b2. company think low,
 					if (currentPk <= mainPk && predictPk - mainPk > 0.3
 							&& (guest6Match.getWinPkRate() > 0.4 || guest6Match.getWinDrawPkRate() > 0.6)) {
@@ -599,12 +612,12 @@ public class PankouKillPromoter {
 					}
 				}
 			} else if (main.getPanKou() > 0.4) {
-				if (main.gethWin() <= 0.92 && current.gethWin() <= 0.92) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.92) {
 					// company think high of the host
 					if (mainPk - predictPk > 0.25) {
 						// host is pretty good, or guest is pretty bad (this is not matter,
 						// if guest is too bad, then the predict pk should be high, not align with the assumption), or host is good guest is bad,
-						if (current.gethWin() <= 0.92 && (host6Match.getWinRate() >= 0.6 && guest6Match.getWinRate() <= 0.5
+						if ((host6Match.getWinRate() >= 0.6 && guest6Match.getWinRate() <= 0.5
 								|| guest6Match.getWinDrawRate() <= 0.5
 								|| ((host6Match.getWinRate() >= 0.5 && host6Match.getWinDrawPkRate() >= 0.6)
 									|| (guest6Match.getWinRate() <= 0.5 && guest6Match.getWinDrawRate() <= 0.7)))) {
@@ -620,7 +633,7 @@ public class PankouKillPromoter {
 							rgs.add(ResultGroup.Three);
 						}
 						// pk is support, and host is good or guest is bad
-						else if ((currentPk - mainPk >= 0.08 || main.gethWin() <= 0.9 && current.gethWin() <= 0.9)
+						else if ((currentPk - mainPk >= 0.08 || current.gethWin() <= 0.9)
 								&& isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& (host6Match.getWinRate() >= 0.5 || host6Match.getWinDrawRate() >= 0.6)
 									&& (guest6Match.getWinRate() <= 0.5 && guest6Match.getWinDrawRate() <= 0.7)) {
@@ -630,7 +643,7 @@ public class PankouKillPromoter {
 						// think high of guest.. check below
 					}
 				}
-				else if (main.getaWin() <= 0.9 && current.getaWin() <= 0.9) {
+				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.9) {
 					// company think high of the guest
 					if (predictPk - mainPk > 0.22) {
 						// guest is pretty good, or host is pretty bad, or guest is good guest is bad,
@@ -645,7 +658,7 @@ public class PankouKillPromoter {
 					}
 					else if (predictPk - mainPk > -0.12) {
 						if (!MatchUtil.isHostHomeStrong(hostLabels) && isPkSupportHot(predictPk, mainPk, hotPoint)
-								&& (mainPk - currentPk > 0.08 || main.getaWin() <= 0.88 && current.getaWin() <= 0.88)
+								&& (mainPk - currentPk > 0.08 || current.getaWin() <= 0.88)
 								&& ((guest6Match.getWinPkRate() >= 0.5 && guest6Match.getWinDrawPkRate() >= 0.6)
 									|| (host6Match.getWinRate() <= 0.5 && host6Match.getWinDrawRate() <= 0.7))) {
 							rgs.add(ResultGroup.One);
@@ -654,7 +667,7 @@ public class PankouKillPromoter {
 					}
 				}
 			} else if (main.getPanKou() > -0.4) {
-				if (main.gethWin() <= 0.9 && current.gethWin() <= 0.9) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.9) {
 					// company think high of the host
 					if (mainPk - predictPk > 0.21) {
 						// host is pretty good (the teams are in same level, check win pk rate, instead of win rate),
@@ -668,7 +681,7 @@ public class PankouKillPromoter {
 						}
 					} else if (mainPk - predictPk > -0.1) {
 						// host performs good or guest performs bad
-						if ((currentPk > mainPk || main.gethWin() <= 0.88 && current.gethWin() <= 0.88)
+						if ((currentPk > mainPk || current.gethWin() <= 0.88)
 								&& isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& ((host6Match.getWinPkRate() >= 0.5 && host6Match.getWinDrawPkRate() >= 0.6)
 										&& (guest6Match.getWinPkRate() <= 0.5 && guest6Match.getWinDrawPkRate() <= 0.7))) {
@@ -678,7 +691,7 @@ public class PankouKillPromoter {
 					} else {
 						// think high of guest.. check below
 					}
-				} else if (main.getaWin() <= 0.92 && current.getaWin() <= 0.92) {
+				} else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92) {
 					// company think high of the guest
 					if (predictPk - mainPk > 0.21) {
 						if (guest6Match.getWinRate() >= 0.6 && host6Match.getWinRate() <= 0.6
@@ -700,7 +713,7 @@ public class PankouKillPromoter {
 					}
 				}
 			} else if (main.getPanKou() > -1) {
-				if (main.gethWin() <= 0.9 && current.gethWin() <= 0.9) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.9) {
 					// company think high of the host
 					if (mainPk - predictPk > 0.25) {
 						// host is pretty good, or guest is pretty bad, or host is good guest is bad,
@@ -724,7 +737,7 @@ public class PankouKillPromoter {
 						// think high of guest.. check below
 					}
 				}
-				else if (main.getaWin() <= 0.92 && current.getaWin() <= 0.92) {
+				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92) {
 					// company think high of the guest
 					if (predictPk - mainPk > 0.25) {
 						// guest is pretty good, or host is pretty bad, or guest is good guest is bad,
@@ -744,7 +757,7 @@ public class PankouKillPromoter {
 					}
 				}
 			} else {
-				if (main.gethWin() <= 0.9 && current.gethWin() <= 0.9) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.9) {
 					if (currentPk >= mainPk && mainPk - predictPk > 0.3
 							&& (host6Match.getWinPkRate() >= 0.5 || host6Match.getWinDrawPkRate() >= 0.6)) {
 						rgs.add(ResultGroup.Three);
@@ -752,7 +765,7 @@ public class PankouKillPromoter {
 					}
 				}
 				// a2. guest pay is low
-				else if (main.getaWin() <= 0.92 && current.getaWin() <= 0.92) {
+				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92) {
 					// b1. company think high of the guest
 					if (predictPk - mainPk > 0.3) {
 						if ((guest6Match.getWinPkRate() >= 0.5 && guest6Match.getWinDrawPkRate() >= 0.7)) {

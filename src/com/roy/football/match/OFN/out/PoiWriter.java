@@ -83,16 +83,16 @@ public class PoiWriter <T> implements Writer <T>{
 			cell.setCellStyle(headerStyle);
 			cell.setCellValue(headerConfigs.get(i).getTitle());
 			
-			if (i == 0 || i == 2 || i == 3 || i == 4 || i ==15) {
-				sheet.setColumnWidth(i, 6 * 512);
-			} else if (i == 13 || i ==14) {
+			if (i == 13 || i ==14) {
 				sheet.setColumnWidth(i, 4 * 512);
-			} else if (i == 5 || i==7 || i==10) {
-				sheet.setColumnWidth(i, 9 * 512);
-			} else if ( i == 6 || i==8 || i ==12) {
+			} else if (i == 0 || i == 2 || i == 3 || i == 4 || i ==15) {
+				sheet.setColumnWidth(i, 6 * 512);
+			} else if (i==7 || i==8 || i ==12) {
 				sheet.setColumnWidth(i, 7 * 512);
+			} else if (i == 5 || i == 6 || i==10) {
+				sheet.setColumnWidth(i, 9 * 512);
 			} else {
-				sheet.setColumnWidth(i, 11 * 512);
+				sheet.setColumnWidth(i, 10 * 512);
 			}
 			
 		}

@@ -32,11 +32,14 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		if (matchData == null) {
 			return null;
 		}
+		OFNCalculateResult calResult= new OFNCalculateResult();
 
 		ClubMatrices matrices = baseCalculator.calucate(matchData);
+		if (matrices != null) {
+			baseMatrixCalculator.calucate(matrices);
+			calResult.setClubMatrices(matrices);
+		}
 
-		OFNCalculateResult calResult = baseMatrixCalculator.calucate(matrices);
-		
 		try {
 			League league = League.getLeagueById(matchData.getLeagueId());
 			calResult.setLeague(league);
@@ -58,9 +61,11 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		DaxiaoMatrices dxMatrices = dxCalculator.calucate(matchData);
 		calResult.setDxMatrices(dxMatrices);
 		
-		Float predictPanKou = getPredictPanKou(jsMatrices, matchState, calResult.getHostLevel(), calResult.getGuestLevel());
-		calResult.setPredictPanKou(predictPanKou);
-		
+		if (matrices != null) {
+			Float predictPanKou = getPredictPanKou(jsMatrices, matchState, matrices.getHostLevel(), matrices.getGuestLevel());
+			calResult.setPredictPanKou(predictPanKou);
+		}
+
 		EuroMatrices euroMatrices = euroCalculator.calucate(matchData);
 		calResult.setEuroMatrices(euroMatrices);
 		
