@@ -1,5 +1,6 @@
 package com.roy.football.match.OFN;
 
+import com.roy.football.match.Exception.CommonException;
 import com.roy.football.match.OFN.response.ClubDatas;
 import com.roy.football.match.OFN.response.ClubDatas.ClubData;
 import com.roy.football.match.OFN.response.OFNMatchData;
@@ -13,18 +14,22 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 	@Override
 	public ClubMatrices calucate(OFNMatchData matchData) {
 		ClubDatas baseData = matchData.getBaseData();
-		
+
 		if (baseData != null) {
-			ClubMatrices clubBaseMatx = new ClubMatrices();
-			
-			clubBaseMatx.setHostAllMatrix(calculate(baseData.getHostData(), MatrixType.All));
-			clubBaseMatx.setHostHomeMatrix(calculate(baseData.getHostData(), MatrixType.Home));
-			clubBaseMatx.setHostAwayMatrix(calculate(baseData.getHostData(), MatrixType.Away));
-			clubBaseMatx.setGuestAllMatrix(calculate(baseData.getGuestData(), MatrixType.All));
-			clubBaseMatx.setGuestHomeMatrix(calculate(baseData.getGuestData(), MatrixType.Home));
-			clubBaseMatx.setGuestAwayMatrix(calculate(baseData.getGuestData(), MatrixType.Away));
-			
-			return clubBaseMatx;
+			try {
+				ClubMatrices clubBaseMatx = new ClubMatrices();
+				
+				clubBaseMatx.setHostAllMatrix(calculate(baseData.getHostData(), MatrixType.All));
+				clubBaseMatx.setHostHomeMatrix(calculate(baseData.getHostData(), MatrixType.Home));
+				clubBaseMatx.setHostAwayMatrix(calculate(baseData.getHostData(), MatrixType.Away));
+				clubBaseMatx.setGuestAllMatrix(calculate(baseData.getGuestData(), MatrixType.All));
+				clubBaseMatx.setGuestHomeMatrix(calculate(baseData.getGuestData(), MatrixType.Home));
+				clubBaseMatx.setGuestAwayMatrix(calculate(baseData.getGuestData(), MatrixType.Away));
+
+				return clubBaseMatx;
+			} catch (CommonException e) {
+				// ignore..
+			}
 		}
 		
 		return null;
@@ -36,9 +41,9 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 		
 	}
 	
-	private ClubMatrix calculate (ClubData clubData, MatrixType type) {
+	private ClubMatrix calculate (ClubData clubData, MatrixType type) throws CommonException {
 		if (clubData == null) {
-			return null;
+			throw new CommonException("Club base data is empty.");
 		}
 		
 		ClubMatrix matrix = new ClubMatrix();

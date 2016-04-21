@@ -1,14 +1,9 @@
 package com.roy.football.match.OFN.statics.matrices;
 
-import java.util.List;
-import java.util.Set;
 
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.MatchData;
-import com.roy.football.match.base.ResultGroup;
-import com.roy.football.match.base.TeamLabel;
-import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.process.CalculateResult;
 
 public class OFNCalculateResult implements CalculateResult, MatchData {
@@ -16,10 +11,7 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	@Override
 	public String toString() {
 		return "OFNCalculateResult [league=" + league + ", clubMatrices="
-				+ clubMatrices + ", hostLevel=" + hostLevel + ", hostLabels="
-				+ hostLabels + ", guestLevel=" + guestLevel + ", guestLabels="
-				+ guestLabels + ", attackComp=" + attackComp + ", defendComp="
-				+ defendComp + ", jiaoShou=" + jiaoShou + ", matchState="
+				+ clubMatrices + ", jiaoShou=" + jiaoShou + ", matchState="
 				+ matchState + ", hotPoint=" + hotPoint + ", pkMatrices="
 				+ pkMatrices + ", dxMatrices=" + dxMatrices
 				+ ", predictPanKou=" + predictPanKou + ", predictResult="
@@ -32,30 +24,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	}
 	public void setClubMatrices(ClubMatrices clubMatrices) {
 		this.clubMatrices = clubMatrices;
-	}
-	public TeamLevel getGuestLevel() {
-		return guestLevel;
-	}
-	public void setGuestLevel(TeamLevel guestLevel) {
-		this.guestLevel = guestLevel;
-	}
-	public TeamLevel getHostLevel() {
-		return hostLevel;
-	}
-	public void setHostLevel(TeamLevel hostLevel) {
-		this.hostLevel = hostLevel;
-	}
-	public List<TeamLabel> getHostLabels() {
-		return hostLabels;
-	}
-	public void setHostLabels(List<TeamLabel> hostLabels) {
-		this.hostLabels = hostLabels;
-	}
-	public List<TeamLabel> getGuestLabels() {
-		return guestLabels;
-	}
-	public void setGuestLabels(List<TeamLabel> guestLabels) {
-		this.guestLabels = guestLabels;
 	}
 
 	public JiaoShouMatrices getJiaoShou() {
@@ -118,25 +86,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.hotPoint = hotPoint;
 	}
 
-
-	public Float getAttackComp() {
-		return attackComp;
-	}
-
-	public void setAttackComp(Float attackComp) {
-		this.attackComp = attackComp;
-	}
-
-
-	public Float getDefendComp() {
-		return defendComp;
-	}
-
-	public void setDefendComp(Float defendComp) {
-		this.defendComp = defendComp;
-	}
-
-
 	public DaxiaoMatrices getDxMatrices() {
 		return dxMatrices;
 	}
@@ -155,12 +104,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 
 	private League league;
 	private ClubMatrices clubMatrices;
-	private TeamLevel hostLevel;
-	private List<TeamLabel> hostLabels;
-	private TeamLevel guestLevel;
-	private List<TeamLabel> guestLabels;
-	private Float attackComp;
-	private Float defendComp;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
 	private Float hotPoint;

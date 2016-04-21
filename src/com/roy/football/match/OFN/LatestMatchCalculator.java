@@ -9,6 +9,7 @@ import com.roy.football.match.OFN.response.ClubDatas.ClubData;
 import com.roy.football.match.OFN.response.FinishedMatch;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
+import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
 import com.roy.football.match.base.League;
 import com.roy.football.match.process.Calculator;
@@ -27,6 +28,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			calculateMatchMatrices(matchState, matchData.getGuestMatches(), matchData.getGuestId(), matchData.getMatchTime(), clubData.getGuestData(), false);
 			matchState.setCalculatePk(getPankouByFinishedMatches(matchData));
 			
+			calMatchStateIndex(matchState);
+			
 			return matchState;
 		}
 		return null;
@@ -36,6 +39,22 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	public void calucate(MatchState Result, OFNMatchData matchData) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void calMatchStateIndex (MatchState matchState) {
+		LatestMatchMatrices hostMatches = matchState.getHostState6();
+		LatestMatchMatrices guestMatches = matchState.getGuestState6();
+
+		float hgoal = 0.6f * hostMatches.getMatchGoal() + 0.4f * guestMatches.getMatchMiss();
+		float ggoal = 0.6f * guestMatches.getMatchGoal() + 0.4f * hostMatches.getMatchMiss();
+
+		float hvariation = 0.6f * hostMatches.getgVariation() + 0.4f * guestMatches.getmVariation();
+		float gvariation = 0.6f * guestMatches.getgVariation() + 0.4f * hostMatches.getmVariation();
+
+		matchState.setHostAttackToGuest(hgoal);
+		matchState.setGuestAttackToHost(ggoal);
+		matchState.setHostAttackVariationToGuest(hvariation);
+		matchState.setGuestAttackVariationToHost(gvariation);
 	}
 	
 	private Float getPankouByFinishedMatches (OFNMatchData matchData) {

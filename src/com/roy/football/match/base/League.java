@@ -12,11 +12,12 @@ public enum League {
 	FaJia(93, 20), FaYi(171, 20),
 	HeJia(99, 18), HeYi(202, 19), PuChao(88, 18),
 	OuGuan(74, 16), OuLian(58, 16),
-	EChao(165, 16),
+	EChao(165, 16), RussiaCup(232, 16),
 	NorChao(104, 16),
 	Sweden(103, 16),
 
 	RiLian(102, 18, Company.Aomen), RiYi(347, 22, Company.Aomen),
+	RiLianBei(158, 8, Company.Aomen),
 	HanZhiLian(250, 12, Company.Aomen),
 	AoChao(339, 10, Company.Aomen),
 	YaGuan(139, 16, Company.Aomen),

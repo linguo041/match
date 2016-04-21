@@ -11,52 +11,53 @@ import com.roy.football.match.base.TeamLabel;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.process.Calculator;
 
-public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements Calculator<OFNCalculateResult, ClubMatrices> {
+public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements Calculator<ClubMatrices, ClubMatrices> {
 
 	@Override
-	public OFNCalculateResult calucate(ClubMatrices matrices) {
-		OFNCalculateResult calResult = new OFNCalculateResult();
-		
-		calResult.setClubMatrices(matrices);
+	public ClubMatrices calucate(ClubMatrices matrices) {
 
-		calResult.setHostLevel(measureTeamLevel(matrices.getHostAllMatrix()));
-		calResult.setGuestLevel(measureTeamLevel(matrices.getGuestAllMatrix()));
-		
+		matrices.setHostLevel(measureTeamLevel(matrices.getHostAllMatrix()));
+		matrices.setGuestLevel(measureTeamLevel(matrices.getGuestAllMatrix()));
+
 		List<TeamLabel> hostLabels = measureTeamPositiveLabel(matrices.getHostAllMatrix(), MatrixType.All);
 		measureTeamPositiveLabel(matrices.getHostHomeMatrix(), MatrixType.Home, hostLabels);
-		calResult.setHostLabels(hostLabels);
-		
+		matrices.setHostLabels(hostLabels);
+
 		List<TeamLabel> guestLabels = measureTeamPositiveLabel(matrices.getGuestAllMatrix(), MatrixType.All);
 		measureTeamNegativeLabel(matrices.getGuestAwayMatrix(), MatrixType.Away, guestLabels);
-		calResult.setGuestLabels(guestLabels);
-		
-		compareClubsAttackDefend(matrices, calResult);
+		matrices.setGuestLabels(guestLabels);
 
-		return calResult;
+		compareClubsAttackDefend(matrices);
+
+		return matrices;
 	}
 	
 	@Override
-	public void calucate(OFNCalculateResult Result, ClubMatrices matchData) {
+	public void calucate(ClubMatrices matchResult, ClubMatrices matchData) {
 		// TODO Auto-generated method stub
 		
 	}
 	
-	private void compareClubsAttackDefend (ClubMatrices matrices, OFNCalculateResult calResult) {
+	private void compareClubsAttackDefend (ClubMatrices matrices) {
 		if (matrices == null) {
 			return;
 		}
 		
-		ClubMatrix hostMatrix = matrices.getHostHomeMatrix();
-		ClubMatrix guestMatrix = matrices.getGuestAwayMatrix();
+		ClubMatrix hostClub = matrices.getHostHomeMatrix();
+		ClubMatrix guestClub = matrices.getGuestAwayMatrix();
 
-		if (hostMatrix != null && hostMatrix.getNum() <= 5) {
-			hostMatrix = matrices.getHostAllMatrix();
-			guestMatrix = matrices.getGuestAllMatrix();
+		if (hostClub != null && hostClub.getNum() <= 5) {
+			hostClub = matrices.getHostAllMatrix();
 		}
 		
-		if (hostMatrix != null && guestMatrix != null) {
-			calResult.setAttackComp(guestMatrix.getGoals() == 0 ? 0 : (float)hostMatrix.getGoals() / guestMatrix.getGoals());
-			calResult.setDefendComp(hostMatrix.getMisses() == 0 ? 0 : (float)guestMatrix.getMisses() / hostMatrix.getMisses());
+		if (guestClub != null && guestClub.getNum() <= 5) {
+			guestClub = matrices.getGuestAllMatrix();
+		}
+
+		if (hostClub != null && guestClub != null) {
+			// goal is main key here
+			matrices.setHostAttGuestDefInx(0.6f * hostClub.getGoals() / hostClub.getNum() + 0.4f * guestClub.getMisses() / guestClub.getNum());
+			matrices.setGuestAttHostDefInx(0.6f * guestClub.getGoals() / guestClub.getNum() + 0.4f * hostClub.getMisses() / hostClub.getNum());
 		}
 	}
 	

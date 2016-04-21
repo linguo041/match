@@ -69,7 +69,7 @@ public class DaxiaoCalculator extends AbstractBaseDataCalculator implements Calc
 							changePk = -0.125f;
 						} else {
 							// week the rate
-							changePk = changePk * 0.8f;
+							changePk = changePk * 0.9f;
 						}
 					}
 
@@ -90,8 +90,8 @@ public class DaxiaoCalculator extends AbstractBaseDataCalculator implements Calc
 				}
 
 				dxMatrices.setMainPk(main);
-				dxMatrices.setDaChangeRate(winWeight);
-				dxMatrices.setXiaoChangeRate(loseWeight);
+				dxMatrices.setDaChangeRate(winWeight / (totalHours * 0.85f));
+				dxMatrices.setXiaoChangeRate(loseWeight / (totalHours * 0.85f));
 				dxMatrices.setHours(totalHours);
 				return dxMatrices;
 			}
