@@ -55,9 +55,19 @@ public class OFNOutputFormater {
 						matchState.getGuestAttackVariationToHost()));
 			}
 
-			JiaoShouMatrices jiaoshouMatrices = calculateResult.getJiaoShou();
 			Float predictPk = calculateResult.getPredictPanKou();
-			Float latestPk = jiaoshouMatrices == null ? null : jiaoshouMatrices.getLatestPankou();
+			Float latestPk = null;
+			JiaoShouMatrices jiaoshouMatrices = calculateResult.getJiaoShou();
+
+			if (jiaoshouMatrices != null) {
+				latestPk = jiaoshouMatrices.getLatestPankou();
+				if (jiaoshouMatrices.getMatchNum() > 3) {
+					excelData.setJsComp(String.format("%.2f | %.1f : %.1f",
+							latestPk > 0.8 ? jiaoshouMatrices.getWinPkRate() : jiaoshouMatrices.getWinRate(),
+							jiaoshouMatrices.getHgoalPerMatch(),
+							jiaoshouMatrices.getGgoalPerMatch()));
+				}
+			}
 			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
 
 			PankouMatrices pkmatrices = calculateResult.getPkMatrices();

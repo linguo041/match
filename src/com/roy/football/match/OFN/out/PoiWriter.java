@@ -79,17 +79,19 @@ public class PoiWriter <T> implements Writer <T>{
 		Row hRow = sheet.createRow(0);
 
 		for (int i=0; i < headerConfigs.size(); i++) {
+			HeaderConfiguration hc = headerConfigs.get(i);
 			Cell cell = hRow.createCell(i);
 			cell.setCellStyle(headerStyle);
-			cell.setCellValue(headerConfigs.get(i).getTitle());
+			cell.setCellValue(hc.getTitle());
+			int order = hc.getOrder();
 			
-			if (i == 13 || i ==14) {
+			if (order == 140 || order ==150) {
 				sheet.setColumnWidth(i, 4 * 512);
-			} else if (i == 0 || i == 2 || i == 3 || i == 4 || i ==15) {
+			} else if (order == 10 || order == 30 || order == 40 || order == 50 || order ==160 || order ==170) {
 				sheet.setColumnWidth(i, 6 * 512);
-			} else if (i==7 || i==8 || i ==12) {
+			} else if (order==80 || order==90 || order ==130) {
 				sheet.setColumnWidth(i, 7 * 512);
-			} else if (i == 5 || i == 6 || i==10) {
+			} else if (order == 60 || order == 70 || order==85 || order==20) {
 				sheet.setColumnWidth(i, 9 * 512);
 			} else {
 				sheet.setColumnWidth(i, 10 * 512);

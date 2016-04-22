@@ -10,8 +10,9 @@ public class JiaoShouMatrices implements CalculateResult, MatchData {
 		return "JiaoShouMatrices [latestPankou=" + latestPankou
 				+ ", latestDaxiao=" + latestDaxiao + ", winRate=" + winRate
 				+ ", winDrawRate=" + winDrawRate + ", winPkRate=" + winPkRate
-				+ ", winDrawPkRate=" + winDrawPkRate + ", matchNum=" + matchNum
-				+ "]";
+				+ ", winDrawPkRate=" + winDrawPkRate + ", hgoalPerMatch="
+				+ hgoalPerMatch + ", ggoalPerMatch=" + ggoalPerMatch
+				+ ", matchNum=" + matchNum + "]";
 	}
 
 	public Float getLatestPankou() {
@@ -61,11 +62,29 @@ public class JiaoShouMatrices implements CalculateResult, MatchData {
 		this.winDrawPkRate = winDrawPkRate;
 	}
 
+	public Float getHgoalPerMatch() {
+		return hgoalPerMatch;
+	}
+
+	public void setHgoalPerMatch(Float hgoalPerMatch) {
+		this.hgoalPerMatch = hgoalPerMatch;
+	}
+
+	public Float getGgoalPerMatch() {
+		return ggoalPerMatch;
+	}
+
+	public void setGgoalPerMatch(Float ggoalPerMatch) {
+		this.ggoalPerMatch = ggoalPerMatch;
+	}
+
 	private Float latestPankou;
 	private Float latestDaxiao;
 	private Float winRate;
 	private Float winDrawRate;
 	private Float winPkRate;
 	private Float winDrawPkRate;
+	private Float hgoalPerMatch;
+	private Float ggoalPerMatch;
 	private Integer matchNum;
 }

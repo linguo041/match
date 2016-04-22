@@ -16,7 +16,7 @@ public class MatchUtil {
 	public final static String UNICODE_LESS = "\u5c0f";
 	public final static String UNICODE_DRAW = "\u8d70";
 	public final static long DAY_TIME = 86400000;
-	public final static long YEAR_TIME = 86400 * 360 * 2; // unit is second
+	public final static long YEAR_TIME = 86400 * 900; // unit is second
 	
 	public final static String simple_date_format = "yyMMdd";
 	

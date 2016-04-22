@@ -32,6 +32,9 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 			int winPkNum = 0;
 			int drawPkNum = 0;
 			int losePkNum = 0;
+			
+			int hgoal = 0;
+			int ggoal = 0;
 
 			Iterator<FinishedMatch> ite = matches.iterator();
 
@@ -71,6 +74,8 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 							loseNum ++;
 						}
 						
+						hgoal += match.getHscore();
+						ggoal += match.getAscore();
 						allNum ++;
 					} else {
 						if (latestPankou == null) {
@@ -101,6 +106,8 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 							winNum ++;
 						}
 						
+						hgoal += match.getAscore();
+						ggoal += match.getHscore();
 						allNum ++;
 					}
 				}
@@ -119,6 +126,8 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 				matrices.setWinDrawRate((float)(winNum + drawNum)/allNum);
 				matrices.setWinPkRate((float)winPkNum/allNum);
 				matrices.setWinDrawPkRate((float)(winPkNum + drawPkNum)/allNum);
+				matrices.setHgoalPerMatch((float)hgoal / allNum);
+				matrices.setGgoalPerMatch((float)ggoal / allNum);
 			}
 			
 			return matrices;

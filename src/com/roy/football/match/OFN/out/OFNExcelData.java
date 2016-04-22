@@ -6,20 +6,20 @@ import com.roy.football.match.base.TeamLevel;
 
 public class OFNExcelData {
 
-	
-
 	@Override
 	public String toString() {
 		return "OFNExcelData [matchDayId=" + matchDayId + ", matchTime="
 				+ matchTime + ", leagueName=" + leagueName + ", hostName="
 				+ hostName + ", guestName=" + guestName + ", hostLevel="
 				+ hostLevel + ", guestLevel=" + guestLevel + ", baseComp="
-				+ baseComp + ", stateComp=" + stateComp + ", originPanKou="
-				+ originPanKou + ", predictPanKou=" + predictPanKou
-				+ ", stateVariation=" + stateVariation + ", pkKillRate="
-				+ pkKillRate + ", kill=" + kill + ", promote=" + promote
-				+ ", result=" + result + ", predictScore=" + predictScore + "]";
+				+ baseComp + ", jsComp=" + jsComp + ", stateComp=" + stateComp
+				+ ", originPanKou=" + originPanKou + ", predictPanKou="
+				+ predictPanKou + ", stateVariation=" + stateVariation
+				+ ", pkKillRate=" + pkKillRate + ", kill=" + kill
+				+ ", promote=" + promote + ", predictScore=" + predictScore
+				+ ", result=" + result + "]";
 	}
+
 	public Long getMatchDayId() {
 		return matchDayId;
 	}
@@ -129,6 +129,12 @@ public class OFNExcelData {
 	public void setStateVariation(String stateVariation) {
 		this.stateVariation = stateVariation;
 	}
+	public String getJsComp() {
+		return jsComp;
+	}
+	public void setJsComp(String jsComp) {
+		this.jsComp = jsComp;
+	}
 
 
 
@@ -148,6 +154,8 @@ public class OFNExcelData {
 	private String guestLevel;
 	@Header(order=80, title="Base [host : guest]")
 	private String baseComp;
+	@Header(order=85, title="JS [host : guest]")
+	private String jsComp;
 	@Header(order=90, title="State [host : guest]")
 	private String stateComp;
 	@Header(order=100, title="Main, Latest [PK]")

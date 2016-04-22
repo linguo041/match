@@ -32,11 +32,6 @@ public class PankouKillPromoter {
 	public PredictResult calculate (OFNCalculateResult calResult) {
 		PredictResult predictRes = new PredictResult();
 		OFNKillPromoteResult killPromoteResult = new OFNKillPromoteResult();
-		
-		ClubMatrices clubMs = calResult.getClubMatrices();
-		if (clubMs == null) {
-			return null;
-		}
 
 		predict(predictRes, calResult);
 		
@@ -55,8 +50,6 @@ public class PankouKillPromoter {
 		// default to 1
 		float hvariation = 1;
 		float gvariation = 1;
-		
-		float jsWeight = 0;
 
 		/*<<<<  calculate the score according to the base data & latest matches  <<<< */
 		ClubMatrices clubMatrices = calResult.getClubMatrices();
@@ -86,12 +79,13 @@ public class PankouKillPromoter {
 		}
 		
 		JiaoShouMatrices jiaoShou = calResult.getJiaoShou();
-		if (jiaoShou != null && jiaoShou.getMatchNum() >= 3) {
-			jsWeight = jiaoShou.getWinRate() + jiaoShou.getWinDrawRate() - 1;
+		if (jiaoShou != null && jiaoShou.getMatchNum() > 3) {
+			float jsHgoal = jiaoShou.getHgoalPerMatch();
+			float jsGgoal = jiaoShou.getGgoalPerMatch();
 			
 			// Multiple 0.5 to avoid duplicate adding weight
-			hgoal += jsWeight * 0.2;
-			ggoal -= jsWeight * 0.2;
+			hgoal = 0.65f * hgoal + 0.35f * jsHgoal;
+			ggoal = 0.65f * ggoal + 0.35f * jsGgoal;
 		}
 		/* >>>> end >>>>*/
 
@@ -148,10 +142,6 @@ public class PankouKillPromoter {
 			PankouMatrices pkMatrices = calResult.getPkMatrices();
 			Float predictPk = calResult.getPredictPanKou();
 
-			ClubMatrices clubMatrices = calResult.getClubMatrices();
-			List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
-			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
-			
 			if (predictPk == null && calResult.getJiaoShou() != null) {
 				predictPk = calResult.getJiaoShou().getLatestPankou();
 			}
@@ -161,10 +151,17 @@ public class PankouKillPromoter {
 
 			if (pkMatrices != null) {
 				float currPk = pkMatrices.getCurrentPk().getPanKou();
-				Set<ResultGroup> pkRes = killByPk(pkMatrices, hotPoint, predictPk, hostLabels, guestLabels, calResult.getClubMatrices());
-				Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai(), league);
+				ClubMatrices clubMatrices = calResult.getClubMatrices();
 
-				killPromoteResult.setKillByPk(pkRes);
+				if (clubMatrices != null) {
+					List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+					List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
+
+					Set<ResultGroup> pkRes = killByPk(pkMatrices, hotPoint, predictPk, hostLabels, guestLabels, calResult.getClubMatrices());
+					killPromoteResult.setKillByPk(pkRes);
+				}
+				
+				Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai(), league);
 				killPromoteResult.setKillByPl(plRes);
 			}
 		}
@@ -175,10 +172,7 @@ public class PankouKillPromoter {
 		
 		PankouMatrices pkMatrices = calResult.getPkMatrices();
 		Float predictPk = calResult.getPredictPanKou();
-		ClubMatrices clubMatrices = calResult.getClubMatrices();
-		List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
-		List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
-		
+
 		if (predictPk == null && calResult.getJiaoShou() != null) {
 			predictPk = calResult.getJiaoShou().getLatestPankou();
 		}
@@ -188,10 +182,17 @@ public class PankouKillPromoter {
 		
 		if (pkMatrices != null) {
 			float currPk = pkMatrices.getCurrentPk().getPanKou();
-			Set<ResultGroup> pkRes = killByPk(pkMatrices, hotPoint, predictPk, hostLabels, guestLabels, calResult.getClubMatrices());
-			Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai(), league);
+			ClubMatrices clubMatrices = calResult.getClubMatrices();
+
+			if (clubMatrices != null) {
+				List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+				List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
+
+				Set<ResultGroup> pkRes = killByPk(pkMatrices, hotPoint, predictPk, hostLabels, guestLabels, calResult.getClubMatrices());
+				killResult.setKillByPk(pkRes);
+			}
 			
-			killResult.setKillByPk(pkRes);
+			Set<ResultGroup> plRes = killByEuro(calResult.getEuroMatrices(), currPk, calResult.getJinCai(), league);
 			killResult.setKillByPl(plRes);
 		}
 		
@@ -204,13 +205,14 @@ public class PankouKillPromoter {
 			PankouMatrices pkMatrices = calResult.getPkMatrices();
 			Float predictPk = calResult.getPredictPanKou();
 			ClubMatrices clubMatrices = calResult.getClubMatrices();
-			List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
-			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 			MatchState matchState = calResult.getMatchState();
 			
 			Float hotPoint = calResult.getHotPoint();
 			
-			if (pkMatrices != null) {
+			if (pkMatrices != null && clubMatrices != null) {
+				List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+				List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
+
 				killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices,
 						predictPk, hostLabels, guestLabels, hotPoint,
 						matchState, clubMatrices.getHostAttGuestDefInx(),
@@ -276,9 +278,9 @@ public class PankouKillPromoter {
 			}
 
 			// the predict and main is nearly same, but the company chooses high pay to stop betting on win/lose.
-			if ((hWinChgRtFloat > 0.12 || hWinChgRtFloat >= 0.07 && current.gethWin() > 1.05)
+			if ((hWinChgRtFloat > 0.12 || hWinChgRtFloat >= 0.06 && current.gethWin() > 1.02)
 					&& current.gethWin() - main.gethWin() >= -0.04
-					&& Math.abs(predictPk - mainPk) < 0.25
+					&& Math.abs(predictPk - mainPk) < 0.29
 					&& !MatchUtil.isHostHomeStrong(hostLabels)) {
 
 				if (asiaPk >= 1) {
@@ -295,9 +297,9 @@ public class PankouKillPromoter {
 				}
 			}
 			
-			if ((gWinChgRtFloat >= 0.12 || gWinChgRtFloat >= 0.07 && current.getaWin() > 1.05)
+			if ((gWinChgRtFloat >= 0.12 || gWinChgRtFloat >= 0.06 && current.getaWin() > 1.02)
 					&& current.getaWin() - main.getaWin() >= -0.04
-					&& Math.abs(predictPk - mainPk) < 0.25
+					&& Math.abs(predictPk - mainPk) < 0.29
 					&& !MatchUtil.isGuestDefensive(guestLabels)) {
 				if (asiaPk <= -1) {
 					if (!skipLose) {
