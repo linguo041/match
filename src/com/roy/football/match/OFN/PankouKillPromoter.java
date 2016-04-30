@@ -84,8 +84,8 @@ public class PankouKillPromoter {
 			float jsGgoal = jiaoShou.getGgoalPerMatch();
 			
 			// Multiple 0.5 to avoid duplicate adding weight
-			hgoal = 0.65f * hgoal + 0.35f * jsHgoal;
-			ggoal = 0.65f * ggoal + 0.35f * jsGgoal;
+			hgoal = 0.6f * hgoal + 0.4f * jsHgoal;
+			ggoal = 0.6f * ggoal + 0.4f * jsGgoal;
 		}
 		/* >>>> end >>>>*/
 
