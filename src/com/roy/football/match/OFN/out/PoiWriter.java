@@ -85,16 +85,16 @@ public class PoiWriter <T> implements Writer <T>{
 			cell.setCellValue(hc.getTitle());
 			int order = hc.getOrder();
 			
-			if (order == 140 || order ==150) {
+			if (order == 135 || order == 140 || order ==150) {
 				sheet.setColumnWidth(i, 4 * 512);
-			} else if (order == 10 || order == 30 || order == 40 || order == 50 || order ==160 || order ==170) {
+			} else if (order == 10 || order == 30 || order == 40 || order == 50 || order==80 || order==90 || order ==160 || order ==170) {
 				sheet.setColumnWidth(i, 6 * 512);
-			} else if (order==80 || order==90 || order ==130) {
+			} else if (order ==130) {
 				sheet.setColumnWidth(i, 7 * 512);
 			} else if (order == 60 || order == 70 || order==85 || order==20) {
-				sheet.setColumnWidth(i, 9 * 512);
+				sheet.setColumnWidth(i, 8 * 512);
 			} else {
-				sheet.setColumnWidth(i, 10 * 512);
+				sheet.setColumnWidth(i, 9 * 512);
 			}
 			
 		}

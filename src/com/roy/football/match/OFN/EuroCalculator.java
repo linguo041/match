@@ -31,6 +31,8 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				euroMatrices.setYiShenBoMatrix(getEuroMatrix(comEuros.get(Company.YiShenBo), matchDt));
 				euroMatrices.setInterwettenMatrix(getEuroMatrix(comEuros.get(Company.Interwetten), matchDt));
 				euroMatrices.setSnaiMatrix(getEuroMatrix(comEuros.get(Company.SNAI), matchDt));
+				euroMatrices.setCurrEuroAvg(matchData.getEuroAvg());
+				euroMatrices.setWillAvgDrawDiff(getWillAvgDrawDiff(euroMatrices.getWilliamMatrix().getCurrentEuro(), euroMatrices.getCurrEuroAvg()));
 				
 				return euroMatrices;
 			}
@@ -53,6 +55,10 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			return euMatrix;
 		}
 		return null;
+	}
+	
+	private float getWillAvgDrawDiff (EuroPl currWillEu, EuroPl euroAvg) {
+		return MatchUtil.getEuDiff(currWillEu.geteDraw(), euroAvg.geteDraw(), false);
 	}
 	
 	private EuroPl getMainEuro (List<EuroPl> euroPls, Date matchDt) {

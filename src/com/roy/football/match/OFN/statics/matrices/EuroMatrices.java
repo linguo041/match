@@ -62,12 +62,30 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.snaiMatrix = snaiMatrix;
 	}
 
+	public float getWillAvgDrawDiff() {
+		return willAvgDrawDiff;
+	}
+
+	public void setWillAvgDrawDiff(float willAvgDrawDiff) {
+		this.willAvgDrawDiff = willAvgDrawDiff;
+	}
+
+	public EuroPl getCurrEuroAvg() {
+		return currEuroAvg;
+	}
+
+	public void setCurrEuroAvg(EuroPl currEuroAvg) {
+		this.currEuroAvg = currEuroAvg;
+	}
+
 	private EuroMatrix williamMatrix;
 	private EuroMatrix aomenMatrix;
 	private EuroMatrix ladMatrix;
 	private EuroMatrix yiShenBoMatrix;
 	private EuroMatrix interwettenMatrix;
 	private EuroMatrix snaiMatrix;
+	private EuroPl currEuroAvg;
+	private float willAvgDrawDiff;
 
 	public static class EuroMatrix {
 		@Override

@@ -156,6 +156,15 @@ public class OFNMatchData implements MatchData{
 	}
 
 
+	public EuroPl getEuroAvg() {
+		return euroAvg;
+	}
+
+	public void setEuroAvg(EuroPl euroAvg) {
+		this.euroAvg = euroAvg;
+	}
+
+
 	private Long matchDayId;
 	private Long matchId;
 	private Date matchTime;
@@ -166,6 +175,7 @@ public class OFNMatchData implements MatchData{
 	private Long guestId;
 	private String guestName;
 	private EuroPl jinCai;
+	private EuroPl euroAvg;
 	private ClubDatas baseData;
 	private List<FinishedMatch> jiaoShou;
 	private List<FinishedMatch> hostMatches;

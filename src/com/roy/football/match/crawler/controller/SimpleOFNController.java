@@ -91,7 +91,7 @@ public class SimpleOFNController {
 	public void processMatch (Long oddsmid, League league) {
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
 		OFNTask task = new OFNTask(parser, calculator, outputFormater, null);
-		excelDatas.add(task.getOFNMatchExcelData(oddsmid, null, league.getLeagueId(), null, null));
+		excelDatas.add(task.getOFNMatchExcelData(oddsmid, null, league.getLeagueId(), null, null, null));
 		writeExcel(excelDatas);
 	}
 

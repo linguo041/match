@@ -102,6 +102,14 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.predictResult = predictResult;
 	}
 
+	public EuroPl getEuroAvg() {
+		return euroAvg;
+	}
+
+	public void setEuroAvg(EuroPl euroAvg) {
+		this.euroAvg = euroAvg;
+	}
+
 	private League league;
 	private ClubMatrices clubMatrices;
 	private JiaoShouMatrices jiaoShou;
@@ -113,4 +121,5 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private PredictResult predictResult;
 	private EuroMatrices euroMatrices;
 	private EuroPl jinCai;
+	private EuroPl euroAvg;
 }

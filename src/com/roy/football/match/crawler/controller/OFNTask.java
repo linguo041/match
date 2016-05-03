@@ -35,16 +35,16 @@ public class OFNTask implements Callable<OFNExcelData>{
 
 	@Override
 	public OFNExcelData call() throws Exception {
-//		EuroPl jinCai = new EuroPl();
-//		jinCai.seteWin(jcMatch.getOh());
-//		jinCai.seteDraw(jcMatch.getOd());
-//		jinCai.seteLose(jcMatch.getOa());
+		EuroPl euroAg = new EuroPl();
+		euroAg.seteWin(jcMatch.getOh());
+		euroAg.seteDraw(jcMatch.getOd());
+		euroAg.seteLose(jcMatch.getOa());
 
 		return getOFNMatchExcelData(jcMatch.getOddsmid(),
-				jcMatch.getXid(), jcMatch.getLid(), jcMatch.getLn(), null);
+				jcMatch.getXid(), jcMatch.getLid(), jcMatch.getLn(), null, euroAg);
 	}
 	
-	public OFNExcelData getOFNMatchExcelData (Long oddsmid, Long matchDayId, Long leagueId, String leaueName, EuroPl jinCai) {
+	public OFNExcelData getOFNMatchExcelData (Long oddsmid, Long matchDayId, Long leagueId, String leaueName, EuroPl jinCai, EuroPl euroAvg) {
 		try {
 			// get match base data
 			OFNMatchData ofnMatch = parser.parseMatchData(oddsmid);
@@ -52,6 +52,7 @@ public class OFNTask implements Callable<OFNExcelData>{
 			ofnMatch.setLeagueId(leagueId);
 			ofnMatch.setLeagueName(leaueName);
 			ofnMatch.setJinCai(jinCai);
+			ofnMatch.setEuroAvg(euroAvg);
 
 			// get euro peilv
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();

@@ -10,6 +10,7 @@ import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
+import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
 import com.roy.football.match.OFN.statics.matrices.PredictResult;
@@ -77,6 +78,11 @@ public class OFNOutputFormater {
 					MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), origPk));
 
 			excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
+			
+			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
+			if (euroMatrics != null) {
+				excelData.setWillAvgDrawDiff((String.format("%.2f", euroMatrics.getWillAvgDrawDiff())));
+			}
 			
 			PredictResult predictRes = calculateResult.getPredictResult();
 			if (predictRes != null) {
