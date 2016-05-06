@@ -62,20 +62,20 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.snaiMatrix = snaiMatrix;
 	}
 
-	public float getWillAvgDrawDiff() {
-		return willAvgDrawDiff;
-	}
-
-	public void setWillAvgDrawDiff(float willAvgDrawDiff) {
-		this.willAvgDrawDiff = willAvgDrawDiff;
-	}
-
 	public EuroPl getCurrEuroAvg() {
 		return currEuroAvg;
 	}
 
 	public void setCurrEuroAvg(EuroPl currEuroAvg) {
 		this.currEuroAvg = currEuroAvg;
+	}
+
+	public float getMainAvgDrawDiff() {
+		return mainAvgDrawDiff;
+	}
+
+	public void setMainAvgDrawDiff(float mainAvgDrawDiff) {
+		this.mainAvgDrawDiff = mainAvgDrawDiff;
 	}
 
 	private EuroMatrix williamMatrix;
@@ -85,7 +85,7 @@ public class EuroMatrices implements CalculateResult, MatchData{
 	private EuroMatrix interwettenMatrix;
 	private EuroMatrix snaiMatrix;
 	private EuroPl currEuroAvg;
-	private float willAvgDrawDiff;
+	private float mainAvgDrawDiff;
 
 	public static class EuroMatrix {
 		@Override

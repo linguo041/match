@@ -14,7 +14,7 @@ public enum League {
 	PuChao(88, 18), PuLianBei(251, 18),
 	OuGuan(74, 16), OuLian(58, 16),
 	EChao(165, 16), RussiaCup(232, 16),
-	NorChao(104, 16),
+	NorChao(104, 16), NorCup (227, 16),
 	Sweden(103, 16),
 
 	RiLian(102, 18, Company.Aomen), RiYi(347, 22, Company.Aomen),
@@ -23,6 +23,7 @@ public enum League {
 	AoChao(339, 10, Company.Aomen),
 	YaGuan(139, 16, Company.Aomen),
 
+	BrazilJia(160, 20), BrazilCup(266, 20),
 	America(107, 20),
 	Argintina(108, 30),
 	Maxico(191, 18),

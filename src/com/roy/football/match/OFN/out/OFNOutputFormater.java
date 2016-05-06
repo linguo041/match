@@ -72,16 +72,19 @@ public class OFNOutputFormater {
 			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
 
 			PankouMatrices pkmatrices = calculateResult.getPkMatrices();
-			Float origPk = pkmatrices.getOriginPk().getPanKou();
 			
-			excelData.setOriginPanKou(String.format("%.2f, %.2f [%.2f]",
-					MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), origPk));
+			if (pkmatrices != null) {
+				Float origPk = pkmatrices.getOriginPk().getPanKou();
+				
+				excelData.setOriginPanKou(String.format("%.2f, %.2f [%.2f]",
+						MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), origPk));
 
-			excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
-			
+				excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
+			}
+
 			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
 			if (euroMatrics != null) {
-				excelData.setWillAvgDrawDiff((String.format("%.2f", euroMatrics.getWillAvgDrawDiff())));
+				excelData.setMainAvgDrawDiff((String.format("%.2f", euroMatrics.getMainAvgDrawDiff())));
 			}
 			
 			PredictResult predictRes = calculateResult.getPredictResult();

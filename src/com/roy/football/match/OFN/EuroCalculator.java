@@ -11,6 +11,7 @@ import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
+import com.roy.football.match.base.League;
 import com.roy.football.match.process.Calculator;
 import com.roy.football.match.util.MatchUtil;
 
@@ -32,7 +33,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				euroMatrices.setInterwettenMatrix(getEuroMatrix(comEuros.get(Company.Interwetten), matchDt));
 				euroMatrices.setSnaiMatrix(getEuroMatrix(comEuros.get(Company.SNAI), matchDt));
 				euroMatrices.setCurrEuroAvg(matchData.getEuroAvg());
-				euroMatrices.setWillAvgDrawDiff(getWillAvgDrawDiff(euroMatrices.getWilliamMatrix().getCurrentEuro(), euroMatrices.getCurrEuroAvg()));
+				
+				League league = League.getLeagueById(matchData.getLeagueId());
+				euroMatrices.setMainAvgDrawDiff(getMainAvgDrawDiff(euroMatrices, league));
 				
 				return euroMatrices;
 			}
@@ -57,8 +60,37 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		return null;
 	}
 	
-	private float getWillAvgDrawDiff (EuroPl currWillEu, EuroPl euroAvg) {
-		return MatchUtil.getEuDiff(currWillEu.geteDraw(), euroAvg.geteDraw(), false);
+	private float getMainAvgDrawDiff (EuroMatrices euroMatrices, League league) {
+		EuroMatrix will = euroMatrices.getWilliamMatrix();
+		EuroMatrix lab = euroMatrices.getLadMatrix();
+		EuroMatrix aomen = euroMatrices.getAomenMatrix();
+		EuroMatrix majorComp = will;
+		
+		Company company = league.getMajorCompany();
+		if (company != null) {
+			switch (company) {
+				case Aomen:
+					majorComp = aomen;
+					break;
+				case SNAI:
+					majorComp = euroMatrices.getSnaiMatrix();
+					break;
+				default:
+					majorComp = will;
+					break;
+			}
+		}
+
+		if (majorComp != null) {
+			EuroPl currMajorpl = majorComp.getCurrentEuro();
+			EuroPl currAvgPl = euroMatrices.getCurrEuroAvg();
+
+			if (currMajorpl != null && currAvgPl != null) {
+				return MatchUtil.getEuDiff(currMajorpl.geteDraw(), currAvgPl.geteDraw(), false);
+			}
+		}
+		
+		return -1;
 	}
 	
 	private EuroPl getMainEuro (List<EuroPl> euroPls, Date matchDt) {

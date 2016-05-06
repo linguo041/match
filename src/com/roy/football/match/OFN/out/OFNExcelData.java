@@ -135,11 +135,11 @@ public class OFNExcelData {
 	public void setJsComp(String jsComp) {
 		this.jsComp = jsComp;
 	}
-	public String getWillAvgDrawDiff() {
-		return willAvgDrawDiff;
+	public String getMainAvgDrawDiff() {
+		return mainAvgDrawDiff;
 	}
-	public void setWillAvgDrawDiff(String willAvgDrawDiff) {
-		this.willAvgDrawDiff = willAvgDrawDiff;
+	public void setMainAvgDrawDiff(String mainAvgDrawDiff) {
+		this.mainAvgDrawDiff = mainAvgDrawDiff;
 	}
 
 
@@ -172,8 +172,8 @@ public class OFNExcelData {
 	private String stateVariation;
 	@Header(order=130, title="K_PK[Up, Down]")
 	private String pkKillRate;
-	@Header(order=135, title="will_draw")
-	private String willAvgDrawDiff;
+	@Header(order=135, title="main_draw")
+	private String mainAvgDrawDiff;
 	@Header(order=140, title="Kill[pk | pl]")
 	private String kill;
 	@Header(order=150, title="Promote")
