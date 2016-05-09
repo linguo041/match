@@ -14,7 +14,7 @@ public class OFNMatchData implements MatchData{
 				+ matchId + ", matchTime=" + matchTime + ", leagueId="
 				+ leagueId + ", leagueName=" + leagueName + ", hostId="
 				+ hostId + ", hostName=" + hostName + ", guestId=" + guestId
-				+ ", guestName=" + guestName + ", jinCai=" + jinCai
+				+ ", guestName=" + guestName
 				+ ", baseData=" + baseData + ", jiaoShou=" + jiaoShou
 				+ ", hostMatches=" + hostMatches + ", guestMatches="
 				+ guestMatches + ", euroPls=" + euroPls + ", aoMen=" + aoMen
@@ -137,16 +137,6 @@ public class OFNMatchData implements MatchData{
 		this.leagueName = leagueName;
 	}
 
-
-	public EuroPl getJinCai() {
-		return jinCai;
-	}
-
-	public void setJinCai(EuroPl jinCai) {
-		this.jinCai = jinCai;
-	}
-
-
 	public List<AsiaPl> getDaxiao() {
 		return daxiao;
 	}
@@ -174,7 +164,6 @@ public class OFNMatchData implements MatchData{
 	private String hostName;
 	private Long guestId;
 	private String guestName;
-	private EuroPl jinCai;
 	private EuroPl euroAvg;
 	private ClubDatas baseData;
 	private List<FinishedMatch> jiaoShou;

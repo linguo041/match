@@ -88,10 +88,10 @@ public class SimpleOFNController {
 		writeExcel(excelDatas);
 	}
 	
-	public void processMatch (Long oddsmid, League league) {
+	public void processMatch (Long oddsmid, Long matchDayId, League league) {
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
 		OFNTask task = new OFNTask(parser, calculator, outputFormater, null);
-		excelDatas.add(task.getOFNMatchExcelData(oddsmid, null, league.getLeagueId(), null, null, null));
+		excelDatas.add(task.getOFNMatchExcelData(oddsmid, matchDayId, league.getLeagueId(), null, null));
 		writeExcel(excelDatas);
 	}
 

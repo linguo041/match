@@ -24,6 +24,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	private final static DaxiaoCalculator dxCalculator = new DaxiaoCalculator();
 	private final static EuroCalculator euroCalculator = new EuroCalculator();
 	private final static PankouKillPromoter pankouKiller = new PankouKillPromoter();
+	private final static ExchangeCalculator exchangeCalculator = new ExchangeCalculator();
 	// more....
 
 	@Override
@@ -46,7 +47,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		} catch(Exception e) {
 			
 		}
-		calResult.setJinCai(matchData.getJinCai());
+
 		calResult.setEuroAvg(matchData.getEuroAvg());
 		
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
@@ -72,6 +73,8 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		
 		PredictResult predictRes = pankouKiller.calculate(calResult);
 		calResult.setPredictResult(predictRes);
+		
+		calResult.setExchanges(exchangeCalculator.calculate(matchData.getMatchDayId()));
 
 		return calResult;
 	}

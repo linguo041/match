@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -14,6 +15,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.roy.football.match.OFN.out.header.HeaderConfiguration;
@@ -41,6 +43,7 @@ public class PoiWriter <T> implements Writer <T>{
 		init(workBook);
 		writeHeader(sheet);
 		writeBody(sheet, elements);
+		sheet.createFreezePane(0, 1, 0, 1);
 	}
 
 	public void write (List <T> elements) {
@@ -66,6 +69,7 @@ public class PoiWriter <T> implements Writer <T>{
 		
 		bodyStyle = workBook.createCellStyle();
 		bodyStyle.setAlignment(CellStyle.ALIGN_LEFT);
+		bodyStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
 		bodyStyle.setWrapText(true);
 		
 		dateCellStyle = workBook.createCellStyle();
@@ -84,14 +88,18 @@ public class PoiWriter <T> implements Writer <T>{
 			cell.setCellStyle(headerStyle);
 			cell.setCellValue(hc.getTitle());
 			int order = hc.getOrder();
-			
+
 			if (order == 135 || order == 140 || order ==150) {
 				sheet.setColumnWidth(i, 4 * 512);
-			} else if (order == 10 || order == 30 || order == 40 || order == 50 || order==80 || order==90 || order ==160 || order ==170) {
+			}  else if (order==80 || order==90) {
+				sheet.setColumnWidth(i, 5 * 512);
+			} else if (order == 10 || order == 30 || order == 40
+					|| order ==100 || order==110 || order==130 
+					|| order ==160 || order ==170) {
 				sheet.setColumnWidth(i, 6 * 512);
-			} else if (order ==130) {
+			} else if (order==85 || order==138) {
 				sheet.setColumnWidth(i, 7 * 512);
-			} else if (order == 60 || order == 70 || order==85 || order==20) {
+			} else if (order == 60 || order == 70 || order==20 || order==120 || order == 136) {
 				sheet.setColumnWidth(i, 8 * 512);
 			} else {
 				sheet.setColumnWidth(i, 9 * 512);
@@ -106,6 +114,7 @@ public class PoiWriter <T> implements Writer <T>{
 			for (T ele : elements) {
 				Row row = sheet.createRow(rowIndex++);
 				addRow(ele, row, false);
+				row.setHeightInPoints(40);
 			}
 		}
 	}
@@ -165,9 +174,11 @@ public class PoiWriter <T> implements Writer <T>{
 		} else {
 			cl.setCellType(Cell.CELL_TYPE_STRING);
 			if (cellData != null) {
-				cl.setCellValue((String) cellData);
+				cl.setCellValue(new XSSFRichTextString((String)cellData));
 			}
 		}
+		
+		cl.setCellStyle(bodyStyle);
 	}
 	
 	private CellStyle headerStyle;

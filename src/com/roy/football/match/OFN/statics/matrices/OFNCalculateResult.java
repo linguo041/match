@@ -4,6 +4,7 @@ package com.roy.football.match.OFN.statics.matrices;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.MatchData;
+import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.process.CalculateResult;
 
 public class OFNCalculateResult implements CalculateResult, MatchData {
@@ -110,6 +111,14 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.euroAvg = euroAvg;
 	}
 
+	public MatchExchangeData getExchanges() {
+		return exchanges;
+	}
+
+	public void setExchanges(MatchExchangeData exchanges) {
+		this.exchanges = exchanges;
+	}
+
 	private League league;
 	private ClubMatrices clubMatrices;
 	private JiaoShouMatrices jiaoShou;
@@ -122,4 +131,5 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private EuroMatrices euroMatrices;
 	private EuroPl jinCai;
 	private EuroPl euroAvg;
+	private MatchExchangeData exchanges;
 }

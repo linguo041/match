@@ -6,19 +6,7 @@ import com.roy.football.match.base.TeamLevel;
 
 public class OFNExcelData {
 
-	@Override
-	public String toString() {
-		return "OFNExcelData [matchDayId=" + matchDayId + ", matchTime="
-				+ matchTime + ", leagueName=" + leagueName + ", hostName="
-				+ hostName + ", guestName=" + guestName + ", hostLevel="
-				+ hostLevel + ", guestLevel=" + guestLevel + ", baseComp="
-				+ baseComp + ", jsComp=" + jsComp + ", stateComp=" + stateComp
-				+ ", originPanKou=" + originPanKou + ", predictPanKou="
-				+ predictPanKou + ", stateVariation=" + stateVariation
-				+ ", pkKillRate=" + pkKillRate + ", kill=" + kill
-				+ ", promote=" + promote + ", predictScore=" + predictScore
-				+ ", result=" + result + "]";
-	}
+
 
 	public Long getMatchDayId() {
 		return matchDayId;
@@ -31,36 +19,6 @@ public class OFNExcelData {
 	}
 	public void setMatchTime(String matchTime) {
 		this.matchTime = matchTime;
-	}
-	public String getLeagueName() {
-		return leagueName;
-	}
-	public void setLeagueName(String leagueName) {
-		this.leagueName = leagueName;
-	}
-	public String getHostName() {
-		return hostName;
-	}
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
-	public String getGuestName() {
-		return guestName;
-	}
-	public void setGuestName(String guestName) {
-		this.guestName = guestName;
-	}
-	public String getHostLevel() {
-		return hostLevel;
-	}
-	public void setHostLevel(String hostLevel) {
-		this.hostLevel = hostLevel;
-	}
-	public String getGuestLevel() {
-		return guestLevel;
-	}
-	public void setGuestLevel(String guestLevel) {
-		this.guestLevel = guestLevel;
 	}
 	public String getOriginPanKou() {
 		return originPanKou;
@@ -141,6 +99,52 @@ public class OFNExcelData {
 	public void setMainAvgDrawDiff(String mainAvgDrawDiff) {
 		this.mainAvgDrawDiff = mainAvgDrawDiff;
 	}
+	public String getBifa() {
+		return bifa;
+	}
+
+	public void setBifa(String bifa) {
+		this.bifa = bifa;
+	}
+
+	public String getJincai() {
+		return jincai;
+	}
+
+	public void setJincai(String jincai) {
+		this.jincai = jincai;
+	}
+
+	public String getMatchInfor() {
+		return matchInfor;
+	}
+
+	public void setMatchInfor(String matchInfor) {
+		this.matchInfor = matchInfor;
+	}
+	
+
+	public String getLeagueName() {
+		return leagueName;
+	}
+
+	public void setLeagueName(String leagueName) {
+		this.leagueName = leagueName;
+	}
+
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
+	public String getJincaiJY() {
+		return jincaiJY;
+	}
+	public void setJincaiJY(String jincaiJY) {
+		this.jincaiJY = jincaiJY;
+	}
 
 
 
@@ -150,30 +154,34 @@ public class OFNExcelData {
 	private String matchTime;
 	@Header(order=30, title="League Name")
 	private String leagueName;
-	@Header(order=40, title="Host Name")
-	private String hostName;
-	@Header(order=50, title="Guest Name")
-	private String guestName;
-	@Header(order=60, title="Host Level [winRt, winGoal]")
-	private String hostLevel;
-	@Header(order=70, title="Guest Level [winRt, winGoal]")
-	private String guestLevel;
-	@Header(order=80, title="Base [host : guest]")
+	@Header(order=40, title="Match Team")
+	private String matchInfor;
+	@Header(order=60, title="Level [winRt, winGoal]")
+	private String level;
+//	@Header(order=70, title="Guest Level [winRt, winGoal]")
+//	private String guestLevel;
+	@Header(order=80, title="Base [H:G]")
 	private String baseComp;
-	@Header(order=85, title="JS [host : guest]")
+	@Header(order=85, title="JS [H:G]")
 	private String jsComp;
-	@Header(order=90, title="State [host : guest]")
+	@Header(order=90, title="State [H:G]")
 	private String stateComp;
-	@Header(order=100, title="Main, Latest [PK]")
+	@Header(order=100, title="Main, curr")
 	private String originPanKou;
 	@Header(order=110, title="Predict PK [Latest]")
 	private String predictPanKou;
-	@Header(order=120, title="Hot | h_goal_chg, g_goal_chg")
+	@Header(order=120, title="Hot | goal_chg{H:G} ")
 	private String stateVariation;
 	@Header(order=130, title="K_PK[Up, Down]")
 	private String pkKillRate;
 	@Header(order=135, title="main_draw")
 	private String mainAvgDrawDiff;
+	@Header(order=136, title="bf jc")
+	private String bifa;
+	@Header(order=137, title="avg jc chg")
+	private String jincai;
+	@Header(order=138, title="exg jc_gain")
+	private String jincaiJY;
 	@Header(order=140, title="Kill[pk | pl]")
 	private String kill;
 	@Header(order=150, title="Promote")
@@ -182,5 +190,4 @@ public class OFNExcelData {
 	private String predictScore;
 	@Header(order=170, title="Result")
 	private String result;
-	
 }

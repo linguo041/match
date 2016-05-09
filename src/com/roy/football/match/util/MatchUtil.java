@@ -15,6 +15,8 @@ public class MatchUtil {
 	public final static String UNICODE_GREAT = "\u5927";
 	public final static String UNICODE_LESS = "\u5c0f";
 	public final static String UNICODE_DRAW = "\u8d70";
+	public final static Character UP_ARROW = '↑';
+	public final static Character DOWN_ARROW = '↓';
 	public final static long DAY_TIME = 86400000;
 	public final static long YEAR_TIME = 86400 * 900; // unit is second
 	

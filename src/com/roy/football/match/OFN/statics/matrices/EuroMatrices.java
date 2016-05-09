@@ -78,6 +78,39 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.mainAvgDrawDiff = mainAvgDrawDiff;
 	}
 
+	public float getMainDrawChange() {
+		return mainDrawChange;
+	}
+
+	public void setMainDrawChange(float mainDrawChange) {
+		this.mainDrawChange = mainDrawChange;
+	}
+
+	public float getMainWinChange() {
+		return mainWinChange;
+	}
+
+	public void setMainWinChange(float mainWinChange) {
+		this.mainWinChange = mainWinChange;
+	}
+
+	public float getMainLoseChange() {
+		return mainLoseChange;
+	}
+
+	public void setMainLoseChange(float mainLoseChange) {
+		this.mainLoseChange = mainLoseChange;
+	}
+
+	public EuroMatrix getJincaiMatrix() {
+		return jincaiMatrix;
+	}
+
+	public void setJincaiMatrix(EuroMatrix jincaiMatrix) {
+		this.jincaiMatrix = jincaiMatrix;
+	}
+
+	private EuroMatrix jincaiMatrix;
 	private EuroMatrix williamMatrix;
 	private EuroMatrix aomenMatrix;
 	private EuroMatrix ladMatrix;
@@ -86,6 +119,9 @@ public class EuroMatrices implements CalculateResult, MatchData{
 	private EuroMatrix snaiMatrix;
 	private EuroPl currEuroAvg;
 	private float mainAvgDrawDiff;
+	private float mainWinChange;
+	private float mainDrawChange;
+	private float mainLoseChange;
 
 	public static class EuroMatrix {
 		@Override
@@ -112,9 +148,31 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		public void setCurrentEuro(EuroPl currentEuro) {
 			this.currentEuro = currentEuro;
 		}
+		public float getWinChange() {
+			return winChange;
+		}
+		public void setWinChange(float winChange) {
+			this.winChange = winChange;
+		}
+		public float getDrawChange() {
+			return drawChange;
+		}
+		public void setDrawChange(float drawChange) {
+			this.drawChange = drawChange;
+		}
+		public float getLoseChange() {
+			return loseChange;
+		}
+		public void setLoseChange(float loseChange) {
+			this.loseChange = loseChange;
+		}
+
 
 		private EuroPl originEuro;
 		private EuroPl mainEuro;
 		private EuroPl currentEuro;
+		private float winChange;
+		private float drawChange;
+		private float loseChange;
 	}
 }
