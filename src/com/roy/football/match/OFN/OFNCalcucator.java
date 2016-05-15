@@ -69,10 +69,10 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		EuroMatrices euroMatrices = euroCalculator.calucate(matchData);
 		calResult.setEuroMatrices(euroMatrices);
 		
+		calResult.setExchanges(exchangeCalculator.calculate(matchData.getMatchDayId()));
+		
 		PredictResult predictRes = pankouKiller.calculate(calResult);
 		calResult.setPredictResult(predictRes);
-		
-		calResult.setExchanges(exchangeCalculator.calculate(matchData.getMatchDayId()));
 
 		return calResult;
 	}

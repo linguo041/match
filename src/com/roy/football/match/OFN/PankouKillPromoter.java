@@ -215,56 +215,67 @@ public class PankouKillPromoter {
 		return killResult;
 	}
 	
-	public void killPromoteByExchange (OFNKillPromoteResult killPromoteResult,
+	private void killPromoteByExchange (OFNKillPromoteResult killPromoteResult,
 			OFNCalculateResult calResult) {
 		MatchExchangeData exchange = calResult.getExchanges();
-		Set<ResultGroup> exRes = killPromoteResult.getKillByPk();
+		EuroMatrices euroMatrices = calResult.getEuroMatrices();
+		EuroMatrix jincaiMatrix = euroMatrices.getJincaiMatrix();
+		Set<ResultGroup> exRes = killPromoteResult.getKillByExchange();
 		if (exRes == null) {
 			exRes = new TreeSet<ResultGroup> ();
 			killPromoteResult.setKillByExchange(exRes);
 		}
-		
-		PredictResult predictResult = calResult.getPredictResult();
-		float predictScore = 0;
-		if (predictResult != null) {
-			predictScore = predictResult.getHostScore() / predictResult.getGuestScore();
-		}
-		
-		if (exchange != null) {
+
+		if (exchange != null && jincaiMatrix != null) {
 			Long jcTotal= exchange.getJcTotalExchange();
 			Integer jcWinGain = exchange.getJcWinGain();
-//			Integer jcDrawGain = exchange.getJcDrawGain();
+			Integer jcDrawGain = exchange.getJcDrawGain();
 			Integer jcLoseGain = exchange.getJcLoseGain();
+			
+			float jcWinChange = jincaiMatrix.getWinChange();
+			float jcDrawChange = jincaiMatrix.getDrawChange();
+			float jcLoseChange = jincaiMatrix.getLoseChange();
 
-			if (jcTotal > 500000) {
+			if (jcTotal > 1000000) {
 				// win is hot, but win is not so good
-				if (jcWinGain < -100 && predictScore < 1.8) {
+				if (jcWinGain < -60 && jcWinChange > -0.001) {
 					exRes.add(ResultGroup.Three);
 				}
 				
-				if (jcLoseGain < -100 && predictScore > 0.7) {
+				if (jcDrawGain < -60 && jcDrawChange > -0.001) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -60 && jcLoseChange > -0.001) {
 					exRes.add(ResultGroup.Zero);
 				}
 			} else if (jcTotal > 800000) {
 				// win is hot, but win is not so good
-				if (jcWinGain < -80 && predictScore < 1.8) {
+				if (jcWinGain < -80 && jcWinChange > -0.001) {
 					exRes.add(ResultGroup.Three);
 				}
 				
-				if (jcLoseGain < -80 && predictScore > 0.7) {
+				if (jcDrawGain < -80 && jcDrawChange > -0.001) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -80 && jcLoseChange > -0.001) {
 					exRes.add(ResultGroup.Zero);
 				}
-			} else if (jcTotal > 1000000) {
+			} else if (jcTotal > 500000) {
 				// win is hot, but win is not so good
-				if (jcWinGain < -70 && predictScore < 1.8) {
+				if (jcWinGain < -100 && jcWinChange > -0.001) {
 					exRes.add(ResultGroup.Three);
 				}
 				
-				if (jcLoseGain < -70 && predictScore > 0.7) {
+				if (jcDrawGain < -100 && jcDrawChange > -0.001) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -100 && jcLoseChange > -0.001) {
 					exRes.add(ResultGroup.Zero);
 				}
 			}
-			
 		}
 	}
 
