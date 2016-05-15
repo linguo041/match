@@ -93,11 +93,12 @@ public class OFNExcelData {
 	public void setJsComp(String jsComp) {
 		this.jsComp = jsComp;
 	}
-	public String getMainAvgDrawDiff() {
-		return mainAvgDrawDiff;
+
+	public String getPlMatrix() {
+		return plMatrix;
 	}
-	public void setMainAvgDrawDiff(String mainAvgDrawDiff) {
-		this.mainAvgDrawDiff = mainAvgDrawDiff;
+	public void setPlMatrix(String plMatrix) {
+		this.plMatrix = plMatrix;
 	}
 	public String getBifa() {
 		return bifa;
@@ -174,15 +175,15 @@ public class OFNExcelData {
 	private String stateVariation;
 	@Header(order=130, title="K_PK[Up, Down]")
 	private String pkKillRate;
-	@Header(order=135, title="main_draw")
-	private String mainAvgDrawDiff;
+	@Header(order=135, title="Main_Avg Main_chg")
+	private String plMatrix;
 	@Header(order=136, title="bf jc")
 	private String bifa;
 	@Header(order=137, title="avg jc chg")
 	private String jincai;
 	@Header(order=138, title="exg jc_gain")
 	private String jincaiJY;
-	@Header(order=140, title="Kill[pk | pl]")
+	@Header(order=140, title="Kill[pk |pl ~ex]")
 	private String kill;
 	@Header(order=150, title="Promote")
 	private String promote;

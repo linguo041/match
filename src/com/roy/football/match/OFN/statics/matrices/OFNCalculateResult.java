@@ -1,7 +1,5 @@
 package com.roy.football.match.OFN.statics.matrices;
 
-
-import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.okooo.MatchExchangeData;
@@ -17,7 +15,7 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 				+ pkMatrices + ", dxMatrices=" + dxMatrices
 				+ ", predictPanKou=" + predictPanKou + ", predictResult="
 				+ predictResult + ", euroMatrices=" + euroMatrices
-				+ ", jinCai=" + jinCai + "]";
+				+ "]";
 	}
 
 	public ClubMatrices getClubMatrices() {
@@ -71,14 +69,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.league = league;
 	}
 
-	public EuroPl getJinCai() {
-		return jinCai;
-	}
-
-	public void setJinCai(EuroPl jinCai) {
-		this.jinCai = jinCai;
-	}
-
 	public Float getHotPoint() {
 		return hotPoint;
 	}
@@ -103,14 +93,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.predictResult = predictResult;
 	}
 
-	public EuroPl getEuroAvg() {
-		return euroAvg;
-	}
-
-	public void setEuroAvg(EuroPl euroAvg) {
-		this.euroAvg = euroAvg;
-	}
-
 	public MatchExchangeData getExchanges() {
 		return exchanges;
 	}
@@ -129,7 +111,5 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private Float predictPanKou;
 	private PredictResult predictResult;
 	private EuroMatrices euroMatrices;
-	private EuroPl jinCai;
-	private EuroPl euroAvg;
 	private MatchExchangeData exchanges;
 }

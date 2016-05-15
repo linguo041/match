@@ -40,9 +40,8 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				euroMatrices.setCurrEuroAvg(matchData.getEuroAvg());
 				
 				League league = League.getLeagueById(matchData.getLeagueId());
-				euroMatrices.setMainAvgDrawDiff(getMainAvgDrawDiff(euroMatrices, league));
-				euroMatrices.setMainDrawChange(getMainDrawChange(euroMatrices, league));
-				
+				setMainAvgDiff(euroMatrices, league);
+
 				return euroMatrices;
 			}
 		}
@@ -67,46 +66,20 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		}
 		return null;
 	}
-	
-	private EuroMatrix getMainEuro (EuroMatrices euroMatrices, League league) {
-		Company company = league.getMajorCompany();
-		if (company != null) {
-			switch (company) {
-				case Aomen:
-					return euroMatrices.getAomenMatrix();
-				case SNAI:
-					return euroMatrices.getSnaiMatrix();
-				default:
-					return euroMatrices.getWilliamMatrix();
-			}
-		}
 
-		return euroMatrices.getWilliamMatrix();
-	}
-	
-	private float getMainDrawChange (EuroMatrices euroMatrices, League league) {
-		EuroMatrix majorComp = getMainEuro(euroMatrices, league);
-		
-//		float originDraw = majorComp.getOriginEuro().geteDraw();
-		float mainDraw = majorComp.getMainEuro().geteDraw();
-		float currDraw = majorComp.getCurrentEuro().geteDraw();
-		
-		return (currDraw - mainDraw) / mainDraw;
-	}
-	
-	private float getMainAvgDrawDiff (EuroMatrices euroMatrices, League league) {
-		EuroMatrix majorComp = getMainEuro(euroMatrices, league);
+	private void setMainAvgDiff (EuroMatrices euroMatrices, League league) {
+		EuroMatrix majorComp = MatchUtil.getMainEuro(euroMatrices, league);
 
 		if (majorComp != null) {
 			EuroPl currMajorpl = majorComp.getCurrentEuro();
 			EuroPl currAvgPl = euroMatrices.getCurrEuroAvg();
 
 			if (currMajorpl != null && currAvgPl != null) {
-				return MatchUtil.getEuDiff(currMajorpl.geteDraw(), currAvgPl.geteDraw(), false);
+				euroMatrices.setMainAvgWinDiff(MatchUtil.getEuDiff(currMajorpl.geteWin(), currAvgPl.geteWin(), false));
+				euroMatrices.setMainAvgDrawDiff(MatchUtil.getEuDiff(currMajorpl.geteDraw(), currAvgPl.geteDraw(), false));
+				euroMatrices.setMainAvgLoseDiff(MatchUtil.getEuDiff(currMajorpl.geteLose(), currAvgPl.geteLose(), false));
 			}
 		}
-		
-		return -1;
 	}
 	
 	private EuroMatrix getAbsoluteEuroMatrix (List<EuroPl> euroPls, Date matchDt) {

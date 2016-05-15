@@ -78,36 +78,28 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.mainAvgDrawDiff = mainAvgDrawDiff;
 	}
 
-	public float getMainDrawChange() {
-		return mainDrawChange;
-	}
-
-	public void setMainDrawChange(float mainDrawChange) {
-		this.mainDrawChange = mainDrawChange;
-	}
-
-	public float getMainWinChange() {
-		return mainWinChange;
-	}
-
-	public void setMainWinChange(float mainWinChange) {
-		this.mainWinChange = mainWinChange;
-	}
-
-	public float getMainLoseChange() {
-		return mainLoseChange;
-	}
-
-	public void setMainLoseChange(float mainLoseChange) {
-		this.mainLoseChange = mainLoseChange;
-	}
-
 	public EuroMatrix getJincaiMatrix() {
 		return jincaiMatrix;
 	}
 
 	public void setJincaiMatrix(EuroMatrix jincaiMatrix) {
 		this.jincaiMatrix = jincaiMatrix;
+	}
+
+	public float getMainAvgWinDiff() {
+		return mainAvgWinDiff;
+	}
+
+	public void setMainAvgWinDiff(float mainAvgWinDiff) {
+		this.mainAvgWinDiff = mainAvgWinDiff;
+	}
+
+	public float getMainAvgLoseDiff() {
+		return mainAvgLoseDiff;
+	}
+
+	public void setMainAvgLoseDiff(float mainAvgLoseDiff) {
+		this.mainAvgLoseDiff = mainAvgLoseDiff;
 	}
 
 	private EuroMatrix jincaiMatrix;
@@ -118,10 +110,10 @@ public class EuroMatrices implements CalculateResult, MatchData{
 	private EuroMatrix interwettenMatrix;
 	private EuroMatrix snaiMatrix;
 	private EuroPl currEuroAvg;
+
+	private float mainAvgWinDiff;
 	private float mainAvgDrawDiff;
-	private float mainWinChange;
-	private float mainDrawChange;
-	private float mainLoseChange;
+	private float mainAvgLoseDiff;
 
 	public static class EuroMatrix {
 		@Override

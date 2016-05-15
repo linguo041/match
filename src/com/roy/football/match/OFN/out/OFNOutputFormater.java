@@ -19,6 +19,7 @@ import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
+import com.roy.football.match.base.League;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.okooo.MatchExchangeData;
@@ -89,9 +90,19 @@ public class OFNOutputFormater {
 
 			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
 			if (euroMatrics != null) {
-				float drawChange = euroMatrics.getMainDrawChange();
-				excelData.setMainAvgDrawDiff((String.format("%.2f %c", euroMatrics.getMainAvgDrawDiff(),
-						drawChange > 0.008 ? MatchUtil.UP_ARROW : (drawChange < -0.008 ? MatchUtil.DOWN_ARROW : ' '))));
+				League league = League.getLeagueById(ofnMatch.getLeagueId());
+				EuroMatrix majorComp = MatchUtil.getMainEuro(euroMatrics, league);
+
+				if (majorComp != null) {
+					excelData.setPlMatrix((String.format("%.2f   %.2f   %.2f\n"
+							+ "%.2f   %.2f   %.2f",
+							euroMatrics.getMainAvgWinDiff(),
+							euroMatrics.getMainAvgDrawDiff(),
+							euroMatrics.getMainAvgLoseDiff(),
+							majorComp.getWinChange(),
+							majorComp.getDrawChange(),
+							majorComp.getLoseChange())));
+				}
 
 				float euAvgWin = 0;
 				float euAvgDraw = 0;
@@ -110,7 +121,7 @@ public class OFNOutputFormater {
 					euAvgDraw = euAvg.geteDraw();
 					euAvgLose = euAvg.geteLose();
 				}
-				if (jincai.getCurrentEuro() != null) {
+				if (jincai != null && jincai.getCurrentEuro() != null) {
 					euJcWin = jincai.getCurrentEuro().geteWin();
 					euJcDraw = jincai.getCurrentEuro().geteDraw();
 					euJcLose = jincai.getCurrentEuro().geteLose();
@@ -157,13 +168,18 @@ public class OFNOutputFormater {
 			if (predictRes != null) {
 				Set<ResultGroup> killByPk = predictRes.getKpResult().getKillByPk();
 				Set<ResultGroup> killByPl = predictRes.getKpResult().getKillByPl();
+				Set<ResultGroup> killByEx = predictRes.getKpResult().getKillByExchange();
 				String kill = "";
 				if (killByPk != null && killByPk.size() > 0) {
 					kill = getSetVals(killByPk);
 				}
 				
 				if (killByPl != null && killByPl.size() > 0) {
-					kill = kill + " | "+ getSetVals(killByPl);
+					kill = kill + " |"+ getSetVals(killByPl);
+				}
+				
+				if (killByEx != null && killByEx.size() > 0) {
+					kill = kill + " ~"+ getSetVals(killByEx);
 				}
 				excelData.setKill(kill);
 				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByPk();

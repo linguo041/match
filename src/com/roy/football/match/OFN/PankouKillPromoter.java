@@ -22,6 +22,7 @@ import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLabel;
+import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.process.CalculateResult;
 import com.roy.football.match.process.KillPromoter;
 import com.roy.football.match.util.MatchUtil;
@@ -168,8 +169,10 @@ public class PankouKillPromoter {
 				}
 				
 				killPromoteByEuro(killPromoteResult.getKillByPl(), killPromoteResult.getPromoteByPk(),
-						calResult.getEuroMatrices(), currPk, calResult.getEuroAvg(), league);
+						calResult.getEuroMatrices(), currPk, league);
 			}
+
+			killPromoteByExchange(killPromoteResult, calResult);
 		}
 	}
 
@@ -204,10 +207,65 @@ public class PankouKillPromoter {
 				killResult.setKillByPk(pkRes);
 			}
 			
-			killPromoteByEuro(killResult.getKillByPl(), killResult.getPromoteByPk(), calResult.getEuroMatrices(), currPk, calResult.getEuroAvg(), league);
+			killPromoteByEuro(killResult.getKillByPl(), killResult.getPromoteByPk(), calResult.getEuroMatrices(), currPk, league);
 		}
 		
+		killPromoteByExchange(killResult, calResult);
+		
 		return killResult;
+	}
+	
+	public void killPromoteByExchange (OFNKillPromoteResult killPromoteResult,
+			OFNCalculateResult calResult) {
+		MatchExchangeData exchange = calResult.getExchanges();
+		Set<ResultGroup> exRes = killPromoteResult.getKillByPk();
+		if (exRes == null) {
+			exRes = new TreeSet<ResultGroup> ();
+			killPromoteResult.setKillByExchange(exRes);
+		}
+		
+		PredictResult predictResult = calResult.getPredictResult();
+		float predictScore = 0;
+		if (predictResult != null) {
+			predictScore = predictResult.getHostScore() / predictResult.getGuestScore();
+		}
+		
+		if (exchange != null) {
+			Long jcTotal= exchange.getJcTotalExchange();
+			Integer jcWinGain = exchange.getJcWinGain();
+//			Integer jcDrawGain = exchange.getJcDrawGain();
+			Integer jcLoseGain = exchange.getJcLoseGain();
+
+			if (jcTotal > 500000) {
+				// win is hot, but win is not so good
+				if (jcWinGain < -100 && predictScore < 1.8) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcLoseGain < -100 && predictScore > 0.7) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else if (jcTotal > 800000) {
+				// win is hot, but win is not so good
+				if (jcWinGain < -80 && predictScore < 1.8) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcLoseGain < -80 && predictScore > 0.7) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else if (jcTotal > 1000000) {
+				// win is hot, but win is not so good
+				if (jcWinGain < -70 && predictScore < 1.8) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcLoseGain < -70 && predictScore > 0.7) {
+					exRes.add(ResultGroup.Zero);
+				}
+			}
+			
+		}
 	}
 
 	public void promote(OFNKillPromoteResult killPromoteResult,
@@ -217,17 +275,17 @@ public class PankouKillPromoter {
 			Float predictPk = calResult.getPredictPanKou();
 			ClubMatrices clubMatrices = calResult.getClubMatrices();
 			MatchState matchState = calResult.getMatchState();
+			MatchExchangeData exchange = calResult.getExchanges();
+			EuroMatrices euroMatrices= calResult.getEuroMatrices();
 			
 			Float hotPoint = calResult.getHotPoint();
 			
 			if (pkMatrices != null && clubMatrices != null) {
-				List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
-				List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 
 				killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices,
-						predictPk, hostLabels, guestLabels, hotPoint,
-						matchState, clubMatrices.getHostAttGuestDefInx(),
-						clubMatrices.getGuestAttHostDefInx()));
+						predictPk, hotPoint,
+						matchState, clubMatrices, 
+						exchange, euroMatrices));
 			}
 		}
 	}
@@ -238,17 +296,17 @@ public class PankouKillPromoter {
 		PankouMatrices pkMatrices = calResult.getPkMatrices();
 		Float predictPk = calResult.getPredictPanKou();
 		ClubMatrices clubMatrices = calResult.getClubMatrices();
-		List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
-		List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 		MatchState matchState = calResult.getMatchState();
+		MatchExchangeData exchange = calResult.getExchanges();
+		EuroMatrices euroMatrices= calResult.getEuroMatrices();
 		
 		Float hotPoint = calResult.getHotPoint();
 		
 		if (pkMatrices != null) {
 			killPromoteResult.setPromoteByPk(promoteByPk(pkMatrices,
-					predictPk, hostLabels, guestLabels, hotPoint,
-					matchState, clubMatrices.getHostAttGuestDefInx(),
-					clubMatrices.getGuestAttHostDefInx()));
+					predictPk, hotPoint,
+					matchState, clubMatrices,
+					exchange, euroMatrices));
 		}
 		
 		return killPromoteResult;
@@ -331,29 +389,15 @@ public class PankouKillPromoter {
 	}
 	
 	private void killPromoteByEuro (Set<ResultGroup> killGps, Set<ResultGroup> promteGps,
-			EuroMatrices euMatrices, Float aomenPk, EuroPl euroAvg, League league) {
+			EuroMatrices euMatrices, Float aomenPk, League league) {
 
 		if (euMatrices != null) {
 			EuroMatrix will = euMatrices.getWilliamMatrix();
 			EuroMatrix lab = euMatrices.getLadMatrix();
 			EuroMatrix aomen = euMatrices.getAomenMatrix();
-			EuroMatrix majorComp = will;
-			
-			Company company = league.getMajorCompany();
-			if (company != null) {
-				switch (company) {
-					case Aomen:
-						majorComp = aomen;
-						break;
-					case SNAI:
-						majorComp = euMatrices.getSnaiMatrix();
-						break;
-					default:
-						majorComp = will;
-						break;
-				}
-			}
-			
+			EuroPl euroAvg = euMatrices.getCurrEuroAvg();
+			EuroMatrix majorComp = MatchUtil.getMainEuro(euMatrices, league);
+
 			if (will != null && lab != null) {
 				EuroPl currWillEu = will.getCurrentEuro();
 				EuroPl currLabEu = lab.getCurrentEuro();
@@ -548,70 +592,64 @@ public class PankouKillPromoter {
 		}
 	}
 	
-	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, Float hostAttGuestDefComp, Float guestAttHostDefComp,
-			float currentPk, Float predictPk, AsiaPl main, AsiaPl current) {
+	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, ClubMatrices clubMatrices,
+			float currentPk, Float predictPk, AsiaPl main, AsiaPl current, MatchExchangeData exchange, EuroMatrices euroMatrices) {
 		if (rgs == null) {
 			rgs = new TreeSet<ResultGroup> ();
 		}
+		
+		float hostAttGuestDefComp = clubMatrices.getHostAttGuestDefInx();
+		float guestAttHostDefComp = clubMatrices.getGuestAttHostDefInx();
 
 		// host performed good lately
 		if (hotPoint >= 6) {
 			// host is so good --> win
-			if (hostAttGuestDefComp - guestAttHostDefComp > 0.8) {
-				if (main.gethWin() < 0.90 && current.gethWin() <= main.gethWin()) {
-					rgs.add(ResultGroup.Three);
-				}
-			}
-			// host is not so good and guest is not so good
-			else if (hostAttGuestDefComp - guestAttHostDefComp <= 0.5 && hostAttGuestDefComp - guestAttHostDefComp > -0.2){
-				// but the company think low of host -- lose
-				if (currentPk < predictPk - 0.15 && main.getaWin() <= 0.93 && current.getaWin() <= main.getaWin()) {
-					rgs.add(ResultGroup.One);
-					rgs.add(ResultGroup.Zero);
+			if (hostAttGuestDefComp > 1.6 * guestAttHostDefComp) {
+				if (main.gethWin() < 0.92 && current.gethWin() <= main.gethWin()) {
+					Boolean jcSupport = isJcExchangePromote(exchange, euroMatrices.getJincaiMatrix(), ResultGroup.Three);;
+					
+					if (jcSupport == null || jcSupport) {
+						rgs.add(ResultGroup.Three);
+					}
 				}
 			}
 		}
 		// guest performed good lately
 		else if (hotPoint <= -6) {
 			// guest is so good
-			if (guestAttHostDefComp - hostAttGuestDefComp >= 0.35) {
-				if (main.getaWin() < 0.90 && current.getaWin() <= main.getaWin()) {
+			if (guestAttHostDefComp >= 1.25 * hostAttGuestDefComp) {
+				if (main.getaWin() < 0.92 && current.getaWin() <= main.getaWin()) {
+					Boolean jcSupport = isJcExchangePromote(exchange, euroMatrices.getJincaiMatrix(), ResultGroup.Zero);
+					
+					if (jcSupport == null || jcSupport) {
+						rgs.add(ResultGroup.Zero);
+					}
+				}
+			}
+		} else {
+			// host is good (not very good), and host didn't perform bad
+			if (hostAttGuestDefComp < 1.65 * guestAttHostDefComp && hostAttGuestDefComp > 1.1 * guestAttHostDefComp && hotPoint >= -4) {
+				// but the company think low of host -- lose
+				if (currentPk < predictPk - 0.15 && main.getaWin() < 0.92 && current.getaWin() <= main.getaWin()) {
+					rgs.add(ResultGroup.One);
 					rgs.add(ResultGroup.Zero);
 				}
 			}
-			// guest is not so good and host is not so good
-			else if (guestAttHostDefComp - hostAttGuestDefComp <= 0.1 && guestAttHostDefComp - hostAttGuestDefComp > -0.5) {
+			// guest is good (not very good), and guest didn't perform bad 
+			else if ((guestAttHostDefComp < 1.4 * hostAttGuestDefComp) && guestAttHostDefComp > 0.7 * hostAttGuestDefComp && hotPoint <= 4) {
 				// but the company think low of guest -- win
-				if (currentPk > predictPk + 0.15 && main.gethWin() <= 0.93 && current.gethWin() <= main.gethWin()) {
+				if (currentPk > predictPk + 0.15 && main.gethWin() < 0.92 && current.gethWin() <= main.gethWin()) {
 					rgs.add(ResultGroup.Three);
 					rgs.add(ResultGroup.One);
 				}
 			}
 		}
 
-		// host is good (not very good), and host didn't perform bad
-		if (hostAttGuestDefComp - guestAttHostDefComp < 0.6 && hostAttGuestDefComp - guestAttHostDefComp > 0.3 && hotPoint >= -3) {
-			// but the company think low of host -- lose
-			if (currentPk < predictPk - 0.15 && main.getaWin() < 0.94 && current.getaWin() <= main.getaWin()) {
-				rgs.add(ResultGroup.One);
-				rgs.add(ResultGroup.Zero);
-			}
-		}
-		// guest is good (not very good), and guest didn't perform bad 
-		else if ((guestAttHostDefComp - hostAttGuestDefComp >= -0.1) && hotPoint <= 3) {
-			// but the company think low of guest -- win
-			if (currentPk > predictPk + 0.15 && main.gethWin() < 0.94 && current.gethWin() <= main.gethWin()) {
-				rgs.add(ResultGroup.Three);
-				rgs.add(ResultGroup.One);
-			}
-		}
-
 		return rgs;
 	}
 	
-	private Set<ResultGroup> promoteByPk (PankouMatrices pkMatrices, Float predictPk,
-			List <TeamLabel> hostLabels, List <TeamLabel> guestLabels, Float hotPoint,
-			MatchState matchState, Float hostAttGuestDefComp, Float guestAttHostDefComp) {
+	private Set<ResultGroup> promoteByPk (PankouMatrices pkMatrices, Float predictPk, Float hotPoint,
+			MatchState matchState, ClubMatrices clubMatrices, MatchExchangeData exchange, EuroMatrices euroMatrices) {
 		Set<ResultGroup> rgs = new TreeSet<ResultGroup> ();
 		
 		if (pkMatrices != null && predictPk != null && matchState != null) {
@@ -623,8 +661,8 @@ public class PankouKillPromoter {
 			float mainPk = MatchUtil.getCalculatedPk(main);
 			float currentPk = MatchUtil.getCalculatedPk(current);
 			
-			promoteByBase(rgs, hotPoint, hostAttGuestDefComp, guestAttHostDefComp,
-					currentPk, predictPk, main, current);
+			promoteByBase(rgs, hotPoint, clubMatrices,
+					currentPk, predictPk, main, current, exchange, euroMatrices);
 			
 			LatestMatchMatrices host6Match = matchState.getHostState6();
 			LatestMatchMatrices guest6Match = matchState.getGuestState6();
@@ -632,6 +670,9 @@ public class PankouKillPromoter {
 			if (host6Match == null || guest6Match == null) {
 				return rgs;
 			}
+
+			List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
+			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
 
 			if (main.getPanKou() >= 1) {
 				// a1. host pay is low
@@ -852,6 +893,49 @@ public class PankouKillPromoter {
 		} else {
 			return true;
 		}
+	}
+	
+	private Boolean isJcExchangePromote (MatchExchangeData exchange, EuroMatrix jinCaiMatrix, ResultGroup rg) {
+		if (exchange != null && exchange.getJcWinExchange() != null && jinCaiMatrix != null) {
+			Long jcTotal= exchange.getJcTotalExchange();
+			Integer jcWinGain = exchange.getJcWinGain();
+			Integer jcDrawGain = exchange.getJcDrawGain();
+			Integer jcLoseGain = exchange.getJcLoseGain();
+			
+			switch (rg) {
+				case Three:
+					if (jinCaiMatrix.getWinChange() < 0.001 && isExchangePromoted(jcTotal, jcWinGain)) {
+						return true;
+					}
+					break;
+				case One:
+					if (jinCaiMatrix.getDrawChange() < 0.001 && isExchangePromoted(jcTotal, jcDrawGain)) {
+						return true;
+					}
+					break;
+				case Zero:
+					if (jinCaiMatrix.getLoseChange() < 0.001 && isExchangePromoted(jcTotal, jcLoseGain)) {
+						return true;
+					}
+					break;
+			}
+
+			return false;
+		}
+
+		return null;
+	}
+	
+	private boolean isExchangePromoted (Long jcTotal, Integer jcGain) {
+		if (jcTotal > 500000 && jcGain > -25) {
+			return true;
+		} else if (jcTotal > 800000 && jcGain > -15) {
+			return true;
+		} else if (jcTotal > 1000000 && jcGain > -10) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	private int compareClub (ClubMatrices clubs, Long lid) {

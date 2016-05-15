@@ -7,6 +7,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.roy.football.match.OFN.response.AsiaPl;
+import com.roy.football.match.OFN.response.Company;
+import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
+import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
+import com.roy.football.match.base.League;
 import com.roy.football.match.base.TeamLabel;
 
 public class MatchUtil {
@@ -21,6 +25,22 @@ public class MatchUtil {
 	public final static long YEAR_TIME = 86400 * 900; // unit is second
 	
 	public final static String simple_date_format = "yyMMdd";
+	
+	public static EuroMatrix getMainEuro (EuroMatrices euroMatrices, League league) {
+		Company company = league.getMajorCompany();
+		if (company != null) {
+			switch (company) {
+				case Aomen:
+					return euroMatrices.getAomenMatrix();
+				case SNAI:
+					return euroMatrices.getSnaiMatrix();
+				default:
+					return euroMatrices.getWilliamMatrix();
+			}
+		}
+
+		return euroMatrices.getWilliamMatrix();
+	}
 	
 	public static boolean isHostHomeStrong (List <TeamLabel> hostLabels) {
 		if (hostLabels != null && hostLabels.size() > 0) {

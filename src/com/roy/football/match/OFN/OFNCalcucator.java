@@ -48,8 +48,6 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			
 		}
 
-		calResult.setEuroAvg(matchData.getEuroAvg());
-		
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
 		calResult.setJiaoShou(jsMatrices);
 		

@@ -41,7 +41,7 @@ public class OFNTask implements Callable<OFNExcelData>{
 		euroAg.seteLose(jcMatch.getOa());
 
 		return getOFNMatchExcelData(jcMatch.getOddsmid(),
-				jcMatch.getXid(), jcMatch.getLid(), null, euroAg);
+				jcMatch.getXid(), jcMatch.getLid(), jcMatch.getLn(), euroAg);
 	}
 	
 	public OFNExcelData getOFNMatchExcelData (Long oddsmid, Long matchDayId, Long leagueId, String leaueName, EuroPl euroAvg) {

@@ -27,7 +27,15 @@ public class OFNKillPromoteResult implements KillResult, PromoteResult{
 		this.promoteByPk = promoteByPk;
 	}
 
+	public Set<ResultGroup> getKillByExchange() {
+		return killByExchange;
+	}
+	public void setKillByExchange(Set<ResultGroup> killByExchange) {
+		this.killByExchange = killByExchange;
+	}
+
 	private Set<ResultGroup> killByPk;
 	private Set<ResultGroup> killByPl;
+	private Set<ResultGroup> killByExchange;
 	private Set<ResultGroup> promoteByPk;
 }

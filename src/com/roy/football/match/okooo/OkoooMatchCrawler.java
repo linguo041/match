@@ -1,6 +1,5 @@
 package com.roy.football.match.okooo;
 
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.HashMap;
@@ -11,8 +10,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 public class OkoooMatchCrawler {
 	private final static String OKOOO_JINCAI_URL = "http://www.okooo.com/jingcai/";
@@ -41,8 +38,6 @@ public class OkoooMatchCrawler {
 				matches.put(Integer.parseInt(matchOrderStr), Long.parseLong(matchIdStr));
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		return matches;
@@ -65,8 +60,6 @@ public class OkoooMatchCrawler {
 			
 			return exchangeData;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		return null;
@@ -88,12 +81,21 @@ public class OkoooMatchCrawler {
 		String bfLoseExchange = loseElement.child(6).text();
 		String jcLoseExchange = loseElement.child(9).text();
 		
-		exchangeData.setBfWinExchange(Long.parseLong(bfWinExchange));
-		exchangeData.setBfDrawExchange(Long.parseLong(bfDrawExchange));
-		exchangeData.setBfLoseExchange(Long.parseLong(bfLoseExchange));
-		exchangeData.setJcWinExchange(Long.parseLong(jcWinExchange));
-		exchangeData.setJcDrawExchange(Long.parseLong(jcDrawExchange));
-		exchangeData.setJcLoseExchange(Long.parseLong(jcLoseExchange));
+		try {
+			exchangeData.setBfWinExchange(Long.parseLong(bfWinExchange));
+			exchangeData.setBfDrawExchange(Long.parseLong(bfDrawExchange));
+			exchangeData.setBfLoseExchange(Long.parseLong(bfLoseExchange));
+		} catch (Exception e) {
+			
+		}
+		
+		try {
+			exchangeData.setJcWinExchange(Long.parseLong(jcWinExchange));
+			exchangeData.setJcDrawExchange(Long.parseLong(jcDrawExchange));
+			exchangeData.setJcLoseExchange(Long.parseLong(jcLoseExchange));
+		} catch (Exception e) {
+			
+		}
 	}
 	
 	private void parseAnalyseTable (MatchExchangeData exchangeData, Element element) {
@@ -114,26 +116,32 @@ public class OkoooMatchCrawler {
 		String bfLoseGain = loseElement.child(10).text();
 		String jcLoseGain= loseElement.child(11).text();
 		
-		exchangeData.setBfWinExgRt(parsePercentNum(bfWinExgRt));
-		exchangeData.setBfDrawExgRt(parsePercentNum(bfDrawExgRt));
-		exchangeData.setBfLoseExgRt(parsePercentNum(bfLoseExgRt));
-		exchangeData.setBfWinGain(Integer.parseInt(bfWinGain));
-		exchangeData.setBfDrawGain(Integer.parseInt(bfDrawGain));
-		exchangeData.setBfLoseGain(Integer.parseInt(bfLoseGain));
-		exchangeData.setJcWinExgRt(parsePercentNum(jcWinExgRt));
-		exchangeData.setJcDrawExgRt(parsePercentNum(jcDrawExgRt));
-		exchangeData.setJcLoseExgRt(parsePercentNum(jcLoseExgRt));
-		exchangeData.setJcWinGain(Integer.parseInt(jcWinGain));
-		exchangeData.setJcDrawGain(Integer.parseInt(jcDrawGain));
-		exchangeData.setJcLoseGain(Integer.parseInt(jcLoseGain));
+		try {
+			exchangeData.setBfWinExgRt(parsePercentNum(bfWinExgRt));
+			exchangeData.setBfDrawExgRt(parsePercentNum(bfDrawExgRt));
+			exchangeData.setBfLoseExgRt(parsePercentNum(bfLoseExgRt));
+			exchangeData.setBfWinGain(Integer.parseInt(bfWinGain));
+			exchangeData.setBfDrawGain(Integer.parseInt(bfDrawGain));
+			exchangeData.setBfLoseGain(Integer.parseInt(bfLoseGain));
+		} catch (Exception e) {
+		}
+		
+		
+		try {
+			exchangeData.setJcWinExgRt(parsePercentNum(jcWinExgRt));
+			exchangeData.setJcDrawExgRt(parsePercentNum(jcDrawExgRt));
+			exchangeData.setJcLoseExgRt(parsePercentNum(jcLoseExgRt));
+			exchangeData.setJcWinGain(Integer.parseInt(jcWinGain));
+			exchangeData.setJcDrawGain(Integer.parseInt(jcDrawGain));
+			exchangeData.setJcLoseGain(Integer.parseInt(jcLoseGain));
+		} catch (Exception e) {
+		}
 	}
 	
 	private Float parsePercentNum(String num) {
 		try {
 			return ((Double)NF_FORMAT.parse(num)).floatValue();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		
 		return null;

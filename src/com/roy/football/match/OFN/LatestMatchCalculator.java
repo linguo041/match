@@ -175,7 +175,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			float gVariation = 0;
 			float mVariation = 0;
 			
-			if (club != null) {
+			if (club != null && club.getAllNum() != 0) {
 				goalPerMatch = club.getAllGoal() / club.getAllNum();
 				missPerMatch = club.getAllMiss() / club.getAllNum();
 				checkVariation = true;
