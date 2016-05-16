@@ -238,41 +238,41 @@ public class PankouKillPromoter {
 
 			if (jcTotal > 1000000) {
 				// win is hot, but win is not so good
-				if (jcWinGain < -60 && jcWinChange > -0.001) {
+				if (jcWinGain < -60 && jcWinChange > 0.001) {
 					exRes.add(ResultGroup.Three);
 				}
 				
-				if (jcDrawGain < -60 && jcDrawChange > -0.001) {
+				if (jcDrawGain < -60 && jcDrawChange > 0.001) {
 					exRes.add(ResultGroup.One);
 				}
 				
-				if (jcLoseGain < -60 && jcLoseChange > -0.001) {
+				if (jcLoseGain < -60 && jcLoseChange > 0.001) {
 					exRes.add(ResultGroup.Zero);
 				}
 			} else if (jcTotal > 800000) {
 				// win is hot, but win is not so good
-				if (jcWinGain < -80 && jcWinChange > -0.001) {
+				if (jcWinGain < -80 && jcWinChange > 0.001) {
 					exRes.add(ResultGroup.Three);
 				}
 				
-				if (jcDrawGain < -80 && jcDrawChange > -0.001) {
+				if (jcDrawGain < -80 && jcDrawChange > 0.001) {
 					exRes.add(ResultGroup.One);
 				}
 				
-				if (jcLoseGain < -80 && jcLoseChange > -0.001) {
+				if (jcLoseGain < -80 && jcLoseChange > 0.001) {
 					exRes.add(ResultGroup.Zero);
 				}
 			} else if (jcTotal > 500000) {
 				// win is hot, but win is not so good
-				if (jcWinGain < -100 && jcWinChange > -0.001) {
+				if (jcWinGain < -100 && jcWinChange > 0.001) {
 					exRes.add(ResultGroup.Three);
 				}
 				
-				if (jcDrawGain < -100 && jcDrawChange > -0.001) {
+				if (jcDrawGain < -100 && jcDrawChange > 0.001) {
 					exRes.add(ResultGroup.One);
 				}
 				
-				if (jcLoseGain < -100 && jcLoseChange > -0.001) {
+				if (jcLoseGain < -100 && jcLoseChange > 0.001) {
 					exRes.add(ResultGroup.Zero);
 				}
 			}
@@ -409,197 +409,93 @@ public class PankouKillPromoter {
 			EuroPl euroAvg = euMatrices.getCurrEuroAvg();
 			EuroMatrix majorComp = MatchUtil.getMainEuro(euMatrices, league);
 
-			if (will != null && lab != null) {
-				EuroPl currWillEu = will.getCurrentEuro();
+			if (euroAvg != null && lab != null && majorComp != null && aomen != null) {
 				EuroPl currLabEu = lab.getCurrentEuro();
-				
-				float lwWinRt = MatchUtil.getEuDiff(currLabEu.geteWin(), currWillEu.geteWin(), false);
-				float lwDrawRt = MatchUtil.getEuDiff(currLabEu.geteDraw(), currWillEu.geteDraw(), false);
-				float lwLoseRt = MatchUtil.getEuDiff(currLabEu.geteLose(), currWillEu.geteLose(), false);
-				
-				float waDrawRt = 0;
-				float laWinRt = 0;
-				float laLoseRt = 0;
-				
-				if (euroAvg != null) {
-					waDrawRt = MatchUtil.getEuDiff(currWillEu.geteDraw(), euroAvg.geteDraw(), false);
-					laWinRt = MatchUtil.getEuDiff(currLabEu.geteWin(), euroAvg.geteWin(), false);
-					laLoseRt = MatchUtil.getEuDiff(currLabEu.geteLose(), euroAvg.geteLose(), false);
-				}
-				
-				System.out.println(String.format("will-lab draw: %.2f,  will-avg draw: %.2f", lwDrawRt*-1, waDrawRt));
-				
+				EuroPl currMajorEu = majorComp.getCurrentEuro();
+				float aomenWinChange = aomen.getWinChange();
+				float aomenDrawChange = aomen.getDrawChange();
+				float aomenLoseChange = aomen.getLoseChange();
+
+				float laWinRt = MatchUtil.getEuDiff(currLabEu.geteWin(), euroAvg.geteWin(), false);
+				float laDrawRt = MatchUtil.getEuDiff(currLabEu.geteDraw(), euroAvg.geteDraw(), false);
+				float laLoseRt = MatchUtil.getEuDiff(currLabEu.geteLose(), euroAvg.geteLose(), false);
+
+				float maWinRt = MatchUtil.getEuDiff(currMajorEu.geteWin(), euroAvg.geteWin(), false);
+				float maDrawRt = MatchUtil.getEuDiff(currMajorEu.geteDraw(), euroAvg.geteDraw(), false);
+				float maLoseRt = MatchUtil.getEuDiff(currMajorEu.geteLose(), euroAvg.geteLose(), false);
+
 				if (aomenPk >= 1) {
-					if (lwWinRt > 0.061) {
+					if (maWinRt > 0.06 && laWinRt > 0.06 && aomenWinChange > -0.001 || aomenWinChange > 0.011 && maWinRt > 0.03) {
 						killGps.add(ResultGroup.Three);
 					}
-					if (lwDrawRt > 0.081) {
-//						rgs.add(ResultGroup.One);
+					if (maDrawRt > 0.065 && laDrawRt > 0.065 && aomenDrawChange > -0.001 || aomenDrawChange > 0.021 && maDrawRt > 0.04) {
+						killGps.add(ResultGroup.One);
 					}
-					if (lwLoseRt > 0.091) {
+					if (maLoseRt > 0.07 && laLoseRt > 0.07 && aomenLoseChange > -0.001 || aomenLoseChange > 0.031 && maLoseRt > 0.05) {
 						killGps.add(ResultGroup.Zero);
 					}
 				} else if (aomenPk >= 0.4) {
-					if (lwWinRt > 0.063) {
+					if (maWinRt > 0.06 && laWinRt > 0.06 && aomenWinChange > -0.001 || aomenWinChange > 0.011 && maWinRt > 0.03) {
 						killGps.add(ResultGroup.Three);
 					}
-					// will draw is lower than the avg
-					if (lwDrawRt > 0.068) {
-						if (waDrawRt <= -0.05 && currWillEu.geteDraw() < 3.50) {
-							promteGps.add(ResultGroup.One);
-						}
-					}
-					if (lwLoseRt > 0.073) {
-						killGps.add(ResultGroup.Zero);
-					}
-					if (lwDrawRt < -0.05 && waDrawRt > 0.05) {
+					if (maDrawRt > 0.062 && laDrawRt > 0.062 && aomenDrawChange > -0.001 || aomenDrawChange > 0.021 && maDrawRt > 0.03) {
 						killGps.add(ResultGroup.One);
+					}
+					if (maLoseRt > 0.065 && laLoseRt > 0.065 && aomenLoseChange > -0.001 || aomenLoseChange > 0.021 && maLoseRt > 0.04) {
+						killGps.add(ResultGroup.Zero);
 					}
 				} else if (aomenPk >= 0.25) {
-					if (lwWinRt > 0.063) {
+					if (maWinRt > 0.06 && laWinRt > 0.06 && aomenWinChange > -0.001 || aomenWinChange > 0.011 && maWinRt > 0.03) {
 						killGps.add(ResultGroup.Three);
 					}
-					// will graw is lower than the avg
-					if (lwDrawRt > 0.067) {
-						if (waDrawRt <= -0.05 && currWillEu.geteDraw() < 3.50) {
-							promteGps.add(ResultGroup.One);
-						}
-					}
-					if (lwLoseRt > 0.071) {
-						killGps.add(ResultGroup.Zero);
-					}
-					if (lwDrawRt < -0.05 && waDrawRt > 0.05) {
+					if (maDrawRt > 0.061 && laDrawRt > 0.061 && aomenDrawChange > -0.001 || aomenDrawChange > 0.011 && maDrawRt > 0.03) {
 						killGps.add(ResultGroup.One);
+					}
+					if (maLoseRt > 0.065 && laLoseRt > 0.065 && aomenLoseChange > -0.001 || aomenLoseChange > 0.021 && maLoseRt > 0.03) {
+						killGps.add(ResultGroup.Zero);
 					}
 				} else if (aomenPk >= 0) {
-					if (lwWinRt > 0.068) {
+					if (maWinRt > 0.06 && laWinRt > 0.06 && aomenWinChange > -0.001  || aomenWinChange > 0.011 && maWinRt > 0.03) {
 						killGps.add(ResultGroup.Three);
 					}
-					// will graw is lower than the avg
-					if (lwDrawRt > 0.065) {
-						if (waDrawRt <= -0.05 && currWillEu.geteDraw() < 3.50) {
-							promteGps.add(ResultGroup.One);
-						}
-					}
-					if (lwLoseRt > 0.068) {
-						killGps.add(ResultGroup.Zero);
-					}
-					if (lwDrawRt < -0.06 && waDrawRt > 0.05) {
+					if (maDrawRt > 0.06 && laDrawRt > 0.06 && aomenDrawChange > -0.001 || aomenDrawChange > 0.011 && maDrawRt > 0.03) {
 						killGps.add(ResultGroup.One);
+					}
+					if (maLoseRt > 0.06 && laLoseRt > 0.06 && aomenLoseChange > -0.001 || aomenLoseChange > 0.011 && maLoseRt > 0.03) {
+						killGps.add(ResultGroup.Zero);
 					}
 				} else if (aomenPk >= -0.25) {
-					if (lwWinRt > 0.068) {
+					if (maWinRt > 0.063 && laWinRt > 0.063 && aomenWinChange > -0.001 || aomenWinChange > 0.011 && maWinRt > 0.03) {
 						killGps.add(ResultGroup.Three);
 					}
-					// will graw is lower than the avg
-					if (lwDrawRt > 0.065) {
-						if (waDrawRt <= -0.05 && currWillEu.geteDraw() < 3.50) {
-							promteGps.add(ResultGroup.One);
-						}
-					}
-					if (lwLoseRt > 0.068) {
-						killGps.add(ResultGroup.Zero);
-					}
-					if (lwDrawRt < -0.05 && waDrawRt > 0.05) {
+					if (maDrawRt > 0.06 && laDrawRt > 0.06 && aomenDrawChange > -0.001 || aomenDrawChange > 0.011 && maDrawRt > 0.03) {
 						killGps.add(ResultGroup.One);
+					}
+					if (maLoseRt > 0.06 && laLoseRt > 0.06 && aomenLoseChange > -0.001 || aomenLoseChange > 0.011 && maLoseRt > 0.03) {
+						killGps.add(ResultGroup.Zero);
 					}
 				} else if (aomenPk >= -1) {
-					if (lwWinRt > 0.075) {
+					if (maWinRt > 0.065 && laWinRt > 0.065 && aomenWinChange > -0.001 || aomenWinChange > 0.021 && maWinRt > 0.04) {
 						killGps.add(ResultGroup.Three);
 					}
-					// will graw is lower than the avg
-					if (lwDrawRt > 0.068) {
-						if (waDrawRt <= -0.05 && currWillEu.geteDraw() < 3.50) {
-							promteGps.add(ResultGroup.One);
-						}
-					}
-					if (lwLoseRt > 0.065) {
-						killGps.add(ResultGroup.Zero);
-					}
-					if (lwDrawRt < -0.05 && waDrawRt > 0.05) {
+					if (maDrawRt > 0.062 && laDrawRt > 0.062 && aomenDrawChange > -0.001 || aomenDrawChange > 0.011 && maDrawRt > 0.04) {
 						killGps.add(ResultGroup.One);
 					}
+					if (maLoseRt > 0.06 && laLoseRt > 0.06 && aomenLoseChange > -0.001 || aomenLoseChange > 0.011 && maLoseRt > 0.03) {
+						killGps.add(ResultGroup.Zero);
+					}
 				} else {
-					if (lwWinRt > 0.085) {
+					if (maWinRt > 0.07 && laWinRt > 0.07 && aomenWinChange > -0.001 || aomenWinChange > 0.031 && maWinRt > 0.05) {
 						killGps.add(ResultGroup.Three);
 					}
-					if (lwDrawRt > 0.075) {
-//						rgs.add(ResultGroup.One);
+					if (maDrawRt > 0.065 && laDrawRt > 0.065 && aomenDrawChange > -0.001 || aomenDrawChange > 0.021 && maDrawRt > 0.04) {
+						killGps.add(ResultGroup.One);
 					}
-					if (lwLoseRt > 0.065) {
+					if (maLoseRt > 0.06 && laLoseRt > 0.06 && aomenLoseChange > -0.001 || aomenLoseChange > 0.011 && maLoseRt > 0.03) {
 						killGps.add(ResultGroup.Zero);
 					}
 				}
 			}
-			
-			if (majorComp != will && majorComp != null && will != null) {
-				// use current since the main is not correct by the company changed frequently
-				EuroPl willEu = will.getCurrentEuro();
-				EuroPl majorEu = majorComp.getCurrentEuro();
-
-				float wlWinRt = MatchUtil.getEuDiff(willEu.geteWin(), majorEu.geteWin(), true);
-				float wlDrawRt = MatchUtil.getEuDiff(willEu.geteDraw(), majorEu.geteDraw(), true);
-				float wlLoseRt = MatchUtil.getEuDiff(willEu.geteLose(), majorEu.geteLose(), true);
-				
-				if (aomenPk >= 0.4) {
-					if (wlWinRt > 0.05) {
-						killGps.add(ResultGroup.Three);
-					}
-					if (wlDrawRt > 0.06) {
-						killGps.add(ResultGroup.One);
-					}
-					if (wlLoseRt > 0.07) {
-						killGps.add(ResultGroup.Zero);
-					}
-				} else if (aomenPk >= 0.25) {
-					if (wlWinRt > 0.05) {
-						killGps.add(ResultGroup.Three);
-					}
-					// will follows the major, but has big disagreement with the major
-					// and take big risk, so will must has more info, 
-					if (wlDrawRt > 0.055) {
-						killGps.add(ResultGroup.One);
-					}
-					if (wlLoseRt > 0.06) {
-						killGps.add(ResultGroup.Zero);
-					}
-				} else if (aomenPk >= 0) {
-					if (wlWinRt > 0.055) {
-						killGps.add(ResultGroup.Three);
-					}
-					// will follows the major, but has big disagreement with the major
-					// and take big risk, so will must has more info, 
-					if (wlDrawRt > 0.04) {
-						killGps.add(ResultGroup.One);
-					}
-					if (wlLoseRt > 0.055) {
-						killGps.add(ResultGroup.Zero);
-					}
-				}  else if (aomenPk >= -0.25) {
-					if (wlWinRt > 0.06) {
-						killGps.add(ResultGroup.Three);
-					}
-					// will follows the major, but has big disagreement with the major
-					// and take big risk, so will must has more info, 
-					if (wlDrawRt > 0.055) {
-						killGps.add(ResultGroup.One);
-					}
-					if (wlLoseRt > 0.05) {
-						killGps.add(ResultGroup.Zero);
-					}
-				} else {
-					if (wlWinRt > 0.07) {
-						killGps.add(ResultGroup.Three);
-					}
-					if (wlDrawRt > 0.06) {
-						killGps.add(ResultGroup.One);
-					}
-					if (wlLoseRt > 0.05) {
-						killGps.add(ResultGroup.Zero);
-					}
-				}
-			}
-
 		}
 	}
 	
@@ -639,7 +535,7 @@ public class PankouKillPromoter {
 			}
 		} else {
 			// host is good (not very good), and host didn't perform bad
-			if (hostAttGuestDefComp < 1.65 * guestAttHostDefComp && hostAttGuestDefComp > 1.1 * guestAttHostDefComp && hotPoint >= -4) {
+			if (hostAttGuestDefComp < 1.6 * guestAttHostDefComp && hostAttGuestDefComp > 1.1 * guestAttHostDefComp && hotPoint >= -4) {
 				// but the company think low of host -- lose
 				if (currentPk < predictPk - 0.15 && main.getaWin() < 0.92 && current.getaWin() <= main.getaWin()) {
 					rgs.add(ResultGroup.One);
@@ -683,7 +579,10 @@ public class PankouKillPromoter {
 			}
 
 			List <TeamLabel> hostLabels = clubMatrices.getHostLabels();
-			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
+//			List <TeamLabel> guestLabels = clubMatrices.getGuestLabels();
+//			float hostAtt = clubMatrices.getHostAttGuestDefInx();
+//			float guestAtt = clubMatrices.getGuestAttHostDefInx();
+//			float hostGuestGoal = hostAtt / guestAtt;
 
 			if (main.getPanKou() >= 1) {
 				// a1. host pay is low
