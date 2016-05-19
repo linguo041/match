@@ -34,9 +34,10 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				euroMatrices.setWilliamMatrix(getEuroMatrix(comEuros.get(Company.William), matchDt));
 				euroMatrices.setAomenMatrix(getEuroMatrix(comEuros.get(Company.Aomen), matchDt));
 				euroMatrices.setLadMatrix(getEuroMatrix(comEuros.get(Company.Ladbrokes), matchDt));
-				euroMatrices.setYiShenBoMatrix(getEuroMatrix(comEuros.get(Company.YiShenBo), matchDt));
-				euroMatrices.setInterwettenMatrix(getEuroMatrix(comEuros.get(Company.Interwetten), matchDt));
+//				euroMatrices.setYiShenBoMatrix(getEuroMatrix(comEuros.get(Company.YiShenBo), matchDt));
+//				euroMatrices.setInterwettenMatrix(getEuroMatrix(comEuros.get(Company.Interwetten), matchDt));
 				euroMatrices.setSnaiMatrix(getEuroMatrix(comEuros.get(Company.SNAI), matchDt));
+				euroMatrices.setSwedenMatrix(getEuroMatrix(comEuros.get(Company.Sweden), matchDt));
 				euroMatrices.setCurrEuroAvg(matchData.getEuroAvg());
 				
 				League league = League.getLeagueById(matchData.getLeagueId());

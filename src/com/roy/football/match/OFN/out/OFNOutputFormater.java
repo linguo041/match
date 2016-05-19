@@ -94,8 +94,9 @@ public class OFNOutputFormater {
 				EuroMatrix majorComp = MatchUtil.getMainEuro(euroMatrics, league);
 
 				if (majorComp != null) {
-					excelData.setPlMatrix((String.format("%.2f   %.2f   %.2f\n"
+					excelData.setPlMatrix((String.format("%s\n%.2f   %.2f   %.2f\n"
 							+ "%.2f   %.2f   %.2f",
+							league.getMajorCompany(),
 							euroMatrics.getMainAvgWinDiff(),
 							euroMatrics.getMainAvgDrawDiff(),
 							euroMatrics.getMainAvgLoseDiff(),
@@ -140,7 +141,7 @@ public class OFNOutputFormater {
 			
 			MatchExchangeData exgData = calculateResult.getExchanges();
 			if (exgData != null) {
-				if (exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 500000) {
+				if (exgData.getBfWinExchange() != null && exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 200000) {
 					excelData.setBifa(String.format("%.1f : %.1f : %.1f\n%.1f : %.1f : %.1f",
 							exgData.getBfWinExgRt() * 100,
 							exgData.getBfDrawExgRt() * 100,
@@ -150,7 +151,7 @@ public class OFNOutputFormater {
 							exgData.getJcLoseExgRt() * 100));
 				}
 
-				if (exgData.getJcTotalExchange() > 900000) {
+				if (exgData.getJcWinExchange() != null && exgData.getJcTotalExchange() > 900000) {
 					excelData.setBifa(String.format("%.1f : %.1f : %.1f",
 							exgData.getJcWinExgRt() * 100,
 							exgData.getJcDrawExgRt() * 100,

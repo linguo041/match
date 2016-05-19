@@ -4,8 +4,8 @@ import com.roy.football.match.OFN.response.Company;
 
 public enum League {
 	Friendly(166),
-	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William),
-	ShuChao(76, 12, Company.William),
+	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William),
+	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William),
 	XiJia(85, 20),
 	DeJia(39, 18), DeYi(140, 18),
 	YiJia(34, 20, Company.SNAI),
@@ -15,7 +15,7 @@ public enum League {
 	OuGuan(74, 16), OuLian(58, 16),
 	EChao(165, 16), RussiaCup(232, 16),
 	NorChao(104, 16), NorCup (227, 16),
-	Sweden(103, 16),
+	Sweden(103, 16, Company.Sweden),
 
 	RiLian(102, 18, Company.Aomen), RiYi(347, 22, Company.Aomen),
 	RiLianBei(158, 8, Company.Aomen),

@@ -34,6 +34,8 @@ public class MatchUtil {
 					return euroMatrices.getAomenMatrix();
 				case SNAI:
 					return euroMatrices.getSnaiMatrix();
+				case Sweden:
+					return euroMatrices.getSwedenMatrix();
 				default:
 					return euroMatrices.getWilliamMatrix();
 			}

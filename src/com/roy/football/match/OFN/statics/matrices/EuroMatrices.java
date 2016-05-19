@@ -102,6 +102,14 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.mainAvgLoseDiff = mainAvgLoseDiff;
 	}
 
+	public EuroMatrix getSwedenMatrix() {
+		return swedenMatrix;
+	}
+
+	public void setSwedenMatrix(EuroMatrix swedenMatrix) {
+		this.swedenMatrix = swedenMatrix;
+	}
+
 	private EuroMatrix jincaiMatrix;
 	private EuroMatrix williamMatrix;
 	private EuroMatrix aomenMatrix;
@@ -109,6 +117,7 @@ public class EuroMatrices implements CalculateResult, MatchData{
 	private EuroMatrix yiShenBoMatrix;
 	private EuroMatrix interwettenMatrix;
 	private EuroMatrix snaiMatrix;
+	private EuroMatrix swedenMatrix;
 	private EuroPl currEuroAvg;
 
 	private float mainAvgWinDiff;
