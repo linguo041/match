@@ -95,12 +95,17 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 
 			float hours = 0;
 			EuroPl temp = null;
+			EuroPl lastTemp = null;
 			float winChange = 0;
 			float drawChange = 0;
 			float loseChange = 0;
 
 			for (EuroPl eu : euroPls) {
 				if (temp != null) {
+					if (lastTemp == null) {
+						lastTemp = temp;
+					}
+					
 					Date thisDt = eu.geteDate();
 					Date lastDt = temp.geteDate();
 
@@ -114,19 +119,21 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 
 						if (hours >= 0) {
 							pls.put(temp, hours);
-							winChange += (eu.geteWin() - temp.geteWin()) * hours / temp.geteWin();
-							drawChange += (eu.geteDraw() - temp.geteDraw()) * hours / temp.geteWin();
-							loseChange += (eu.geteLose() - temp.geteLose()) * hours / temp.geteWin();
+							winChange += (temp.geteWin() - lastTemp.geteWin()) * hours / lastTemp.geteWin();
+							drawChange += (temp.geteDraw() - lastTemp.geteDraw()) * hours / lastTemp.geteDraw();
+							loseChange += (temp.geteLose() - lastTemp.geteLose()) * hours / lastTemp.geteLose();
 						}
 					} else {
 						Float totalHours = pls.get(temp);
 						totalHours = (totalHours == null ? 0 : totalHours) + tempHours;
 						pls.put(temp, totalHours);
 						
-						winChange += (eu.geteWin() - temp.geteWin()) * tempHours / temp.geteWin();
-						drawChange += (eu.geteDraw() - temp.geteDraw()) * tempHours / temp.geteWin();
-						loseChange += (eu.geteLose() - temp.geteLose()) * tempHours / temp.geteWin();
+						winChange += (temp.geteWin() - lastTemp.geteWin()) * tempHours / lastTemp.geteWin();
+						drawChange += (temp.geteDraw() - lastTemp.geteDraw()) * tempHours / lastTemp.geteDraw();
+						loseChange += (temp.geteLose() - lastTemp.geteLose()) * tempHours / lastTemp.geteLose();
 					}
+					
+					lastTemp = temp;
 				}
 
 				temp = eu;
@@ -147,6 +154,14 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 					main = pl.getKey();
 				}
 			}
+			
+			if (lastTemp == null) {
+				lastTemp = temp;
+			}
+			
+			winChange += (temp.geteWin() - lastTemp.geteWin()) * (lastToNow > PL_CHECKED_HOURS ? 0 : lastToNow) / lastTemp.geteWin();
+			drawChange += (temp.geteDraw() - lastTemp.geteDraw()) * (lastToNow > PL_CHECKED_HOURS ? 0 : lastToNow) / lastTemp.geteDraw();
+			loseChange += (temp.geteLose() - lastTemp.geteLose()) * (lastToNow > PL_CHECKED_HOURS ? 0 : lastToNow) / lastTemp.geteLose();
 			
 			euMatrix.setMainEuro(main);
 			euMatrix.setWinChange(winChange / PL_CHECKED_HOURS);
@@ -170,12 +185,17 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			EuroPl main = null;
 			float hours = 0;
 			EuroPl temp = null;
+			EuroPl lastTemp = null;
 			float winChange = 0;
 			float drawChange = 0;
 			float loseChange = 0;
 
 			for (EuroPl eu : euroPls) {
 				if (temp != null) {
+					if (lastTemp == null) {
+						lastTemp = temp;
+					}
+
 					Date thisDt = eu.geteDate();
 					Date lastDt = temp.geteDate();
 					
@@ -188,30 +208,41 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 						hours = PL_CHECKED_HOURS - thisTimeToMatch;
 
 						if (hours > 0) {
-							winChange += (eu.geteWin() - temp.geteWin()) * hours / temp.geteWin();
-							drawChange += (eu.geteDraw() - temp.geteDraw()) * hours / temp.geteWin();
-							loseChange += (eu.geteLose() - temp.geteLose()) * hours / temp.geteWin();
+							winChange += (temp.geteWin() - lastTemp.geteWin()) * hours / lastTemp.geteWin();
+							drawChange += (temp.geteDraw() - lastTemp.geteDraw()) * hours / lastTemp.geteDraw();
+							loseChange += (temp.geteLose() - lastTemp.geteLose()) * hours / lastTemp.geteLose();
 						}
 
 						main = temp;
 					} else {
-						winChange += (eu.geteWin() - temp.geteWin()) * tempHours / temp.geteWin();
-						drawChange += (eu.geteDraw() - temp.geteDraw()) * tempHours / temp.geteWin();
-						loseChange += (eu.geteLose() - temp.geteLose()) * tempHours / temp.geteWin();
+						winChange += (temp.geteWin() - lastTemp.geteWin()) * tempHours / lastTemp.geteWin();
+						drawChange += (temp.geteDraw() - lastTemp.geteDraw()) * tempHours / lastTemp.geteDraw();
+						loseChange += (temp.geteLose() - lastTemp.geteLose()) * tempHours / lastTemp.geteLose();
 
 						if (tempHours >= hours) {
 							hours = tempHours;
 							main = temp;
 						}
 					}
+					
+					lastTemp = temp;
 				}
 				
 				temp = eu;
 			}
 			
-			if (MatchUtil.getDiffHours(new Date(), temp.geteDate()) >= hours) {
+			float latestHour = MatchUtil.getDiffHours(new Date(), temp.geteDate());
+			if (latestHour >= hours) {
 				main = temp;
 			}
+			
+			if (lastTemp == null) {
+				lastTemp = temp;
+			}
+			
+			winChange += (temp.geteWin() - lastTemp.geteWin()) * (latestHour > PL_CHECKED_HOURS ? 0 : latestHour) / lastTemp.geteWin();
+			drawChange += (temp.geteDraw() - lastTemp.geteDraw()) * (latestHour > PL_CHECKED_HOURS ? 0 : latestHour) / lastTemp.geteDraw();
+			loseChange += (temp.geteLose() - lastTemp.geteLose()) * (latestHour > PL_CHECKED_HOURS ? 0 : latestHour) / lastTemp.geteLose();
 
 			euMatrix.setMainEuro(main);
 			euMatrix.setWinChange(winChange / PL_CHECKED_HOURS);
