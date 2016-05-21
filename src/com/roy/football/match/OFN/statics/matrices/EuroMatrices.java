@@ -167,7 +167,24 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		public void setLoseChange(float loseChange) {
 			this.loseChange = loseChange;
 		}
-
+		public float getSmWinDiff() {
+			return smWinDiff;
+		}
+		public void setSmWinDiff(float smWinDiff) {
+			this.smWinDiff = smWinDiff;
+		}
+		public float getSmDrawDiff() {
+			return smDrawDiff;
+		}
+		public void setSmDrawDiff(float smDrawDiff) {
+			this.smDrawDiff = smDrawDiff;
+		}
+		public float getSmLoseDiff() {
+			return smLoseDiff;
+		}
+		public void setSmLoseDiff(float smLoseDiff) {
+			this.smLoseDiff = smLoseDiff;
+		}
 
 		private EuroPl originEuro;
 		private EuroPl mainEuro;
@@ -175,5 +192,8 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		private float winChange;
 		private float drawChange;
 		private float loseChange;
+		private float smWinDiff;
+		private float smDrawDiff;
+		private float smLoseDiff;
 	}
 }
