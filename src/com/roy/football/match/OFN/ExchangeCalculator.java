@@ -22,7 +22,10 @@ public class ExchangeCalculator{
 			
 			Long okMatchId= okMatches.get((int)matchOrder);
 			
-			return exchangeCrawler.getExchangeData(okMatchId);
+			if (okMatchId != null) {
+				return exchangeCrawler.getExchangeData(okMatchId);
+			}
+			
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -33,7 +36,7 @@ public class ExchangeCalculator{
 	
 	private synchronized Map<Integer, Long> getOkoooMatches () {
 		if (okoooMatches == null) {
-			okoooMatches = exchangeCrawler.craw();
+			okoooMatches = exchangeCrawler.craw(false);
 		}
 		
 		return okoooMatches;

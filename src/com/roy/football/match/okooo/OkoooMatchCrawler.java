@@ -14,18 +14,18 @@ import org.jsoup.select.Elements;
 public class OkoooMatchCrawler {
 	private final static String OKOOO_JINCAI_URL = "http://www.okooo.com/jingcai/";
 	private final static String OKOOO_BIFA_URL = "http://www.okooo.com/soccer/match/{matchId}/exchanges/";
-//	private final static String OKOOO_MATCH_SELECT = "div.touzhu_1";
+	private final static String OKOOO_ALL_MATCH_SELECT = "div.touzhu_1";
 	private final static String OKOOO_MATCH_SELECT = "div.touzhu_1[data-end=0]";
 	private final static int MAX_BODY_SIZE = 1024*1024*10;
 	private final static NumberFormat NF_FORMAT = NumberFormat.getPercentInstance();
 	
-	public Map<Integer, Long> craw () {
+	public Map<Integer, Long> craw (boolean all) {
 		Map<Integer, Long> matches = new HashMap<Integer, Long>();
 
 		try {
 			Document doc = Jsoup.connect(OKOOO_JINCAI_URL).maxBodySize(MAX_BODY_SIZE).get();
 
-			Elements eles = doc.select(OKOOO_MATCH_SELECT);
+			Elements eles = doc.select(all ? OKOOO_ALL_MATCH_SELECT : OKOOO_MATCH_SELECT);
 
 			Iterator<Element> elIterator = eles.iterator();
 
