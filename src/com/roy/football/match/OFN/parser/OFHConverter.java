@@ -26,11 +26,19 @@ public class OFHConverter {
 	}
 
 	public static ClubDatas convertClubDatas (String json) {
+		if (json.length() < 30) {
+			return null;
+		}
+
 		json = json.replace(RSP_ARRAY, RSP_OBJECT);
 		return GsonConverter.convertJSonToObjectUseNormal(json, ClubDatas.class);
 	}
 	
 	public static List<FinishedMatch> convertJiaoShouMatch (String json) {
+		if (json.length() < 30) {
+			return null;
+		}
+
 		json = json.replace(RSP_ARRAY, RSP_OBJECT).replace(TOKEN_DASH, TOKEN_QUOTE);
 		GsonConverter converter = GsonConverter.useCustomizedGson(OFH_JSONC_NAME);
 
