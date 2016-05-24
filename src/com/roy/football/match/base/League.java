@@ -4,6 +4,7 @@ import com.roy.football.match.OFN.response.Company;
 
 public enum League {
 	Friendly(166),
+	Country(61),
 	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William), YingZhuZong(55, 20, Company.William),
 	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William), ShuZhuZong(145, 10, Company.William),
 	XiJia(85, 20),

@@ -589,7 +589,7 @@ public class PankouKillPromoter {
 		if (rgs == null) {
 			rgs = new TreeSet<ResultGroup> ();
 		}
-		
+
 		float hostAttGuestDefComp = clubMatrices.getHostAttGuestDefInx();
 		float guestAttHostDefComp = clubMatrices.getGuestAttHostDefInx();
 
@@ -642,7 +642,7 @@ public class PankouKillPromoter {
 	
 	private Set<ResultGroup> promoteByPk (Set<ResultGroup> rgs, PankouMatrices pkMatrices, Float predictPk, Float hotPoint,
 			MatchState matchState, ClubMatrices clubMatrices, MatchExchangeData exchange, EuroMatrices euroMatrices) {
-		if (pkMatrices != null && predictPk != null && matchState != null) {
+		if (pkMatrices != null && predictPk != null && matchState != null && clubMatrices != null) {
 			AsiaPl main = pkMatrices.getMainPk();
 			AsiaPl current = pkMatrices.getCurrentPk();
 			Float hWinChgRtFloat = pkMatrices.getHwinChangeRate();

@@ -45,7 +45,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			League league = League.getLeagueById(matchData.getLeagueId());
 			calResult.setLeague(league);
 		} catch(Exception e) {
-			
+			e.printStackTrace();
 		}
 
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);

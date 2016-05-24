@@ -20,17 +20,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	@Override
 	public MatchState calucate(OFNMatchData matchData) {
 		if (matchData != null) {
-			MatchState matchState = new MatchState();
-			
 			ClubDatas clubData = matchData.getBaseData();
-			
-			calculateMatchMatrices(matchState, matchData.getHostMatches(), matchData.getHostId(), matchData.getMatchTime(), clubData.getHostData(), true);
-			calculateMatchMatrices(matchState, matchData.getGuestMatches(), matchData.getGuestId(), matchData.getMatchTime(), clubData.getGuestData(), false);
-			matchState.setCalculatePk(getPankouByFinishedMatches(matchData));
-			
-			calMatchStateIndex(matchState);
-			
-			return matchState;
+
+			if (clubData != null) {
+				MatchState matchState = new MatchState();
+
+				calculateMatchMatrices(matchState, matchData.getHostMatches(), matchData.getHostId(), matchData.getMatchTime(), clubData.getHostData(), true);
+				calculateMatchMatrices(matchState, matchData.getGuestMatches(), matchData.getGuestId(), matchData.getMatchTime(), clubData.getGuestData(), false);
+				matchState.setCalculatePk(getPankouByFinishedMatches(matchData));
+
+				calMatchStateIndex(matchState);
+				
+				return matchState;
+			}
+
 		}
 		return null;
 	}
@@ -44,6 +47,10 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	private void calMatchStateIndex (MatchState matchState) {
 		LatestMatchMatrices hostMatches = matchState.getHostState6();
 		LatestMatchMatrices guestMatches = matchState.getGuestState6();
+		
+		if (hostMatches == null) {
+			return;
+		}
 
 		float hgoal = 0.6f * hostMatches.getMatchGoal() + 0.4f * guestMatches.getMatchMiss();
 		float ggoal = 0.6f * guestMatches.getMatchGoal() + 0.4f * hostMatches.getMatchMiss();
