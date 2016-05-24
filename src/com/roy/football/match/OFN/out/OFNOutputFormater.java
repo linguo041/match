@@ -24,6 +24,7 @@ import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.util.DateUtil;
+import com.roy.football.match.util.EuroUtil;
 import com.roy.football.match.util.MatchUtil;
 
 public class OFNOutputFormater {
@@ -91,7 +92,7 @@ public class OFNOutputFormater {
 			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
 			if (euroMatrics != null) {
 				League league = League.getLeagueById(ofnMatch.getLeagueId());
-				EuroMatrix majorComp = MatchUtil.getMainEuro(euroMatrics, league);
+				EuroMatrix majorComp = EuroUtil.getMainEuro(euroMatrics, league);
 
 				if (majorComp != null) {
 					excelData.setPlMatrix((String.format("%s\n%.2f   %.2f   %.2f\n"

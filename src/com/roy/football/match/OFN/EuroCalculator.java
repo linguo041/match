@@ -15,6 +15,7 @@ import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.base.League;
 import com.roy.football.match.process.Calculator;
+import com.roy.football.match.util.EuroUtil;
 import com.roy.football.match.util.MatchUtil;
 
 public class EuroCalculator extends AbstractBaseDataCalculator implements Calculator<EuroMatrices, OFNMatchData>{
@@ -69,7 +70,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 	}
 
 	private void setMainAvgDiff (EuroMatrices euroMatrices, League league) {
-		EuroMatrix majorComp = MatchUtil.getMainEuro(euroMatrices, league);
+		EuroMatrix majorComp = EuroUtil.getMainEuro(euroMatrices, league);
 
 		if (majorComp != null) {
 			EuroPl currMajorpl = majorComp.getCurrentEuro();

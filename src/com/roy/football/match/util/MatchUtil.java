@@ -25,25 +25,7 @@ public class MatchUtil {
 	public final static long YEAR_TIME = 86400 * 900; // unit is second
 	
 	public final static String simple_date_format = "yyMMdd";
-	
-	public static EuroMatrix getMainEuro (EuroMatrices euroMatrices, League league) {
-		Company company = league.getMajorCompany();
-		if (company != null) {
-			switch (company) {
-				case Aomen:
-					return euroMatrices.getAomenMatrix();
-				case SNAI:
-					return euroMatrices.getSnaiMatrix();
-				case Sweden:
-					return euroMatrices.getSwedenMatrix();
-				default:
-					return euroMatrices.getWilliamMatrix();
-			}
-		}
 
-		return euroMatrices.getWilliamMatrix();
-	}
-	
 	public static boolean isHostHomeStrong (List <TeamLabel> hostLabels) {
 		if (hostLabels != null && hostLabels.size() > 0) {
 			for (TeamLabel l : hostLabels) {
