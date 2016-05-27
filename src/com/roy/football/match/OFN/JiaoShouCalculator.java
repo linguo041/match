@@ -41,8 +41,8 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 			while (ite.hasNext()) {
 				FinishedMatch match = ite.next();
 				
-				if (!match.getLeagueId().equals(League.Friendly.getLeagueId())
-						&& MatchUtil.isMatchInTwoYear(match.getMatchTime(), matchData.getMatchTime())
+				if ((!match.getLeagueId().equals(League.Friendly.getLeagueId()))
+						&& MatchUtil.isMatchLatest(match.getMatchTime(), matchData.getMatchTime(), League.getLeagueById(match.getLeagueId()))
 						&& match.getMatchTime().getTime() < matchData.getMatchTime().getTime()) {
 					
 					if (match.getHostId().equals(matchData.getHostId())) {

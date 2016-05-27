@@ -106,7 +106,7 @@ public class PankouKillPromoter {
 //		Float hotPoint = calResult.getHotPoint();
 
 		PankouMatrices pkMatrices = calResult.getPkMatrices();
-		if (pkMatrices != null) {
+		if (pkMatrices != null && predictPk != null) {
 			// adjust the goals according to the diff of predict and original pk
 			AsiaPl origPkpl = pkMatrices.getOriginPk();
 			float origPk = MatchUtil.getCalculatedPk(origPkpl);
@@ -230,7 +230,7 @@ public class PankouKillPromoter {
 
 			Set<ResultGroup> promoteGps = new TreeSet<ResultGroup> ();
 
-			if (pkMatrices != null && euroMatrices != null) {
+			if (pkMatrices != null && euroMatrices != null && predictPk != null) {
 				promoteByEuro(promoteGps, euroMatrices, predictPk, pkMatrices, league);
 
 				promoteByPk(promoteGps, pkMatrices, predictPk, hotPoint,

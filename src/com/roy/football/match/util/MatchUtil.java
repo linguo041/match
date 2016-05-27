@@ -91,6 +91,20 @@ public class MatchUtil {
 		}
 	}
 	
+	public static boolean isMatchLatest (Date matchDate, Date currentDate, League league) {
+		double span = YEAR_TIME;
+		
+		if (league == League.EuroJingBiao || league == League.EuroYuYuan) {
+			span = YEAR_TIME * 2;
+		}
+		
+		if ((currentDate.getTime() - matchDate.getTime())/1000 <= span) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	public static boolean isMatchTooOld (Date matchDate, Date currentDate, int indicator) {
 		return isMatchTooOld(matchDate, currentDate, indicator, 17);
 	}
