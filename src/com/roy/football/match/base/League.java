@@ -7,6 +7,7 @@ public enum League {
 	Country(61), 
 	EuroYuYuan(175, 6),
 	EuroJingBiao(87, 4),
+	BoluoCup(704),
 	
 	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William), YingZhuZong(55, 20, Company.William),
 	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William), ShuZhuZong(145, 10, Company.William),
@@ -28,7 +29,7 @@ public enum League {
 	YaGuan(139, 16, Company.Aomen),
 
 	BrazilJia(160, 20), BrazilCup(266, 20),
-	America(107, 20),
+	America(107, 20), CannadaCup(700),
 	Argintina(108, 30),
 	Maxico(191, 18),
 	ChiLi(192, 16),
