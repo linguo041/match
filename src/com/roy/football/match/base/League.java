@@ -7,7 +7,10 @@ public enum League {
 	Country(61), 
 	EuroYuYuan(175, 6),
 	EuroJingBiao(87, 4),
+	AsiaYu(161, Company.Aomen),
 	BoluoCup(704),
+	MeiZhouCup(162),
+	ANYMOUS1(297),
 	
 	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William), YingZhuZong(55, 20, Company.William),
 	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William), ShuZhuZong(145, 10, Company.William),
@@ -44,6 +47,11 @@ public enum League {
 	League(int leagueId, int clubNum) {
 		this.leagueId = leagueId;
 		this.clubNum = clubNum;
+	}
+	
+	League(int leagueId, Company comp) {
+		this.leagueId = leagueId;
+		this.majorCompany = comp;
 	}
 	
 	League(int leagueId, int clubNum, Company comp) {
