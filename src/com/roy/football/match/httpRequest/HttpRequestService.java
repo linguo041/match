@@ -42,6 +42,16 @@ public class HttpRequestService {
 	
 	private static MatchLogger logger = MatchLogger.getInstance(HttpRequestService.class);
 	
+	private static HttpRequestService instance = null;
+	
+	public synchronized static HttpRequestService getInstance() {
+		if (instance == null) {
+			instance = new HttpRequestService();
+		}
+
+		return instance;
+	}
+	
 	public String doHttpRequest(String requestUrl, String requestMethod,
 			String content, Map<String, String> headers) throws HttpRequestException {
 		return doHttpRequest(requestUrl, requestMethod, content, headers, false);

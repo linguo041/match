@@ -51,7 +51,7 @@ public class OFNParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 			
-			String resData = this.httpService.doHttpRequest(JIN_CAI_URL, HttpRequestService.GET_METHOD, null, headers);
+			String resData = HttpRequestService.getInstance().doHttpRequest(JIN_CAI_URL, HttpRequestService.GET_METHOD, null, headers);
 			
 			JinCaiSummary response = XmlParser.parseXmlToObject(
 					new StringReader(resData),
@@ -95,7 +95,7 @@ public class OFNParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = this.httpService.doHttpRequest(DETAIL_URL_PREIX
+			String resData = HttpRequestService.getInstance().doHttpRequest(DETAIL_URL_PREIX
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.eruo,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -128,7 +128,7 @@ public class OFNParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = this.httpService.doHttpRequest(DETAIL_URL_PREIX
+			String resData = HttpRequestService.getInstance().doHttpRequest(DETAIL_URL_PREIX
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.asia,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -169,7 +169,7 @@ public class OFNParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = this.httpService.doHttpRequest(DETAIL_URL_PREIX
+			String resData = HttpRequestService.getInstance().doHttpRequest(DETAIL_URL_PREIX
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.shangxia,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -268,16 +268,6 @@ public class OFNParser {
 		return quoteStr.substring(1, end);
 	}
 
-	public HttpRequestService getHttpService() {
-		return httpService;
-	}
-
-	public void setHttpService(HttpRequestService httpService) {
-		this.httpService = httpService;
-	}
-
-	private HttpRequestService httpService = new HttpRequestService();
-	
 	public static void main (String [] args) {
 		String instr = "[[\"4.00\",\"3.75\",\"1.75\",\"1454880574\"],[\"3.60\",\"3.75\",\"1.83\",\"1455221779\"],[\"4.20\",\"3.80\",\"1.70\",\"1455434403\"],[\"3.60\",\"3.75\",\"1.83\",\"1455435003\"],[\"4.20\",\"3.80\",\"1.70\",\"1455435312\"]]";
 		

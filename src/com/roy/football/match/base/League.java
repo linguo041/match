@@ -32,7 +32,7 @@ public enum League {
 	YaGuan(139, 16, Company.Aomen),
 
 	BrazilJia(160, 20), BrazilCup(266, 20),
-	America(107, 20), CannadaCup(700),
+	America(107, 20), CannadaCup(700), AmericaPublic(569),
 	Argintina(108, 30),
 	Maxico(191, 18),
 	ChiLi(192, 16),

@@ -55,6 +55,6 @@ public class ExchangeCalculator{
 	}
 	
 	public static void main (String [] args) throws ParseException {
-		new ExchangeCalculator().getMatchOrder(160508053l);
+		System.out.println(new ExchangeCalculator().getMatchOrder(160508053l));
 	}
 }

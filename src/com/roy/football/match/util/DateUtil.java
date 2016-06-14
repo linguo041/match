@@ -17,6 +17,8 @@ public class DateUtil {
     /**-- add start ziczhou 2015.06.02 --*/
     /** "yyyy-MM-dd HH:mm:ss" format */
 	public static final String DATE_TIME_DATABASE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	
+	public static final String EIGHTWIN_FORMAT = "yyyy-MM-dd HH:mm";
 
 	public final static TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 	public final static TimeZone GMT_PLUS8_TIMEZONE = TimeZone.getTimeZone("GMT+8");
@@ -28,6 +30,7 @@ public class DateUtil {
     private static ThreadLocal<DateFormat> dateTimeComplexThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithDatabaseThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithSlashThread = new ThreadLocal<DateFormat>();
+    private static ThreadLocal<DateFormat> eightWinDateThread = new ThreadLocal<DateFormat>();
     
     // date format: yyyyMMdd
     public static DateFormat getSimpleDateFormat() {
@@ -35,6 +38,24 @@ public class DateUtil {
     	if (df == null) {
     		df = new SimpleDateFormat(simple_date_format);
     		simpleDateThread.set(df);
+    	}
+
+    	return df;
+    }
+
+    public static Date parseEightWinDate (String dateStr) throws ParseException {
+        return getEightWinFormat().parse(dateStr);
+    }
+
+    public static String formatEightWinDate (Date date) {
+        return getEightWinFormat().format(date);
+    }
+    
+    public static DateFormat getEightWinFormat() {
+    	DateFormat df = eightWinDateThread.get();
+    	if (df == null) {
+    		df = new SimpleDateFormat(EIGHTWIN_FORMAT);
+    		eightWinDateThread.set(df);
     	}
 
     	return df;

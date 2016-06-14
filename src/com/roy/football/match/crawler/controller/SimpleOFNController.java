@@ -24,6 +24,7 @@ import com.roy.football.match.OFN.parser.OFNParser;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.base.League;
 import com.roy.football.match.context.MatchContext;
+import com.roy.football.match.eightwin.JincaiParser;
 import com.roy.football.match.util.DateUtil;
 
 public class SimpleOFNController {
@@ -56,7 +57,7 @@ public class SimpleOFNController {
 						continue;
 					}
 
-					Future <OFNExcelData> f = executor.submit(new OFNTask(parser, calculator, outputFormater, jcMatch));
+					Future <OFNExcelData> f = executor.submit(new OFNTask(parser, ewJincaiParser, calculator, outputFormater, jcMatch));
 					
 					futures.add(f);
 				}
@@ -90,7 +91,7 @@ public class SimpleOFNController {
 	
 	public void processMatch (Long oddsmid, Long matchDayId, League league) {
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
-		OFNTask task = new OFNTask(parser, calculator, outputFormater, null);
+		OFNTask task = new OFNTask(parser, ewJincaiParser, calculator, outputFormater, null);
 		excelDatas.add(task.getOFNMatchExcelData(oddsmid, matchDayId, league.getLeagueId(), null, null));
 		writeExcel(excelDatas);
 	}
@@ -136,6 +137,7 @@ public class SimpleOFNController {
 	}
 
 	private OFNParser parser = new OFNParser();
+	private JincaiParser ewJincaiParser = new JincaiParser();
 	private OFNCalcucator calculator = new OFNCalcucator();
 	private OFNOutputFormater outputFormater = new OFNOutputFormater();
 	private PoiWriter <OFNExcelData> writer = new PoiWriter <OFNExcelData>(OFNExcelData.class);
