@@ -42,11 +42,13 @@ public enum League {
 	
 	League(int leagueId) {
 		this.leagueId = leagueId;
+		this.majorCompany = Company.William;
 	}
 	
 	League(int leagueId, int clubNum) {
 		this.leagueId = leagueId;
 		this.clubNum = clubNum;
+		this.majorCompany = Company.William;
 	}
 	
 	League(int leagueId, Company comp) {

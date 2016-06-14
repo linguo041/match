@@ -146,6 +146,12 @@ public class OFNExcelData {
 	public void setJincaiJY(String jincaiJY) {
 		this.jincaiJY = jincaiJY;
 	}
+	public String getAomen() {
+		return aomen;
+	}
+	public void setAomen(String aomen) {
+		this.aomen = aomen;
+	}
 
 
 
@@ -177,11 +183,13 @@ public class OFNExcelData {
 	private String pkKillRate;
 	@Header(order=135, title="Main_Avg Main_chg")
 	private String plMatrix;
-	@Header(order=136, title="bf jc")
-	private String bifa;
+	@Header(order=136, title="am_avg am_chg")
+	private String aomen;
 	@Header(order=137, title="avg jc chg")
 	private String jincai;
-	@Header(order=138, title="exg jc_gain")
+	@Header(order=138, title="bf jc")
+	private String bifa;
+	@Header(order=139, title="exg jc_gain")
 	private String jincaiJY;
 	@Header(order=140, title="Kill[pk |pl ~ex]")
 	private String kill;

@@ -58,8 +58,10 @@ public class OkoooMatchCrawler {
 				parseAnalyseTable(exchangeData, elIterator.next());
 			}
 			
+			System.out.println(exchangeData);
 			return exchangeData;
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return null;
@@ -86,7 +88,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setBfDrawExchange(Long.parseLong(bfDrawExchange));
 			exchangeData.setBfLoseExchange(Long.parseLong(bfLoseExchange));
 		} catch (Exception e) {
-			
+			// ignore
 		}
 		
 		try {
@@ -94,7 +96,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setJcDrawExchange(Long.parseLong(jcDrawExchange));
 			exchangeData.setJcLoseExchange(Long.parseLong(jcLoseExchange));
 		} catch (Exception e) {
-			
+			// ignore
 		}
 	}
 	

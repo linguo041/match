@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.roy.football.match.OFN.response.AsiaPl;
+import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
@@ -115,9 +116,16 @@ public class OFNOutputFormater {
 				float euJcWinChg = 0;
 				float euJcDrawChg = 0;
 				float euJcLoseChg = 0;
+				float aaWinDiff = 0;
+				float aaDrawDiff = 0;
+				float aaLoseDiff = 0;
+				float euAomenWinChg = 0;
+				float euAomenDrawChg = 0;
+				float euAomenLoseChg = 0;
 
 				EuroPl euAvg = euroMatrics.getCurrEuroAvg();
 				EuroMatrix jincai = euroMatrics.getJincaiMatrix();
+				EuroMatrix aomen = euroMatrics.getAomenMatrix();
 				if (euAvg != null) {
 					euAvgWin = euAvg.geteWin();
 					euAvgDraw = euAvg.geteDraw();
@@ -138,32 +146,51 @@ public class OFNOutputFormater {
 						euAvgWin, euAvgDraw, euAvgLose,
 						euJcWin, euJcDraw, euJcLose,
 						euJcWinChg, euJcDrawChg, euJcLoseChg));
+				
+				if (aomen != null && aomen.getCurrentEuro() != null) {
+					aaWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().geteWin(), euAvgWin, false);
+					aaDrawDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().geteDraw(), euAvgDraw, false);
+					aaLoseDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().geteLose(), euAvgLose, false);
+					euAomenWinChg = aomen.getWinChange();
+					euAomenDrawChg = aomen.getDrawChange();
+					euAomenLoseChg = aomen.getLoseChange();
+				}
+
+				excelData.setAomen(String.format("%s\n%.2f   %.2f   %.2f\n"
+												+ "%.2f   %.2f   %.2f",
+						Company.Aomen,
+						aaWinDiff, aaDrawDiff, aaLoseDiff,
+						euAomenWinChg, euAomenDrawChg, euAomenLoseChg));
 			}
 			
 			MatchExchangeData exgData = calculateResult.getExchanges();
 			if (exgData != null) {
-				if (exgData.getBfWinExchange() != null && exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 200000) {
-					excelData.setBifa(String.format("%.1f : %.1f : %.1f\n%.1f : %.1f : %.1f",
+				String bfjcRate = "";
+				if (exgData.getBfWinExchange() != null && exgData.getBfWinExgRt() != null
+						&& exgData.getJcWinExgRt() != null && exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 200000) {
+					bfjcRate = String.format("%.1f : %.1f : %.1f\n%.1f : %.1f : %.1f",
 							exgData.getBfWinExgRt() * 100,
 							exgData.getBfDrawExgRt() * 100,
 							exgData.getBfLoseExgRt() * 100,
 							exgData.getJcWinExgRt() * 100,
 							exgData.getJcDrawExgRt() * 100,
-							exgData.getJcLoseExgRt() * 100));
+							exgData.getJcLoseExgRt() * 100);
 				}
 
 				if (exgData.getJcWinExchange() != null && exgData.getJcTotalExchange() > 900000) {
-					excelData.setBifa(String.format("%.1f : %.1f : %.1f",
-							exgData.getJcWinExgRt() * 100,
-							exgData.getJcDrawExgRt() * 100,
-							exgData.getJcLoseExgRt() * 100));
-					
+					bfjcRate = bfjcRate.equals("") ? String.format("%.1f : %.1f : %.1f",
+								exgData.getJcWinExgRt() * 100,
+								exgData.getJcDrawExgRt() * 100,
+								exgData.getJcLoseExgRt() * 100)
+							: bfjcRate;
 					excelData.setJincaiJY(String.format("%.2f万\n%d   %d   %d",
 							exgData.getJcTotalExchange() / 10000f,
 							exgData.getJcWinGain(),
 							exgData.getJcDrawGain(),
 							exgData.getJcLoseGain()));
 				}
+				
+				excelData.setBifa(bfjcRate);
 			}
 			
 			PredictResult predictRes = calculateResult.getPredictResult();

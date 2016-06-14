@@ -2,6 +2,22 @@ package com.roy.football.match.okooo;
 
 public class MatchExchangeData {
 
+	@Override
+	public String toString() {
+		return "MatchExchangeData [bfWinExchange=" + bfWinExchange
+				+ ", bfDrawExchange=" + bfDrawExchange + ", bfLoseExchange="
+				+ bfLoseExchange + ", bfWinExgRt=" + bfWinExgRt
+				+ ", bfDrawExgRt=" + bfDrawExgRt + ", bfLoseExgRt="
+				+ bfLoseExgRt + ", bfWinGain=" + bfWinGain + ", bfDrawGain="
+				+ bfDrawGain + ", bfLoseGain=" + bfLoseGain
+				+ ", jcWinExchange=" + jcWinExchange + ", jcDrawExchange="
+				+ jcDrawExchange + ", jcLoseExchange=" + jcLoseExchange
+				+ ", jcWinExgRt=" + jcWinExgRt + ", jcDrawExgRt=" + jcDrawExgRt
+				+ ", jcLoseExgRt=" + jcLoseExgRt + ", jcWinGain=" + jcWinGain
+				+ ", jcDrawGain=" + jcDrawGain + ", jcLoseGain=" + jcLoseGain
+				+ "]";
+	}
+
 	public Long getBfWinExchange() {
 		return bfWinExchange;
 	}

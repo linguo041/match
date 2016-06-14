@@ -97,7 +97,7 @@ public class PoiWriter <T> implements Writer <T>{
 					|| order ==100 || order==110 || order==130 
 					|| order ==160 || order ==170) {
 				sheet.setColumnWidth(i, 6 * 512);
-			} else if (order==85 || order==138) {
+			} else if (order==85 || order==139) {
 				sheet.setColumnWidth(i, 7 * 512);
 			} else if (order == 60 || order == 70 || order==20 || order==120 || order == 135 || order == 136) {
 				sheet.setColumnWidth(i, 8 * 512);
