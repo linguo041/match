@@ -41,21 +41,25 @@ public class OFNOutputFormater {
 
 		if (calculateResult != null) {
 			ClubMatrices matrices = calculateResult.getClubMatrices();
+			StringBuilder hostGuestCompFormat = new StringBuilder();
+			List <Object> hostGuestCompArgs = new ArrayList<Object>();
+
 			if (matrices != null) {
 				excelData.setLevel(getHostLevel(matrices.getHostLevel(), matrices.getHostAllMatrix())
 						+ "\r\n" + getHostLevel(matrices.getGuestLevel(), matrices.getGuestAllMatrix()));
-
-				excelData.setBaseComp(String.format("%.1f : %.1f",
-						matrices.getHostAttGuestDefInx(),
-						matrices.getGuestAttHostDefInx()));
+				
+				hostGuestCompFormat.append("B   %.1f : %.1f");
+				hostGuestCompArgs.add(matrices.getHostAttGuestDefInx());
+				hostGuestCompArgs.add(matrices.getHostAttGuestDefInx());
 			}
 
 			MatchState matchState = calculateResult.getMatchState();
 			if (matchState != null) {
-				excelData.setStateComp(String.format("%.1f : %.1f",
-						matchState.getHostAttackToGuest(),
-						matchState.getGuestAttackToHost()));
-				
+				hostGuestCompFormat.append(hostGuestCompFormat.length() > 0 ? '\n' : "");
+				hostGuestCompFormat.append("S   %.1f : %.1f");
+				hostGuestCompArgs.add(matchState.getHostAttackToGuest());
+				hostGuestCompArgs.add(matchState.getGuestAttackToHost());
+
 				Float hotPoint = calculateResult.getHotPoint();
 				excelData.setStateVariation(String.format("%.1f | %.1f, %.1f",
 						hotPoint, matchState.getHostAttackVariationToGuest(),
@@ -69,12 +73,18 @@ public class OFNOutputFormater {
 			if (jiaoshouMatrices != null) {
 				latestPk = jiaoshouMatrices.getLatestPankou();
 				if (jiaoshouMatrices.getMatchNum() > 3) {
-					excelData.setJsComp(String.format("%.2f | %.1f : %.1f",
-							latestPk > 0.8 ? jiaoshouMatrices.getWinPkRate() : jiaoshouMatrices.getWinRate(),
-							jiaoshouMatrices.getHgoalPerMatch(),
-							jiaoshouMatrices.getGgoalPerMatch()));
+					hostGuestCompFormat.append(hostGuestCompFormat.length() > 0 ? '\n' : "");
+					hostGuestCompFormat.append("J   %.1f : %.1f | %.2f");
+					hostGuestCompArgs.add(jiaoshouMatrices.getHgoalPerMatch());
+					hostGuestCompArgs.add(jiaoshouMatrices.getGgoalPerMatch());
+					hostGuestCompArgs.add(jiaoshouMatrices.getWinRate());
 				}
 			}
+
+			if (hostGuestCompArgs.size() > 0) {
+				excelData.setHostGuestComp(String.format(hostGuestCompFormat.toString(), hostGuestCompArgs.toArray()));
+			}
+			
 			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
 
 			PankouMatrices pkmatrices = calculateResult.getPkMatrices();

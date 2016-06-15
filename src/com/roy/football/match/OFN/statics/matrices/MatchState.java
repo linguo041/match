@@ -182,7 +182,7 @@ public class MatchState implements CalculateResult, MatchData {
 		private Float matchGoal;
 		private Float matchMiss;
 		private Float point;
-		private Float gVariation;
-		private Float mVariation;
+		private Float gVariation;                // goal
+		private Float mVariation;                // miss
 	}
 }

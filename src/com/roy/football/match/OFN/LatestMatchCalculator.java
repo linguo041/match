@@ -19,23 +19,30 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 
 	@Override
 	public MatchState calucate(OFNMatchData matchData) {
-		if (matchData != null) {
-			ClubDatas clubData = matchData.getBaseData();
-
-			if (clubData != null) {
-				MatchState matchState = new MatchState();
-
-				calculateMatchMatrices(matchState, matchData.getHostMatches(), matchData.getHostId(), matchData.getMatchTime(), clubData.getHostData(), true);
-				calculateMatchMatrices(matchState, matchData.getGuestMatches(), matchData.getGuestId(), matchData.getMatchTime(), clubData.getGuestData(), false);
-				matchState.setCalculatePk(getPankouByFinishedMatches(matchData));
-
-				calMatchStateIndex(matchState);
-				
-				return matchState;
-			}
-
+		if (matchData == null) {
+			return null;
 		}
-		return null;
+
+		MatchState matchState = new MatchState();
+		ClubDatas clubData = matchData.getBaseData();
+		ClubData hostClubData = null;
+		ClubData guestClubData = null;
+
+		League le = League.getLeagueById(matchData.getLeagueId());
+
+		if (clubData != null) {
+			hostClubData = clubData.getHostData();
+			guestClubData = clubData.getGuestData();
+		}
+
+		calculateMatchMatrices(matchState, matchData.getHostMatches(),
+				matchData.getHostId(), matchData.getMatchTime(), hostClubData, true, le);
+		calculateMatchMatrices(matchState, matchData.getGuestMatches(),
+				matchData.getGuestId(), matchData.getMatchTime(), guestClubData, false, le);
+		matchState.setCalculatePk(getPankouByFinishedMatches(matchData, le));
+
+		calMatchStateIndex(matchState);
+		return matchState;
 	}
 
 	@Override
@@ -64,20 +71,15 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matchState.setGuestAttackVariationToHost(gvariation);
 	}
 	
-	private Float getPankouByFinishedMatches (OFNMatchData matchData) {
+	private Float getPankouByFinishedMatches (OFNMatchData matchData, League le) {
 		Long hostId = matchData.getHostId();
 		Long guestId = matchData.getGuestId();
 		List<FinishedMatch> hMatches = matchData.getHostMatches();
 		List<FinishedMatch> gMatches = matchData.getGuestMatches();
 
 		int comparedMatches = 16;
-		try {
-			League le = League.getLeagueById(matchData.getLeagueId());
-			if (le != null) {
-				comparedMatches = (int)(le.getClubNum() * 0.8);
-			}
-		} catch (Exception e) {
-			
+		if (le != null && le.getClubNum() > 0) {
+			comparedMatches = (int)(le.getClubNum() * 0.8);
 		}
 		
 		List <Float> calPankous = new ArrayList<Float>();
@@ -163,7 +165,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 	
 	private void calculateMatchMatrices (MatchState matchState,
-			List<FinishedMatch> matches, Long teamId, Date matchDate, ClubData club, boolean isHost) {
+			List<FinishedMatch> matches, Long teamId, Date matchDate, ClubData club, boolean isHost, League league) {
 		if (matchState != null && matches != null && matches.size() > 0) {
 			int winNum = 0;
 			int drawNum = 0;
@@ -191,86 +193,84 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			for (int i = 0; i < matches.size(); i++) {
 				FinishedMatch match = matches.get(i);
 				
-				// not friendly
-				if (!match.getLeagueId().equals(League.Friendly.getLeagueId())) {
-					if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, i)
-							|| matchDate.getTime() <= match.getMatchTime().getTime()) {
-						continue;
-					}
-					
-					float point = 0;
-
-					// home match
-					if (teamId.equals(match.getHostId())) {
-						if (match.getHscore() > match.getAscore()) {
-							winNum ++;
-							point = 3;
-						} else if (match.getHscore() == match.getAscore()) {
-							drawNum ++;
-							point = 1;
-						} else {
-							loseNum ++;
-						}
-
-						goals += match.getHscore();
-						misses += match.getAscore();
-						
-						if (checkVariation) {
-							gVariation += Math.abs(match.getHscore() - goalPerMatch);
-							mVariation += Math.abs(match.getAscore() - missPerMatch);
-						}
-						
-						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
-							winPkNum ++;
-							if (point != 3) {
-								point += 0.5;
-							}
-						} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
-							drawPkNum ++;
-						} else {
-							losePkNum ++;
-							if (point != 0) {
-								point -= 0.5;
-							}
-						}
-					} else { // away match
-						if (match.getAscore() > match.getHscore()) {
-							winNum ++;
-							point = 3;
-						} else if (match.getAscore() == match.getHscore()) {
-							drawNum ++;
-							point = 1;
-						} else {
-							loseNum ++;
-						}
-
-						goals += match.getAscore();
-						misses += match.getHscore();
-						
-						if (checkVariation) {
-							gVariation += Math.abs(match.getAscore() - goalPerMatch);
-							mVariation += Math.abs(match.getHscore() - missPerMatch);
-						}
-						
-						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
-							winPkNum ++;
-							if (point != 3) {
-								point += 0.5;
-							}
-						} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
-							drawPkNum ++;
-						} else {
-							losePkNum ++;
-							if (point != 0) {
-								point -= 0.5;
-							}
-						}
-					}
-					
-					allNum ++;
-					points += point;
+				if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, i,
+							league.isState() ? MatchUtil.STATE_LATEST_MIN_MATCH_DAY : MatchUtil.CLUB_LATEST_MIN_MATCH_DAY)
+						|| matchDate.getTime() <= match.getMatchTime().getTime()) {
+					continue;
 				}
 				
+				float point = 0;
+
+				// home match
+				if (teamId.equals(match.getHostId())) {
+					if (match.getHscore() > match.getAscore()) {
+						winNum ++;
+						point = 3;
+					} else if (match.getHscore() == match.getAscore()) {
+						drawNum ++;
+						point = 1;
+					} else {
+						loseNum ++;
+					}
+
+					goals += match.getHscore();
+					misses += match.getAscore();
+					
+					if (checkVariation) {
+						gVariation += Math.abs(match.getHscore() - goalPerMatch);
+						mVariation += Math.abs(match.getAscore() - missPerMatch);
+					}
+					
+					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
+						winPkNum ++;
+						if (point != 3) {
+							point += 0.5;
+						}
+					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
+						drawPkNum ++;
+					} else {
+						losePkNum ++;
+						if (point != 0) {
+							point -= 0.5;
+						}
+					}
+				} else { // away match
+					if (match.getAscore() > match.getHscore()) {
+						winNum ++;
+						point = 3;
+					} else if (match.getAscore() == match.getHscore()) {
+						drawNum ++;
+						point = 1;
+					} else {
+						loseNum ++;
+					}
+
+					goals += match.getAscore();
+					misses += match.getHscore();
+					
+					if (checkVariation) {
+						gVariation += Math.abs(match.getAscore() - goalPerMatch);
+						mVariation += Math.abs(match.getHscore() - missPerMatch);
+					}
+					
+					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
+						winPkNum ++;
+						if (point != 3) {
+							point += 0.5;
+						}
+					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
+						drawPkNum ++;
+					} else {
+						losePkNum ++;
+						if (point != 0) {
+							point -= 0.5;
+						}
+					}
+				}
+				
+				allNum ++;
+				points += point;
+
 				// calculate the latest 6 matches
 				if (allNum == 5) {
 					if (isHost) {

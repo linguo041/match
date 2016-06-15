@@ -3,14 +3,14 @@ package com.roy.football.match.base;
 import com.roy.football.match.OFN.response.Company;
 
 public enum League {
-	Friendly(166),
-	Country(61), 
-	EuroYuYuan(175, 6),
-	EuroJingBiao(87, 4),
-	AsiaYu(161, Company.Aomen),
-	BoluoCup(704),
-	MeiZhouCup(162),
-	ANYMOUS1(297),
+	Friendly(166, true),
+	Country(61, true), 
+	EuroYuYuan(175, true),
+	EuroJingBiao(87, true),
+	AsiaYu(161, Company.Aomen, true),
+	BoluoCup(704, true),
+	MeiZhouCup(162, true),
+	ANYMOUS1(297, true),
 	
 	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William), YingZhuZong(55, 20, Company.William),
 	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William), ShuZhuZong(145, 10, Company.William),
@@ -45,6 +45,12 @@ public enum League {
 		this.majorCompany = Company.William;
 	}
 	
+	League(int leagueId, boolean state) {
+		this.leagueId = leagueId;
+		this.majorCompany = Company.William;
+		this.state = state;
+	}
+	
 	League(int leagueId, int clubNum) {
 		this.leagueId = leagueId;
 		this.clubNum = clubNum;
@@ -54,6 +60,12 @@ public enum League {
 	League(int leagueId, Company comp) {
 		this.leagueId = leagueId;
 		this.majorCompany = comp;
+	}
+	
+	League(int leagueId, Company comp, boolean state) {
+		this.leagueId = leagueId;
+		this.majorCompany = comp;
+		this.state = state;
 	}
 	
 	League(int leagueId, int clubNum, Company comp) {
@@ -95,7 +107,18 @@ public enum League {
 		this.majorCompany = majorCompany;
 	}
 
+	public boolean isState() {
+		return state;
+	}
+
+	public void setState(boolean state) {
+		this.state = state;
+	}
+
+
+
 	private Company majorCompany;
 	private long leagueId;
 	private int clubNum;
+	private boolean state;
 }

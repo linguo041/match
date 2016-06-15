@@ -23,6 +23,8 @@ public class MatchUtil {
 	public final static Character DOWN_ARROW = '↓';
 	public final static long DAY_TIME = 86400000;
 	public final static long YEAR_TIME = 86400 * 900; // unit is second
+	public final static int CLUB_LATEST_MIN_MATCH_DAY = 17;
+	public final static int STATE_LATEST_MIN_MATCH_DAY = 168;
 	
 	public final static String simple_date_format = "yyMMdd";
 
@@ -106,7 +108,7 @@ public class MatchUtil {
 	}
 	
 	public static boolean isMatchTooOld (Date matchDate, Date currentDate, int indicator) {
-		return isMatchTooOld(matchDate, currentDate, indicator, 17);
+		return isMatchTooOld(matchDate, currentDate, indicator, CLUB_LATEST_MIN_MATCH_DAY);
 	}
 	
 	public static boolean isMatchTooOld (Date matchDate, Date currentDate, int indicator, int init) {

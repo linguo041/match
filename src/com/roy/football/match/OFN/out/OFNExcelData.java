@@ -68,18 +68,11 @@ public class OFNExcelData {
 	public void setPredictScore(String predictScore) {
 		this.predictScore = predictScore;
 	}
-
-	public String getBaseComp() {
-		return baseComp;
+	public String getHostGuestComp() {
+		return hostGuestComp;
 	}
-	public void setBaseComp(String baseComp) {
-		this.baseComp = baseComp;
-	}
-	public String getStateComp() {
-		return stateComp;
-	}
-	public void setStateComp(String stateComp) {
-		this.stateComp = stateComp;
+	public void setHostGuestComp(String hostGuestComp) {
+		this.hostGuestComp = hostGuestComp;
 	}
 	public String getStateVariation() {
 		return stateVariation;
@@ -87,13 +80,6 @@ public class OFNExcelData {
 	public void setStateVariation(String stateVariation) {
 		this.stateVariation = stateVariation;
 	}
-	public String getJsComp() {
-		return jsComp;
-	}
-	public void setJsComp(String jsComp) {
-		this.jsComp = jsComp;
-	}
-
 	public String getPlMatrix() {
 		return plMatrix;
 	}
@@ -167,18 +153,14 @@ public class OFNExcelData {
 	private String level;
 //	@Header(order=70, title="Guest Level [winRt, winGoal]")
 //	private String guestLevel;
-	@Header(order=80, title="Base [H:G]")
-	private String baseComp;
-	@Header(order=85, title="JS [H:G]")
-	private String jsComp;
-	@Header(order=90, title="State [H:G]")
-	private String stateComp;
+	@Header(order=80, title="H:G Base State JS")
+	private String hostGuestComp;
+	@Header(order=90, title="Hot | goal_chg{H:G} ")
+	private String stateVariation;
 	@Header(order=100, title="Main, curr")
 	private String originPanKou;
 	@Header(order=110, title="Predict PK [Latest]")
 	private String predictPanKou;
-	@Header(order=120, title="Hot | goal_chg{H:G} ")
-	private String stateVariation;
 	@Header(order=130, title="K_PK[Up, Down]")
 	private String pkKillRate;
 	@Header(order=135, title="Main_Avg Main_chg")
