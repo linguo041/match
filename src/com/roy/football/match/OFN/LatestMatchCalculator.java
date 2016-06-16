@@ -272,7 +272,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				points += point;
 
 				// calculate the latest 6 matches
-				if (allNum == 5) {
+				if (allNum <= 6) {
 					if (isHost) {
 						matchState.setHostState6(setMatchMatricesData(winNum,
 								drawNum, loseNum, allNum, goals, misses,
@@ -287,7 +287,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				}
 				
 				// calculate the latest 10 matches
-				if (allNum == 9) {
+				if (allNum == 10) {
 					if (isHost) {
 						matchState.setHostState10(setMatchMatricesData(winNum,
 								drawNum, loseNum, allNum, goals, misses,
