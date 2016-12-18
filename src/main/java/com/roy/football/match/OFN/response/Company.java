@@ -8,6 +8,10 @@ public enum Company {
 		setCompanyId(cid);
 		setPaidLevel(paidLevel);
 	}
+	
+	public String toString () {
+		return this.name();
+	}
 
 	public Long getCompanyId() {
 		return companyId;

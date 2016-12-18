@@ -11,7 +11,7 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	public String toString() {
 		return "OFNCalculateResult [league=" + league + ", clubMatrices="
 				+ clubMatrices + ", jiaoShou=" + jiaoShou + ", matchState="
-				+ matchState + ", hotPoint=" + hotPoint + ", pkMatrices="
+				+ matchState + ", pkMatrices="
 				+ pkMatrices + ", dxMatrices=" + dxMatrices
 				+ ", predictPanKou=" + predictPanKou + ", predictResult="
 				+ predictResult + ", euroMatrices=" + euroMatrices
@@ -69,14 +69,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.league = league;
 	}
 
-	public Float getHotPoint() {
-		return hotPoint;
-	}
-
-	public void setHotPoint(Float hotPoint) {
-		this.hotPoint = hotPoint;
-	}
-
 	public DaxiaoMatrices getDxMatrices() {
 		return dxMatrices;
 	}
@@ -105,7 +97,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private ClubMatrices clubMatrices;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
-	private Float hotPoint;
 	private PankouMatrices pkMatrices;
 	private DaxiaoMatrices dxMatrices;
 	private Float predictPanKou;

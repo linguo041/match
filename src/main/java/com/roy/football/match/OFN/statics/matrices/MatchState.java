@@ -91,6 +91,15 @@ public class MatchState implements CalculateResult, MatchData {
 	}
 
 
+	public Float getHotPoint() {
+		return hotPoint;
+	}
+
+	public void setHotPoint(Float hotPoint) {
+		this.hotPoint = hotPoint;
+	}
+
+
 	private LatestMatchMatrices hostState6;
 	private LatestMatchMatrices guestState6;
 	private LatestMatchMatrices hostState10;
@@ -100,6 +109,7 @@ public class MatchState implements CalculateResult, MatchData {
 	private Float hostAttackVariationToGuest;
 	private Float guestAttackVariationToHost;
 	private Float calculatePk;
+	private Float hotPoint;
 	
 	public static class LatestMatchMatrices {
 

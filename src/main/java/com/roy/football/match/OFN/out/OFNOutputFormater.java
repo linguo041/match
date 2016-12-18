@@ -63,7 +63,7 @@ public class OFNOutputFormater {
 				hostGuestCompArgs.add(matchState.getHostAttackToGuest());
 				hostGuestCompArgs.add(matchState.getGuestAttackToHost());
 
-				Float hotPoint = calculateResult.getHotPoint();
+				Float hotPoint = matchState.getHotPoint();
 				excelData.setStateVariation(String.format("%.1f | %.1f, %.1f",
 						hotPoint, matchState.getHostAttackVariationToGuest(),
 						matchState.getGuestAttackVariationToHost()));

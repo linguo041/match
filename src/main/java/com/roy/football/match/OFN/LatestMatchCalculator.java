@@ -45,6 +45,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matchState.setCalculatePk(getPankouByFinishedMatches(matchData, le));
 
 		calMatchStateIndex(matchState);
+		
+		calucateHotDiff(matchState);
+		
 		return matchState;
 	}
 
@@ -52,6 +55,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	public void calucate(MatchState Result, OFNMatchData matchData) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private void calucateHotDiff (MatchState matchState) {
+		float pointDiff = 0;
+
+		if (matchState != null) {
+			LatestMatchMatrices host6Match = matchState.getHostState6();
+			LatestMatchMatrices guest6Match = matchState.getGuestState6();
+			if (host6Match != null && guest6Match != null) {
+				pointDiff = host6Match.getPoint() - guest6Match.getPoint();
+			}
+		}
+
+		matchState.setHotPoint(pointDiff);
 	}
 	
 	private void calMatchStateIndex (MatchState matchState) {

@@ -150,7 +150,7 @@ public class PankouKillPromoter {
 				predictPk = calResult.getJiaoShou().getLatestPankou();
 			}
 
-			Float hotPoint = calResult.getHotPoint();
+			Float hotPoint = calResult.getMatchState().getHotPoint();
 			League league = calResult.getLeague();
 
 			if (pkMatrices != null) {
@@ -187,7 +187,7 @@ public class PankouKillPromoter {
 			predictPk = calResult.getJiaoShou().getLatestPankou();
 		}
 		
-		Float hotPoint = calResult.getHotPoint();
+		Float hotPoint = calResult.getMatchState().getHotPoint();
 		League league = calResult.getLeague();
 		
 		if (pkMatrices != null) {
@@ -219,7 +219,7 @@ public class PankouKillPromoter {
 			MatchExchangeData exchange = calResult.getExchanges();
 			EuroMatrices euroMatrices= calResult.getEuroMatrices();
 
-			Float hotPoint = calResult.getHotPoint();
+			Float hotPoint = matchState.getHotPoint();
 			League league = calResult.getLeague();
 
 			if (predictPk == null && calResult.getJiaoShou() != null) {
@@ -249,7 +249,7 @@ public class PankouKillPromoter {
 		MatchExchangeData exchange = calResult.getExchanges();
 		EuroMatrices euroMatrices= calResult.getEuroMatrices();
 		
-		Float hotPoint = calResult.getHotPoint();
+		Float hotPoint = matchState.getHotPoint();
 		League league = calResult.getLeague();
 
 		Set<ResultGroup> promoteGps = new TreeSet<ResultGroup> ();

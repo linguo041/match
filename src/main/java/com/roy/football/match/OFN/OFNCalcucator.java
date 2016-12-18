@@ -67,7 +67,6 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		
 		MatchState matchState = latestMatchCalculator.calucate(matchData);
 		calResult.setMatchState(matchState);
-		calResult.setHotPoint(getHotDiff(matchState));
 		
 		PankouMatrices pkMatrices = pankouCalculator.calucate(matchData);
 		calResult.setPkMatrices(pkMatrices);
@@ -160,19 +159,5 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		}
 		
 		return pkWeight;
-	}
-
-	private float getHotDiff (MatchState matchState) {
-		float pointDiff = 0;
-
-		if (matchState != null) {
-			LatestMatchMatrices host6Match = matchState.getHostState6();
-			LatestMatchMatrices guest6Match = matchState.getGuestState6();
-			if (host6Match != null && guest6Match != null) {
-				pointDiff = host6Match.getPoint() - guest6Match.getPoint();
-			}
-		}
-
-		return pointDiff;
 	}
 }
