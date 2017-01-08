@@ -1,10 +1,11 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
 import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
@@ -12,15 +13,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "match_jiaoshou", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
+@Table(name = "match_jiaoshou")
 public class EJiaoShou implements Serializable{
 
 	private static final long serialVersionUID = -1408900607270383128L;
 	
+	@Id
 	@Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
 

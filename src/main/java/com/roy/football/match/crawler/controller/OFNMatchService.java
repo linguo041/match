@@ -38,6 +38,7 @@ import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.context.MatchContext;
 import com.roy.football.match.eightwin.EWJincaiParser;
+import com.roy.football.match.jpa.service.MatchPersistService;
 import com.roy.football.match.util.DateUtil;
 
 @Service
@@ -53,6 +54,9 @@ public class OFNMatchService {
 	private OFNCalcucator calculator;
 	@Autowired
 	private OFNOutputFormater outputFormater;
+	
+	@Autowired
+	private MatchPersistService matchPersistService;
 
 	@Autowired
 	public ExecutorService calculateExecutorService;
@@ -149,6 +153,11 @@ public class OFNMatchService {
 
 			// calculate
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);
+			
+			// TODO - split
+			if (matchPersistService != null) {
+				matchPersistService.save(ofnMatch, calculateResult);
+			}
 
 			return outputFormater.format(ofnMatch, calculateResult);
 		} catch (Exception e) {

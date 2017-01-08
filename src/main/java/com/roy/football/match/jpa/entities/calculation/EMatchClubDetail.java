@@ -1,4 +1,4 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
@@ -16,18 +18,21 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "match_club_detail", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
+@Table(name = "match_club_detail")
+@IdClass(value = EMatchClubDetail.EMatchClubDetailPk.class)
 public class EMatchClubDetail implements Serializable{
 
 	private static final long serialVersionUID = -3033658090621553898L;
 	
+	@Id
 	@Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
-	
+
+	@Id
+	@Column(name = "team_id", nullable = false)
+    private Long teamId;
+
+	@Id
 	@Column(name = "type", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private MatrixType type;
@@ -52,4 +57,12 @@ public class EMatchClubDetail implements Serializable{
 	private Integer pm;             // pai ming
 	@Column(name = "score")
 	private Integer point;          // scores(win-3, draw-1, lose-0)
+	
+	@Data
+	public static class EMatchClubDetailPk implements Serializable{
+		private static final long serialVersionUID = 1L;
+		private Long ofnMatchId;
+	    private Long teamId;
+		private MatrixType type;
+	}
 }

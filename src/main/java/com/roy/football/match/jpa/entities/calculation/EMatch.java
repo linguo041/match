@@ -1,4 +1,4 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.OneToMany;
@@ -21,23 +23,19 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "matches", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
+@Table(name = "matches")
 public class EMatch implements Serializable{
 
 	private static final long serialVersionUID = -2092993255372976173L;
+	
+//    @Column(name = "match_id", nullable = false)
+//    private Long matchId;
 
-	@Id
-    @Column(name = "match_id", nullable = false)
-    private Long matchId;
-
+    @Id
     @Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
     
-    @Column(name = "okooo_match_id", nullable = true)
+    @Column(name = "okooo_match_id")
     private Long okoooMatchId;
     
     @Column(name = "match_day_id", nullable = false)
@@ -47,8 +45,9 @@ public class EMatch implements Serializable{
     @Column(name = "match_time", nullable = false)
     private Date matchTime;
     
-    @Column(name = "league_id", nullable = false)
-	private Long leagueId;
+    @Column(name = "league", nullable = false)
+    @Enumerated(EnumType.STRING)
+	private League league;
     
     @Column(name = "host_id", nullable = false)
     private Long hostId;
@@ -61,7 +60,4 @@ public class EMatch implements Serializable{
     
     @Column(name = "guest_name", nullable = false)
 	private String guestName;
-    
-    @Column(name = "predict_pk")
-    private Float predictPk;
 }

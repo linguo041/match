@@ -1,4 +1,4 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
 import java.io.Serializable;
 
@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
@@ -17,11 +18,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "match_company_euro", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
+@Table(name = "match_company_euro")
+@IdClass(value = EEuroPlCompany.EEuroPlCompanyPk.class)
 public class EEuroPlCompany implements Serializable{
 
 	private static final long serialVersionUID = -538324314048341206L;
@@ -30,6 +28,7 @@ public class EEuroPlCompany implements Serializable{
 	@Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
 	
+	@Id
 	@Column(name = "company", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private Company company;
@@ -56,15 +55,23 @@ public class EEuroPlCompany implements Serializable{
 	private Float currentELose;
 	
 	@Column(name = "win_change_per_hour")
-	private float winChange;
+	private Float winChange;
 	@Column(name = "draw_change_per_hour")
-	private float drawChange;
+	private Float drawChange;
 	@Column(name = "lose_change_per_hour")
-	private float loseChange;
+	private Float loseChange;
 	@Column(name = "short_main_win_diff")
-	private float smWinDiff;
+	private Float smWinDiff;
 	@Column(name = "short_main_draw_diff")
-	private float smDrawDiff;
+	private Float smDrawDiff;
 	@Column(name = "short_main_lose_diff")
-	private float smLoseDiff;
+	private Float smLoseDiff;
+	
+	@Data
+	public static class EEuroPlCompanyPk implements Serializable{
+
+		private static final long serialVersionUID = 1L;
+		private Long ofnMatchId;
+		private Company company;
+	}
 }

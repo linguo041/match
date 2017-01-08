@@ -14,10 +14,11 @@ import org.springframework.context.annotation.Import;
 import com.roy.football.batch.BatchPackageScanned;
 import com.roy.football.batch.tasklet.MatchCalculationTasklet;
 import com.roy.football.match.MatchConfiguration;
+import com.roy.football.match.jpa.configure.MatchJpaConfiguration;
 
 
 @Configuration
-@Import({BaseBatchConfiguration.class, MatchConfiguration.class})
+@Import({BaseBatchConfiguration.class, MatchConfiguration.class, MatchJpaConfiguration.class})
 @ComponentScan(basePackageClasses = { BatchPackageScanned.class})
 public class MatchCalculationJobConfiguration {
 	@Bean

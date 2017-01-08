@@ -1,25 +1,22 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
 import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Index;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "match_panko", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
-public class EAsiaPk implements Serializable{
-	
-	private static final long serialVersionUID = 4187482226757793530L;
-	
+@Table(name = "match_daxiao_pk")
+public class EDaXiaoPk implements Serializable{
+
+	private static final long serialVersionUID = -683234055386222084L;
+
+	@Id
 	@Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
 	
@@ -42,10 +39,10 @@ public class EAsiaPk implements Serializable{
 	@Column(name = "current_pk")
 	private Float currentPk;
 	
-	@Column(name = "home_win_change_rate")
-	private Float hwinChangeRate;
-	@Column(name = "away_win_change_rate")
-	private Float awinChangeRate;
+	@Column(name = "da_change_rate")
+	private Float daChangeRate;
+	@Column(name = "xiao_change_rate")
+	private Float xiaoChangeRate;
 	@Column(name = "hours")
 	private Float hours;
 }

@@ -1,4 +1,4 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,11 +13,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "match_exchange", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
+@Table(name = "match_exchange")
 public class EExchange implements Serializable{
 
 	private static final long serialVersionUID = 4720010635518886966L;

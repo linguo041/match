@@ -1,6 +1,8 @@
-package com.roy.football.match.entities.calculation;
+package com.roy.football.match.jpa.entities.calculation;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,7 +14,9 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.roy.football.match.base.League;
 import com.roy.football.match.base.TeamLabel;
 import com.roy.football.match.base.TeamLevel;
 
@@ -20,19 +24,17 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "match_club_state", indexes =
-    {
-        @Index(name = "", columnList = "")
-    }
-)
-public class EMatchClubState {
-	
+@Table(name = "match_club_state")
+public class EMatchClubState implements Serializable{
+
+	private static final long serialVersionUID = 6253082811418037813L;
+
 	@Id
 	@Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
 	
-	@Column(name = "league_id", nullable = false)
-	private Long leagueId;
+	@Column(name = "league")
+	private League league;
 	
 	@Column(name = "host_id", nullable = false)
     private Long hostId;
@@ -40,9 +42,10 @@ public class EMatchClubState {
 	@Column(name = "guest_id", nullable = false)
     private Long guestId;
 	
-	@OneToMany(cascade={CascadeType.ALL})
-	@JoinColumn(name="ofn_match_id")
-	private List<EMatchClubDetail> clubStateDetails;
+//	@OneToMany(cascade={CascadeType.ALL})
+//	@JoinColumn(name="ofn_match_id")
+	@Transient
+	private Set<EMatchClubDetail> clubStateDetails;
 	
 	@Column(name = "host_level")
 	@Enumerated(EnumType.STRING)
