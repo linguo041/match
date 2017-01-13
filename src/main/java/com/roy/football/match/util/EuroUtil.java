@@ -1,5 +1,7 @@
 package com.roy.football.match.util;
 
+import java.util.Map;
+
 import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
@@ -8,36 +10,35 @@ import com.roy.football.match.base.League;
 public class EuroUtil {
 	public static EuroMatrix getMainEuro (EuroMatrices euroMatrices, League league) {
 		Company company = league.getMajorCompany();
+		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
 		if (company != null) {
 			switch (company) {
 				case Aomen:
-					return euroMatrices.getAomenMatrix();
 				case SNAI:
-					return euroMatrices.getSnaiMatrix();
 				case Sweden:
-					return euroMatrices.getSwedenMatrix();
+					break;
 				default:
-					return euroMatrices.getWilliamMatrix();
+					company = Company.William;
 			}
 		}
 
-		return euroMatrices.getWilliamMatrix();
+		return companyEus.get(company);
 	}
 
 	public static EuroMatrix getHighPaidEuro (EuroMatrices euroMatrices, League league) {
 		Company company = league.getMajorCompany();
+		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
 		if (company != null) {
 			switch (company) {
 				case SNAI:
-					return euroMatrices.getSnaiMatrix();
 				case Sweden:
-					return euroMatrices.getSwedenMatrix();
+					return companyEus.get(company);
 				default:
-					return euroMatrices.getWilliamMatrix();
+					return companyEus.get(Company.William);
 			}
 		}
 
-		return euroMatrices.getWilliamMatrix();
+		return companyEus.get(Company.William);
 	}
 	
 	public static boolean isAomenTheMajor (League league) {

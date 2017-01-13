@@ -1,10 +1,12 @@
 package com.roy.football.match.OFN;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.roy.football.match.OFN.response.AsiaPl;
+import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.DaxiaoMatrices;
@@ -345,11 +347,12 @@ public class PankouKillPromoter {
 	private void killByEuro (Set<ResultGroup> killGps, EuroMatrices euMatrices, PankouMatrices pkMatrices, League league) {
 
 		if (euMatrices != null && pkMatrices != null) {
-			EuroMatrix will = euMatrices.getWilliamMatrix();
-			EuroMatrix lab = euMatrices.getLadMatrix();
-			EuroMatrix aomen = euMatrices.getAomenMatrix();
+			Map<Company, EuroMatrix> companyEus = euMatrices.getCompanyEus();
+			EuroMatrix will = companyEus.get(Company.William);
+			EuroMatrix lab = companyEus.get(Company.Ladbrokes);
+			EuroMatrix aomen = companyEus.get(Company.Aomen);
 			EuroPl euroAvg = euMatrices.getCurrEuroAvg();
-			EuroMatrix jincai = euMatrices.getJincaiMatrix();
+			EuroMatrix jincai = companyEus.get(Company.Jincai);
 			EuroMatrix majorComp = EuroUtil.getMainEuro(euMatrices, league);
 			
 			AsiaPl aomenCurrPk = pkMatrices.getCurrentPk();
@@ -624,8 +627,9 @@ public class PankouKillPromoter {
 			OFNCalculateResult calResult) {
 		MatchExchangeData exchange = calResult.getExchanges();
 		EuroMatrices euroMatrices = calResult.getEuroMatrices();
-		EuroMatrix jincaiMatrix = euroMatrices.getJincaiMatrix();
-		EuroMatrix aomenMatrix = euroMatrices.getAomenMatrix();
+		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
+		EuroMatrix jincaiMatrix = companyEus.get(Company.Jincai);
+		EuroMatrix aomenMatrix = companyEus.get(Company.Aomen);
 		Set<ResultGroup> exRes = killPromoteResult.getKillByExchange();
 
 		if (exRes == null) {
@@ -703,6 +707,9 @@ public class PankouKillPromoter {
 		if (rgs == null) {
 			rgs = new TreeSet<ResultGroup> ();
 		}
+		
+		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
+		EuroMatrix jincaiMatrix = companyEus.get(Company.Jincai);
 
 		float hostAttGuestDefComp = clubMatrices.getHostAttGuestDefInx();
 		float guestAttHostDefComp = clubMatrices.getGuestAttHostDefInx();
@@ -712,7 +719,7 @@ public class PankouKillPromoter {
 			// host is so good --> win
 			if (hostAttGuestDefComp > 1.6 * guestAttHostDefComp) {
 				if (main.gethWin() < 0.92 && current.gethWin() <= main.gethWin()) {
-					Boolean jcSupport = isJcExchangePromote(exchange, euroMatrices.getJincaiMatrix(), ResultGroup.Three);;
+					Boolean jcSupport = isJcExchangePromote(exchange, jincaiMatrix, ResultGroup.Three);;
 					
 					if (jcSupport == null || jcSupport) {
 						rgs.add(ResultGroup.Three);
@@ -725,7 +732,7 @@ public class PankouKillPromoter {
 			// guest is so good
 			if (guestAttHostDefComp >= 1.25 * hostAttGuestDefComp) {
 				if (main.getaWin() < 0.92 && current.getaWin() <= main.getaWin()) {
-					Boolean jcSupport = isJcExchangePromote(exchange, euroMatrices.getJincaiMatrix(), ResultGroup.Zero);
+					Boolean jcSupport = isJcExchangePromote(exchange, jincaiMatrix, ResultGroup.Zero);
 					
 					if (jcSupport == null || jcSupport) {
 						rgs.add(ResultGroup.Zero);
@@ -771,7 +778,8 @@ public class PankouKillPromoter {
 			LatestMatchMatrices host6Match = matchState.getHostState6();
 			LatestMatchMatrices guest6Match = matchState.getGuestState6();
 			
-			EuroMatrix aomenEu = euroMatrices.getAomenMatrix();
+			Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
+			EuroMatrix aomenEu = companyEus.get(Company.Aomen);
 			
 			if (host6Match == null || guest6Match == null) {
 				return rgs;
@@ -997,10 +1005,11 @@ public class PankouKillPromoter {
 	private void promoteByEuro (Set<ResultGroup> promoteGps, EuroMatrices euMatrices, Float predictPkRt, PankouMatrices pkMatrices, League league) {
 
 		if (euMatrices != null) {
-			EuroMatrix will = euMatrices.getWilliamMatrix();
-			EuroMatrix lab = euMatrices.getLadMatrix();
-			EuroMatrix aomen = euMatrices.getAomenMatrix();
-			EuroMatrix jincai = euMatrices.getJincaiMatrix();
+			Map<Company, EuroMatrix> companyEus = euMatrices.getCompanyEus();
+			EuroMatrix will = companyEus.get(Company.William);
+			EuroMatrix lab = companyEus.get(Company.Ladbrokes);
+			EuroMatrix aomen = companyEus.get(Company.Aomen);
+			EuroMatrix jincai = companyEus.get(Company.Jincai);
 			EuroPl euroAvg = euMatrices.getCurrEuroAvg();
 			EuroMatrix majorComp = EuroUtil.getHighPaidEuro(euMatrices, league);
 			AsiaPl aomenCurrPk = pkMatrices.getCurrentPk();

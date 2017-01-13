@@ -4,6 +4,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Component;
@@ -137,8 +138,9 @@ public class OFNOutputFormater {
 				float euAomenLoseChg = 0;
 
 				EuroPl euAvg = euroMatrics.getCurrEuroAvg();
-				EuroMatrix jincai = euroMatrics.getJincaiMatrix();
-				EuroMatrix aomen = euroMatrics.getAomenMatrix();
+				Map<Company, EuroMatrix> companyEus = euroMatrics.getCompanyEus();
+				EuroMatrix jincai = companyEus.get(Company.Jincai);
+				EuroMatrix aomen = companyEus.get(Company.Aomen);
 				if (euAvg != null) {
 					euAvgWin = euAvg.getEWin();
 					euAvgDraw = euAvg.getEDraw();

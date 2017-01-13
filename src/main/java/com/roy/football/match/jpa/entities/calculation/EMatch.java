@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.roy.football.match.OFN.CalculationType;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.League;
 
@@ -38,7 +39,7 @@ public class EMatch implements Serializable{
     @Column(name = "okooo_match_id")
     private Long okoooMatchId;
     
-    @Column(name = "match_day_id", nullable = false)
+    @Column(name = "match_day_id")
     private Long matchDayId;
     
     @Temporal(TemporalType.TIMESTAMP)
@@ -60,4 +61,8 @@ public class EMatch implements Serializable{
     
     @Column(name = "guest_name", nullable = false)
 	private String guestName;
+    
+    @Column(name = "cal_phase")
+    @Enumerated(EnumType.ORDINAL)
+    private CalculationType phase;
 }

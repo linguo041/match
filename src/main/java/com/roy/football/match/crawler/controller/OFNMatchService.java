@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.roy.football.match.OFN.OFNCalcucator;
-import com.roy.football.match.OFN.OkoooExchangeCalculator;
 import com.roy.football.match.OFN.out.OFNExcelData;
 import com.roy.football.match.OFN.out.OFNOutputFormater;
 import com.roy.football.match.OFN.out.PoiWriter;
@@ -39,6 +38,7 @@ import com.roy.football.match.base.League;
 import com.roy.football.match.context.MatchContext;
 import com.roy.football.match.eightwin.EWJincaiParser;
 import com.roy.football.match.jpa.service.MatchPersistService;
+import com.roy.football.match.okooo.OkoooMatchCrawler;
 import com.roy.football.match.util.DateUtil;
 
 @Service
@@ -49,7 +49,7 @@ public class OFNMatchService {
 	@Autowired
 	private EWJincaiParser ewJincaiParser;
 	@Autowired
-	private OkoooExchangeCalculator exchangeCalculator;
+	private OkoooMatchCrawler okoooMatchCrawler;
 	@Autowired
 	private OFNCalcucator calculator;
 	@Autowired
@@ -65,7 +65,6 @@ public class OFNMatchService {
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
 		
 		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatches();
-		Map<Integer, Long> okMatches = exchangeCalculator.getOkoooMatches();
 		
 		Collections.sort(jinCaiMatches);
 
@@ -74,13 +73,12 @@ public class OFNMatchService {
 			List<Future <OFNExcelData>> futures = new ArrayList<Future <OFNExcelData>>();
 			
 			for (JinCaiMatch jcMatch : jinCaiMatches) {
-				Long okMatchOrder = exchangeCalculator.getMatchOrder(jcMatch.getXid());
 
 				if (filterValidMatch(jcMatch, now)) {
 					Future <OFNExcelData> f = calculateExecutorService.submit(new Callable<OFNExcelData>(){
 						@Override
 						public OFNExcelData call() throws Exception {
-							return parseAndCalculate(jcMatch, okMatches.get(okMatchOrder));
+							return parseAndCalculate(jcMatch);
 						}
 					});
 					
@@ -109,14 +107,11 @@ public class OFNMatchService {
 		jcMatch.setXid(matchDayId);
 		jcMatch.setLid(league.getLeagueId());
 		
-		Map<Integer, Long> okMatches = exchangeCalculator.getOkoooMatches();
-		Long okMatchOrder = exchangeCalculator.getMatchOrder(jcMatch.getXid());
-		
-		OFNExcelData data = parseAndCalculate(jcMatch, okMatches.get(okMatchOrder));
+		OFNExcelData data = parseAndCalculate(jcMatch);
 		writeExcel(Lists.newArrayList(data));
 	}
 	
-	private OFNExcelData parseAndCalculate (JinCaiMatch jcMatch, Long okMatchId) {
+	private OFNExcelData parseAndCalculate (JinCaiMatch jcMatch) {
 		Long oddsmid = jcMatch.getOddsmid();
 		Long matchDayId = jcMatch.getXid();
 		League league = League.getLeagueById(jcMatch.getLid());
@@ -128,7 +123,7 @@ public class OFNMatchService {
 			ofnMatch.setMatchDayId(matchDayId);
 			ofnMatch.setLeague(league);
 			ofnMatch.setEuroAvg(euroAverage);
-			ofnMatch.setOkoooMatchId(okMatchId);
+			ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));
 
 			// get euro peilv
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();
@@ -153,10 +148,14 @@ public class OFNMatchService {
 
 			// calculate
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);
+			calculator.predict(calculateResult);
 			
 			// TODO - split
 			if (matchPersistService != null) {
 				matchPersistService.save(ofnMatch, calculateResult);
+				
+				matchPersistService.saveHistoryMatch(ofnMatch.getHostMatches());
+				matchPersistService.saveHistoryMatch(ofnMatch.getGuestMatches());
 			}
 
 			return outputFormater.format(ofnMatch, calculateResult);

@@ -1,66 +1,13 @@
 package com.roy.football.match.OFN.statics.matrices;
 
+import java.util.Map;
+
+import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.process.CalculateResult;
 
 public class EuroMatrices implements CalculateResult, MatchData{
-
-	@Override
-	public String toString() {
-		return "EuroMatrices [williamMatrix=" + williamMatrix
-				+ ", aomenMatrix=" + aomenMatrix + ", ladMatrix=" + ladMatrix
-				+ ", yiShenBoMatrix=" + yiShenBoMatrix + ", interwettenMatrix="
-				+ interwettenMatrix + "]";
-	}
-
-	public EuroMatrix getWilliamMatrix() {
-		return williamMatrix;
-	}
-
-	public void setWilliamMatrix(EuroMatrix williamMatrix) {
-		this.williamMatrix = williamMatrix;
-	}
-
-	public EuroMatrix getAomenMatrix() {
-		return aomenMatrix;
-	}
-
-	public void setAomenMatrix(EuroMatrix aomenMatrix) {
-		this.aomenMatrix = aomenMatrix;
-	}
-
-	public EuroMatrix getLadMatrix() {
-		return ladMatrix;
-	}
-
-	public void setLadMatrix(EuroMatrix ladMatrix) {
-		this.ladMatrix = ladMatrix;
-	}
-
-	public EuroMatrix getYiShenBoMatrix() {
-		return yiShenBoMatrix;
-	}
-
-	public void setYiShenBoMatrix(EuroMatrix yiShenBoMatrix) {
-		this.yiShenBoMatrix = yiShenBoMatrix;
-	}
-
-	public EuroMatrix getInterwettenMatrix() {
-		return interwettenMatrix;
-	}
-
-	public void setInterwettenMatrix(EuroMatrix interwettenMatrix) {
-		this.interwettenMatrix = interwettenMatrix;
-	}
-
-	public EuroMatrix getSnaiMatrix() {
-		return snaiMatrix;
-	}
-
-	public void setSnaiMatrix(EuroMatrix snaiMatrix) {
-		this.snaiMatrix = snaiMatrix;
-	}
 
 	public EuroPl getCurrEuroAvg() {
 		return currEuroAvg;
@@ -76,14 +23,6 @@ public class EuroMatrices implements CalculateResult, MatchData{
 
 	public void setMainAvgDrawDiff(float mainAvgDrawDiff) {
 		this.mainAvgDrawDiff = mainAvgDrawDiff;
-	}
-
-	public EuroMatrix getJincaiMatrix() {
-		return jincaiMatrix;
-	}
-
-	public void setJincaiMatrix(EuroMatrix jincaiMatrix) {
-		this.jincaiMatrix = jincaiMatrix;
 	}
 
 	public float getMainAvgWinDiff() {
@@ -102,23 +41,24 @@ public class EuroMatrices implements CalculateResult, MatchData{
 		this.mainAvgLoseDiff = mainAvgLoseDiff;
 	}
 
-	public EuroMatrix getSwedenMatrix() {
-		return swedenMatrix;
+	public Map<Company, EuroMatrix> getCompanyEus() {
+		return companyEus;
 	}
 
-	public void setSwedenMatrix(EuroMatrix swedenMatrix) {
-		this.swedenMatrix = swedenMatrix;
+	public void setCompanyEus(Map<Company, EuroMatrix> companyEus) {
+		this.companyEus = companyEus;
 	}
 
-	private EuroMatrix jincaiMatrix;
-	private EuroMatrix williamMatrix;
-	private EuroMatrix aomenMatrix;
-	private EuroMatrix ladMatrix;
-	private EuroMatrix yiShenBoMatrix;
-	private EuroMatrix interwettenMatrix;
-	private EuroMatrix snaiMatrix;
-	private EuroMatrix swedenMatrix;
+//	private EuroMatrix jincaiMatrix;
+//	private EuroMatrix williamMatrix;
+//	private EuroMatrix aomenMatrix;
+//	private EuroMatrix ladMatrix;
+//	private EuroMatrix yiShenBoMatrix;
+//	private EuroMatrix interwettenMatrix;
+//	private EuroMatrix snaiMatrix;
+//	private EuroMatrix swedenMatrix;
 	private EuroPl currEuroAvg;
+	private Map<Company, EuroMatrix> companyEus;
 
 	private float mainAvgWinDiff;
 	private float mainAvgDrawDiff;

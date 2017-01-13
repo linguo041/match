@@ -8,9 +8,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.stereotype.Service;
 
 import com.roy.football.match.OFN.response.MatchResult;
 
+@Service
 public class OFNResultCrawler {
 	private final static String DETAIL_URL_PREIX = "http://bf.159cai.com/detail/index/";
 	private final static NumberFormat NF_FORMAT = NumberFormat.getPercentInstance();
@@ -53,38 +55,38 @@ public class OFNResultCrawler {
 			Element shotEle = ele.select("tr:nth-child(1)").first();
 			String hostShot = shotEle.child(1).text();
 			String guestShot = shotEle.child(3).text();
-			res.setHostShot(Integer.parseInt(hostShot.trim()));
-			res.setGuestShot(Integer.parseInt(guestShot.trim()));
+			res.setHostShot(parseIntNum(hostShot));
+			res.setGuestShot(parseIntNum(guestShot));
 			
 			Element shotOnTargetEle = ele.select("tr:nth-child(2)").first();
 			String hostShotOnTarget = shotOnTargetEle.child(1).text();
 			String guestShotOnTarget = shotOnTargetEle.child(3).text();
-			res.setHostShotOnTarget(Integer.parseInt(hostShotOnTarget.trim()));
-			res.setGuestShotOnTarget(Integer.parseInt(guestShotOnTarget.trim()));
+			res.setHostShotOnTarget(parseIntNum(hostShotOnTarget));
+			res.setGuestShotOnTarget(parseIntNum(guestShotOnTarget));
 			
 			Element faultEle = ele.select("tr:nth-child(3)").first();
 			String hostFault = faultEle.child(1).text();
 			String guestFault = faultEle.child(3).text();
-			res.setHostFault(Integer.parseInt(hostFault.trim()));
-			res.setGuestFault(Integer.parseInt(guestFault.trim()));
+			res.setHostFault(parseIntNum(hostFault));
+			res.setGuestFault(parseIntNum(guestFault));
 			
 			Element cornerEle = ele.select("tr:nth-child(4)").first();
 			String hostCorner = cornerEle.child(1).text();
 			String guestCorner = cornerEle.child(3).text();
-			res.setHostCorner(Integer.parseInt(hostCorner.trim()));
-			res.setGuestCorner(Integer.parseInt(guestCorner.trim()));
+			res.setHostCorner(parseIntNum(hostCorner));
+			res.setGuestCorner(parseIntNum(guestCorner));
 			
 			Element offsideEle = ele.select("tr:nth-child(5)").first();
 			String hostOffside = offsideEle.child(1).text();
 			String guestOffside = offsideEle.child(3).text();
-			res.setHostOffside(Integer.parseInt(hostOffside.trim()));
-			res.setGuestOffside(Integer.parseInt(guestOffside.trim()));
+			res.setHostOffside(parseIntNum(hostOffside));
+			res.setGuestOffside(parseIntNum(guestOffside));
 			
 			Element yellowCardEle = ele.select("tr:nth-child(6)").first();
 			String hostYellowCard = yellowCardEle.child(1).text();
 			String guestYellowCard = yellowCardEle.child(3).text();
-			res.setHostYellowCard(Integer.parseInt(hostYellowCard.trim()));
-			res.setGuestYellowCard(Integer.parseInt(guestYellowCard.trim()));
+			res.setHostYellowCard(parseIntNum(hostYellowCard));
+			res.setGuestYellowCard(parseIntNum(guestYellowCard));
 			
 			Element timeEle = ele.select("tr:nth-child(7)").first();
 			String hostTime = timeEle.child(1).text();
@@ -95,8 +97,8 @@ public class OFNResultCrawler {
 			Element saveEle = ele.select("tr:nth-child(8)").first();
 			String hostSave = saveEle.child(1).text();
 			String guestSave = saveEle.child(3).text();
-			res.setHostSave(Integer.parseInt(hostSave.trim()));
-			res.setGuestSave(Integer.parseInt(guestSave.trim()));
+			res.setHostSave(parseIntNum(hostSave));
+			res.setGuestSave(parseIntNum(guestSave));
 		}
 	}
 	
@@ -104,6 +106,15 @@ public class OFNResultCrawler {
 		try {
 			return ((Double)NF_FORMAT.parse(num)).floatValue();
 		} catch (ParseException e) {
+		}
+		
+		return null;
+	}
+	
+	private Integer parseIntNum(String num) {
+		try {
+			Integer.parseInt(num.trim());
+		} catch (Exception e) {
 		}
 		
 		return null;

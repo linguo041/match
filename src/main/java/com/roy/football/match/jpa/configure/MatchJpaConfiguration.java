@@ -21,15 +21,12 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.roy.football.match.jpa.repositories")
 public class MatchJpaConfiguration {
-	
-	@Autowired
-    private Environment environment;
 
 	@Bean(name="jpaDataSource")
     public DataSource jpaDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/football");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/football?useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;connectTimeout=5000&amp;socketTimeout=60000");
         dataSource.setUsername("gambler");
         dataSource.setPassword("bet@match888");
         return dataSource;
@@ -38,7 +35,7 @@ public class MatchJpaConfiguration {
 	@Bean
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-        hibernateJpaVendorAdapter.setShowSql(false);
+        hibernateJpaVendorAdapter.setShowSql(true);
         hibernateJpaVendorAdapter.setGenerateDdl(true);
         hibernateJpaVendorAdapter.setDatabase(Database.MYSQL);
         return hibernateJpaVendorAdapter;

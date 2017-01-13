@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -35,16 +37,19 @@ public class EMatchResult implements Serializable {
 	private Integer guestScore;
 	
 	@Column(name = "pk_res")
+	@Enumerated(EnumType.STRING)
 	private ResultGroup pkResult;
 	
 	@Column(name = "daxiao_res")
+	@Enumerated(EnumType.STRING)
 	private ResultGroup dxResult;
 	
 	@Column(name = "pl_res")
+	@Enumerated(EnumType.STRING)
 	private ResultGroup plResult;
 	
-//	@OneToOne(cascade={CascadeType.ALL})
-//	@JoinColumn(name="ofn_match_id")
-	@Transient
+	@OneToOne(cascade={CascadeType.ALL})
+	@JoinColumn(name="ofn_match_id")
+//	@Transient
 	private EMatchResultDetail eMatchResultDetail;
 }

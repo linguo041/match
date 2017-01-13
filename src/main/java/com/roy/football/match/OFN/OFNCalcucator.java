@@ -16,6 +16,8 @@ import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrice
 import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.TeamLevel;
+import com.roy.football.match.okooo.MatchExchangeData;
+import com.roy.football.match.okooo.OkoooMatchCrawler;
 import com.roy.football.match.process.Calculator;
 
 @Component
@@ -39,7 +41,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	@Autowired
 	private EuroCalculator euroCalculator;
 	@Autowired
-	private OkoooExchangeCalculator exchangeCalculator;
+	private OkoooMatchCrawler okoooMatchCrawler;
 	
 	
 	private final static PankouKillPromoter pankouKiller = new PankouKillPromoter();
@@ -82,12 +84,20 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		EuroMatrices euroMatrices = euroCalculator.calucate(matchData);
 		calResult.setEuroMatrices(euroMatrices);
 		
-		calResult.setExchanges(exchangeCalculator.calculate(matchData.getMatchDayId(), matchData.getOkoooMatchId()));
-		
-		PredictResult predictRes = pankouKiller.calculate(calResult);
-		calResult.setPredictResult(predictRes);
+		Long okMatchId = matchData.getOkoooMatchId();
+		if (okMatchId != null) {
+			MatchExchangeData exchangeData =okoooMatchCrawler.getExchangeData(okMatchId);
+			calResult.setExchanges(exchangeData);
+		}
 
 		return calResult;
+	}
+	
+	public void predict (OFNCalculateResult calResult) {
+		if (calResult != null) {
+			PredictResult predictRes = pankouKiller.calculate(calResult);
+			calResult.setPredictResult(predictRes);
+		}
 	}
 
 	@Override

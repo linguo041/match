@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Component;
 
 import com.coremedia.iso.boxes.CompositionTimeToSample.Entry;
+import com.google.common.collect.Maps;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
@@ -33,16 +34,23 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			
 			if (comEuros != null && comEuros.size() > 0) {
 				EuroMatrices euroMatrices = new EuroMatrices();
+				Map<Company, EuroMatrix> companyEus = Maps.newHashMap();
+				euroMatrices.setCompanyEus(companyEus);
 				
-				euroMatrices.setJincaiMatrix(getEuroMatrix(comEuros.get(Company.Jincai), matchDt));
-				euroMatrices.setWilliamMatrix(getEuroMatrix(comEuros.get(Company.William), matchDt));
-				euroMatrices.setAomenMatrix(getEuroMatrix(comEuros.get(Company.Aomen), matchDt));
-				euroMatrices.setLadMatrix(getEuroMatrix(comEuros.get(Company.Ladbrokes), matchDt));
-//				euroMatrices.setYiShenBoMatrix(getEuroMatrix(comEuros.get(Company.YiShenBo), matchDt));
-//				euroMatrices.setInterwettenMatrix(getEuroMatrix(comEuros.get(Company.Interwetten), matchDt));
-				euroMatrices.setSnaiMatrix(getEuroMatrix(comEuros.get(Company.SNAI), matchDt));
-				euroMatrices.setSwedenMatrix(getEuroMatrix(comEuros.get(Company.Sweden), matchDt));
-				euroMatrices.setCurrEuroAvg(matchData.getEuroAvg());
+				for (Map.Entry<Company, List<EuroPl>> entry : comEuros.entrySet()) {
+					Company comany = entry.getKey();
+					List<EuroPl> pls = entry.getValue();
+					
+					if (pls != null && pls.size() > 0) {
+						companyEus.put(comany, getEuroMatrix(pls, matchDt));
+					}
+				}
+
+				EuroPl avg = matchData.getEuroAvg();
+				if (avg == null) {
+					avg = calEuroAvg(companyEus);
+				}
+				euroMatrices.setCurrEuroAvg(avg);
 				
 				League league = matchData.getLeague();
 				setMainAvgDiff(euroMatrices, league);
@@ -57,6 +65,25 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 	public void calucate(EuroMatrices Result, OFNMatchData matchData) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private EuroPl calEuroAvg (Map<Company, EuroMatrix> companyEus) {
+		float win = 0, draw = 0, lose = 0;
+		int num = 0;
+		
+		for (Map.Entry<Company, EuroMatrix> entry : companyEus.entrySet()) {
+			EuroMatrix em = entry.getValue();
+			
+			if (em != null) {
+				EuroPl eu = em.getCurrentEuro();
+				num ++;
+				win += eu.getEWin();
+				draw += eu.getEDraw();
+				lose += eu.getELose();
+			}
+		}
+		
+		return new EuroPl(win / num, draw / num, lose / num, null);
 	}
 	
 	private EuroMatrix getEuroMatrix (List<EuroPl> euroPls, Date matchDt) {

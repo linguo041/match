@@ -2,6 +2,8 @@ package com.roy.football.match.okooo;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,6 +13,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.roy.football.match.util.DateUtil;
 
 @Component
 public class OkoooMatchCrawler {
@@ -21,31 +28,12 @@ public class OkoooMatchCrawler {
 	private final static int MAX_BODY_SIZE = 1024*1024*10;
 	private final static NumberFormat NF_FORMAT = NumberFormat.getPercentInstance();
 	
-	public Map<Integer, Long> craw (boolean all) {
-		Map<Integer, Long> matches = new HashMap<Integer, Long>();
-
-		try {
-			Document doc = Jsoup.connect(OKOOO_JINCAI_URL).maxBodySize(MAX_BODY_SIZE).get();
-
-			Elements eles = doc.select(all ? OKOOO_ALL_MATCH_SELECT : OKOOO_MATCH_SELECT);
-
-			Iterator<Element> elIterator = eles.iterator();
-
-			while (elIterator.hasNext()) {
-				Element element = elIterator.next();
-
-				String matchIdStr = element.attr("data-mid");
-				String matchOrderStr = element.attr("data-morder");
-
-				matches.put(Integer.parseInt(matchOrderStr), Long.parseLong(matchIdStr));
-			}
-		} catch (Exception e) {
-		}
-		
-		return matches;
-	}
+	private Cache<Long, Long> okMatches = CacheBuilder.newBuilder()
+			.maximumSize(10000)
+			.build();
 	
-	public MatchExchangeData getExchangeData (long matchId) {
+	public MatchExchangeData getExchangeData (Long matchId) {
+		
 		try {
 			Document doc = Jsoup.connect(getExchangeUrl(matchId)).get();
 			
@@ -59,8 +47,7 @@ public class OkoooMatchCrawler {
 				parseBaseTable(exchangeData, elIterator.next());
 				parseAnalyseTable(exchangeData, elIterator.next());
 			}
-			
-			System.out.println(exchangeData);
+
 			return exchangeData;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -69,6 +56,93 @@ public class OkoooMatchCrawler {
 		return null;
 	}
 	
+	/*
+	public Long getOkoooMatchId (Date matchDate) {
+		
+		try {			
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(matchDate);
+			calendar.add(Calendar.HOUR, -12);
+			int week = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+			
+			long matchOrder = (week == 0 ? 7 : week) * 1000 + matchDayId % 1000;
+			
+			Long okMatchId = okMatches.getIfPresent(matchOrder);
+			
+			if (okMatchId == null) {
+				craw(false, matchDate);
+				
+				return okMatches.getIfPresent(matchOrder);
+			}
+			
+			return okMatchId;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	*/
+	
+	public Long getOkoooMatchId (Long matchDayId) {
+		
+		try {
+			Date matchDate = DateUtil.parseSimpleDate("20" + matchDayId / 1000);
+			
+			Calendar calendar = Calendar.getInstance();
+			
+			calendar.setTime(matchDate);
+			int week = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+			
+			long matchOrder = (week == 0 ? 7 : week) * 1000 + matchDayId % 1000;
+			
+			Long okMatchId = okMatches.getIfPresent(matchOrder);
+			
+			if (okMatchId == null) {
+				craw(false, matchDate);
+				
+				return okMatches.getIfPresent(matchOrder);
+			}
+			
+			return okMatchId;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private void craw (boolean all, Date matchDate) {
+
+		try {
+			String url = OKOOO_JINCAI_URL;
+			
+			if (matchDate != null) {
+				url = url + DateUtil.formatSimpleDateWithDash(matchDate) + "/";
+			}
+			
+			Document doc = Jsoup.connect(url).maxBodySize(MAX_BODY_SIZE).get();
+
+			Elements eles = doc.select(all ? OKOOO_ALL_MATCH_SELECT : OKOOO_MATCH_SELECT);
+
+			Iterator<Element> elIterator = eles.iterator();
+
+			while (elIterator.hasNext()) {
+				Element element = elIterator.next();
+
+				String matchIdStr = element.attr("data-mid");
+				String matchOrderStr = element.attr("data-morder");
+				
+				System.out.println(matchOrderStr + "     " + matchIdStr);
+
+				okMatches.put(Long.parseLong(matchOrderStr), Long.parseLong(matchIdStr));
+			}
+		} catch (Exception e) {
+		}
+	}
+
 	private String getExchangeUrl (long matchId) {
 		return OKOOO_BIFA_URL.replace("{matchId}", matchId+"");
 	}

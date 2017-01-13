@@ -13,26 +13,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.roy.football.batch.configuration.MatchCalculationJobConfiguration;
+import com.roy.football.batch.configuration.HistoryMatchCalculationJobConfiguration;
 
-public class MatchCalculationJobLancher {
-	
+public class HistoryMatchCalculationJobLancher {
 	@Autowired
     JobLauncher jobLauncher;
  
     @Autowired
-    @Qualifier("matchCalculateJob")
-    Job matchCalculateJob;
+    @Qualifier("historyMatchCalculationJob")
+    Job historyMatchCalculationJob;
  
     public static void main(String... args) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, org.springframework.batch.core.repository.JobRestartException {
  
-        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(MatchCalculationJobConfiguration.class);
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(HistoryMatchCalculationJobConfiguration.class);
  
-        MatchCalculationJobLancher main = context.getBean(MatchCalculationJobLancher.class);
+        HistoryMatchCalculationJobLancher main = context.getBean(HistoryMatchCalculationJobLancher.class);
  
-        JobExecution jobExecution = main.jobLauncher.run(main.matchCalculateJob, new JobParameters());
+        JobExecution jobExecution = main.jobLauncher.run(main.historyMatchCalculationJob, new JobParameters());
  
-        context.close();
+        // do not close, since the sub-thread would use.
+//        context.close();
  
     }
 }

@@ -1,13 +1,14 @@
 create table matches (
   ofn_match_id bigint not null,
   okooo_match_id bigint,
-  match_day_id bigint not null,
+  match_day_id bigint,
   match_time datetime,
   league varchar(20),
   host_id int not null,
   host_name varchar(40),
   guest_id int not null,
   guest_name varchar(40),
+  cal_phase int,
   primary key (ofn_match_id)
 ) ENGINE=InnoDB;
 
@@ -173,9 +174,9 @@ create table match_result (
   ofn_match_id bigint not null,
   host_score int,
   guest_score int,
-  pk_res int, 
-  daxiao_res int,
-  pl_res int,
+  pk_res varchar(20), 
+  daxiao_res varchar(20),
+  pl_res varchar(20),
   primary key (ofn_match_id)
 ) ENGINE=InnoDB;
 

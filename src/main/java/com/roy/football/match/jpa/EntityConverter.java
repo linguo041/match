@@ -1,13 +1,17 @@
 package com.roy.football.match.jpa;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.roy.football.match.OFN.CalculationType;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
+import com.roy.football.match.OFN.response.FinishedMatch;
+import com.roy.football.match.OFN.response.MatchResult;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
@@ -33,11 +37,13 @@ import com.roy.football.match.jpa.entities.calculation.ELatestMatchState;
 import com.roy.football.match.jpa.entities.calculation.EMatch;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubDetail;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubState;
+import com.roy.football.match.jpa.entities.calculation.EMatchResult;
+import com.roy.football.match.jpa.entities.calculation.EMatchResultDetail;
 import com.roy.football.match.okooo.MatchExchangeData;
 
 public class EntityConverter {
 
-	public static EMatch toEMatch (OFNMatchData ofnMatch) {
+	public static EMatch toEMatch (OFNMatchData ofnMatch, CalculationType phase) {
 		EMatch ematch = new EMatch();
 		ematch.setOfnMatchId(ofnMatch.getMatchId());
 		ematch.setLeague(ofnMatch.getLeague());
@@ -48,6 +54,22 @@ public class EntityConverter {
 		ematch.setHostName(ofnMatch.getHostName());
 		ematch.setGuestId(ofnMatch.getGuestId());
 		ematch.setGuestName(ofnMatch.getGuestName());
+		ematch.setPhase(phase);
+		return ematch;
+	}
+	
+	public static EMatch toEMatch (FinishedMatch finishedMatch, CalculationType phase) {
+		EMatch ematch = new EMatch();
+		ematch.setOfnMatchId(finishedMatch.getMatchId());
+		ematch.setLeague(League.getLeagueById(finishedMatch.getLeagueId()));
+		ematch.setMatchTime(finishedMatch.getMatchTime());
+//		ematch.setMatchDayId(finishedMatch.getMatchDayId());
+//		ematch.setOkoooMatchId(finishedMatch.getOkoooMatchId());
+		ematch.setHostId(finishedMatch.getHostId());
+		ematch.setHostName(finishedMatch.getHostName());
+		ematch.setGuestId(finishedMatch.getGuestId());
+		ematch.setGuestName(finishedMatch.getGuestName());
+		ematch.setPhase(phase);
 		return ematch;
 	}
 	
@@ -110,18 +132,17 @@ public class EntityConverter {
 		eEuroPlState.setMainAvgWinDiff(euroMatrices.getMainAvgWinDiff());
 		eEuroPlState.setMainAvgDrawDiff(euroMatrices.getMainAvgDrawDiff());
 		eEuroPlState.setMainAvgLoseDiff(euroMatrices.getMainAvgLoseDiff());
-
-		Set<EEuroPlCompany> euCompanyPls = Sets.newHashSet();
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.Aomen, euroMatrices.getAomenMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.Interwetten, euroMatrices.getInterwettenMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.William, euroMatrices.getWilliamMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.SNAI, euroMatrices.getSnaiMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.Sweden, euroMatrices.getSwedenMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.Ladbrokes, euroMatrices.getLadMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.YiShenBo, euroMatrices.getYiShenBoMatrix()));
-		euCompanyPls.add(toEEuroPlCompany(ofnMatchId, Company.Jincai, euroMatrices.getJincaiMatrix()));
-		eEuroPlState.setCompanyPls(euCompanyPls);
 		
+		Set<EEuroPlCompany> euCompanyPls = Sets.newHashSet();
+		eEuroPlState.setCompanyPls(euCompanyPls);
+
+		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
+		for (Map.Entry<Company, EuroMatrix> entry : companyEus.entrySet()) {
+			if (entry.getValue() != null) {
+				euCompanyPls.add(toEEuroPlCompany(ofnMatchId, entry.getKey(), entry.getValue()));
+			}
+		}
+
 		return eEuroPlState;
 	}
 	
@@ -294,5 +315,44 @@ public class EntityConverter {
 		eMatchClubDetail.setWinLoseDiff(clubMatrix.getWinLoseDiff());
 		
 		return eMatchClubDetail;
+	}
+	
+	public static EMatchResult toEMatchResult (Long ofnMatchId, MatchResult result) {
+		EMatchResult dbResult = new EMatchResult();
+		dbResult.setOfnMatchId(ofnMatchId);
+		dbResult.setHostScore(result.getHostScore());
+		dbResult.setGuestScore(result.getGuestScore());
+		
+		dbResult.setEMatchResultDetail(toEMatchResultDetail(ofnMatchId, result));
+		return dbResult;
+	}
+	
+	public static EMatchResultDetail toEMatchResultDetail (Long ofnMatchId, MatchResult result) {
+		EMatchResultDetail resultDetail = new EMatchResultDetail();
+		resultDetail.setOfnMatchId(ofnMatchId);
+		
+		resultDetail.setHostId(result.getHostId());
+		resultDetail.setHostName(result.getHostName());
+		resultDetail.setHostScore(result.getHostScore());
+		resultDetail.setHostShot(result.getHostShot());
+		resultDetail.setHostShotOnTarget(result.getHostShotOnTarget());
+		resultDetail.setHostSave(result.getHostSave());
+		resultDetail.setHostCorner(result.getHostCorner());
+		resultDetail.setHostFault(result.getHostFault());
+		resultDetail.setHostOffside(result.getHostOffside());
+		resultDetail.setHostTime(result.getHostTime());
+		
+		resultDetail.setGuestId(result.getGuestId());
+		resultDetail.setGuestName(result.getGuestName());
+		resultDetail.setGuestScore(result.getGuestScore());
+		resultDetail.setGuestShot(result.getGuestShot());
+		resultDetail.setGuestShotOnTarget(result.getGuestShotOnTarget());
+		resultDetail.setGuestSave(result.getGuestSave());
+		resultDetail.setGuestCorner(result.getGuestCorner());
+		resultDetail.setGuestFault(result.getGuestFault());
+		resultDetail.setGuestOffside(result.getGuestOffside());
+		resultDetail.setGuestTime(result.getGuestTime());
+		
+		return resultDetail;
 	}
 }
