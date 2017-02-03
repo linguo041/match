@@ -39,6 +39,7 @@ import com.roy.football.match.jpa.entities.calculation.EMatchClubDetail;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubState;
 import com.roy.football.match.jpa.entities.calculation.EMatchResult;
 import com.roy.football.match.jpa.entities.calculation.EMatchResultDetail;
+import com.roy.football.match.jpa.entities.calculation.EPredictResult;
 import com.roy.football.match.okooo.MatchExchangeData;
 
 public class EntityConverter {
@@ -142,7 +143,14 @@ public class EntityConverter {
 				euCompanyPls.add(toEEuroPlCompany(ofnMatchId, entry.getKey(), entry.getValue()));
 			}
 		}
-
+		
+		EuroPl avg = euroMatrices.getCurrEuroAvg();
+		if (avg != null) {
+			eEuroPlState.setAvgWin(avg.getEWin());
+			eEuroPlState.setAvgDraw(avg.getEDraw());
+			eEuroPlState.setAvgLose(avg.getELose());
+		}
+	
 		return eEuroPlState;
 	}
 	
@@ -354,5 +362,15 @@ public class EntityConverter {
 		resultDetail.setGuestTime(result.getGuestTime());
 		
 		return resultDetail;
+	}
+	
+	public static EPredictResult toEPredictResult (Long ofnMatchId, Float predictPk, Float lastPk, Float hostScore, Float guestScore) {
+		EPredictResult pr = new EPredictResult();
+		pr.setOfnMatchId(ofnMatchId);
+		pr.setLast_match_pk(lastPk);
+		pr.setPredictPk(predictPk);
+		pr.setHostScore(hostScore);
+		pr.setGuestScore(guestScore);
+		return pr;
 	}
 }

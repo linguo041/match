@@ -152,6 +152,22 @@ public class OFNMatchData implements MatchData{
 		this.okoooMatchId = okoooMatchId;
 	}
 
+	public Integer getHostScore() {
+		return hostScore;
+	}
+
+	public void setHostScore(Integer hostScore) {
+		this.hostScore = hostScore;
+	}
+
+	public Integer getGuestScore() {
+		return guestScore;
+	}
+
+	public void setGuestScore(Integer guestScore) {
+		this.guestScore = guestScore;
+	}
+
 	private Long okoooMatchId;
 	private Long matchDayId;
 	private Long matchId;
@@ -169,4 +185,6 @@ public class OFNMatchData implements MatchData{
 	private Map<Company, List<EuroPl>> euroPls;
 	private List<AsiaPl> aoMen;
 	private List<AsiaPl> daxiao;
+	private Integer hostScore;
+	private Integer guestScore;
 }

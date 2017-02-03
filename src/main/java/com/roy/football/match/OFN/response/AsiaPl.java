@@ -5,6 +5,14 @@ import java.util.Date;
 import com.roy.football.match.base.MatchData;
 
 public class AsiaPl implements MatchData {
+	
+	public AsiaPl () {}
+	
+	public AsiaPl (Float hwin, Float awin, Float pk) {
+		this.hWin = hwin;
+		this.aWin = awin;
+		this.panKou = pk;
+	}
 
 	@Override
 	public String toString() {

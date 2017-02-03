@@ -34,6 +34,13 @@ public class EEuroPlState implements Serializable{
 	@Transient
 	private Set<EEuroPlCompany> companyPls;
 	
+	@Column(name = "avg_win")
+	private Float avgWin;
+	@Column(name = "avg_draw")
+	private Float avgDraw;
+	@Column(name = "avg_lose")
+	private Float avgLose;
+	
 	@Column(name = "main_avg_win_diff")
 	private float mainAvgWinDiff;
 	@Column(name = "main_avg_draw_diff")

@@ -25,11 +25,13 @@ public class OFNResultCrawler {
 			
 			parseScore(res, doc);
 			parseOther(res, doc);
+			
+			return res;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return res;
+		return null;
 	}
 	
 	private void parseScore (MatchResult res, Document doc) {
@@ -113,7 +115,7 @@ public class OFNResultCrawler {
 	
 	private Integer parseIntNum(String num) {
 		try {
-			Integer.parseInt(num.trim());
+			return Integer.parseInt(num.trim());
 		} catch (Exception e) {
 		}
 		
@@ -122,7 +124,7 @@ public class OFNResultCrawler {
 	
 	public static void main (String args[]) {
 		OFNResultCrawler crawler = new OFNResultCrawler();
-		System.out.println(crawler.craw(959891));
+		System.out.println(crawler.craw(961356));
 		
 	}
 

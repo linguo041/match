@@ -34,15 +34,21 @@ public class MatchResultCalculator {
 	@Autowired
 	private MatchRepository matchRepository;
 
-	public void calculateAndPersist (EMatch match) {
+	public void calculateAndPersist (EMatch match, Integer hostScore, Integer guestScore) {
 		Long ofnMatchId = match.getOfnMatchId();
 		
 		EMatchResult dbResult = matchResultRepository.findOne(ofnMatchId);
 		
 		if (dbResult == null) {
 			MatchResult result = ofnResultCrawler.craw(ofnMatchId);
+			if (result == null) {
+				result = new MatchResult();
+				result.setHostScore(hostScore);
+				result.setGuestScore(guestScore);
+			}
+
 			EMatchResult matchResult = EntityConverter.toEMatchResult(ofnMatchId, result);
-			
+
 			matchResult.setPkResult(checkPkResult(ofnMatchId, result));
 			matchResult.setDxResult(checkDaXiaoResult(ofnMatchId, result));
 			matchResult.setPlResult(checkPlResult(result));
@@ -54,7 +60,9 @@ public class MatchResultCalculator {
 			detail.setGuestName(match.getGuestName());
 			
 			matchResultRepository.save(matchResult);
-			
+		}
+		
+		if (CalculationType.resulted != match.getPhase()) {
 			match.setPhase(CalculationType.resulted);
 			matchRepository.save(match);
 		}

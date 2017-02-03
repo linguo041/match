@@ -82,6 +82,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		}
 
 		EuroMatrices euroMatrices = euroCalculator.calucate(matchData);
+
 		calResult.setEuroMatrices(euroMatrices);
 		
 		Long okMatchId = matchData.getOkoooMatchId();
@@ -89,14 +90,20 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			MatchExchangeData exchangeData =okoooMatchCrawler.getExchangeData(okMatchId);
 			calResult.setExchanges(exchangeData);
 		}
+		
+		predict(calResult);
 
 		return calResult;
 	}
 	
 	public void predict (OFNCalculateResult calResult) {
 		if (calResult != null) {
-			PredictResult predictRes = pankouKiller.calculate(calResult);
-			calResult.setPredictResult(predictRes);
+			try {
+				PredictResult predictRes = pankouKiller.calculate(calResult);
+				calResult.setPredictResult(predictRes);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

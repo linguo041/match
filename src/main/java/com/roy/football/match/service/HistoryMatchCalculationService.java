@@ -93,7 +93,7 @@ public class HistoryMatchCalculationService {
 	}
 	
 	private void parseAndCalculateResult (EMatch match) {
-		matchResultCalculator.calculateAndPersist(match);
+		matchResultCalculator.calculateAndPersist(match, null, null);
 	}
 	
 	private void parseAndCalculate (EMatch match) {
@@ -129,10 +129,10 @@ public class HistoryMatchCalculationService {
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);
 			
 			matchPersistService.save(ofnMatch, calculateResult);
+			
+			matchResultCalculator.calculateAndPersist(match, ofnMatch.getHostScore(), ofnMatch.getGuestScore());
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		
-		matchResultCalculator.calculateAndPersist(match);
+		}		
 	}
 }

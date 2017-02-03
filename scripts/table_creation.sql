@@ -48,6 +48,9 @@ create table match_daxiao_pk (
 
 create table match_euro_state (
   ofn_match_id bigint not null,
+  avg_win decimal(10,4),
+  avg_draw decimal(10,4),
+  avg_lose decimal(10,4),
   main_avg_win_diff decimal(10,4),
   main_avg_draw_diff decimal(10,4),
   main_avg_lose_diff decimal(10,4),
@@ -208,5 +211,13 @@ create table match_result_detail (
   primary key (ofn_match_id)
 ) ENGINE=InnoDB;
 
+create table match_predict (
+  ofn_match_id bigint not null,
+  last_match_pk decimal(10,3),
+  predict_pk decimal(10,3),
+  host_score decimal(5,2),
+  guest_score decimal(5,2),
+  primary key (ofn_match_id)
+) ENGINE=InnoDB;
 
 

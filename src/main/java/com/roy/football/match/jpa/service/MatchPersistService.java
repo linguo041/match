@@ -18,6 +18,7 @@ import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
+import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.jpa.EntityConverter;
 import com.roy.football.match.jpa.entities.calculation.EEuroPlCompany;
 import com.roy.football.match.jpa.entities.calculation.EEuroPlState;
@@ -26,6 +27,7 @@ import com.roy.football.match.jpa.entities.calculation.ELatestMatchState;
 import com.roy.football.match.jpa.entities.calculation.EMatch;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubDetail;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubState;
+import com.roy.football.match.jpa.entities.calculation.EPredictResult;
 import com.roy.football.match.jpa.repositories.AsiaPkRepository;
 import com.roy.football.match.jpa.repositories.DaXiaoPkRepository;
 import com.roy.football.match.jpa.repositories.EuroPlCompanyRepository;
@@ -38,6 +40,7 @@ import com.roy.football.match.jpa.repositories.MatchClubDetailRepository;
 import com.roy.football.match.jpa.repositories.MatchClubStateRepository;
 import com.roy.football.match.jpa.repositories.MatchRepository;
 import com.roy.football.match.jpa.repositories.MatchResultRepository;
+import com.roy.football.match.jpa.repositories.PredictResultRepository;
 import com.roy.football.match.okooo.MatchExchangeData;
 
 @Service
@@ -72,6 +75,9 @@ public class MatchPersistService {
 	@Autowired
 	private MatchResultRepository matchResultRepository;
 	
+	@Autowired
+	private PredictResultRepository predictResultRepository;
+	
 	public void save (OFNMatchData ofnMatch, OFNCalculateResult ofnCalculateResult) {
 		if (ofnMatch == null || ofnCalculateResult == null) {
 			return;
@@ -79,14 +85,14 @@ public class MatchPersistService {
 		
 		Long ofnMatchId = ofnMatch.getMatchId();
 		
-//		EMatch eMatch = matchRepository.findOne(ofnMatchId);
-//		if (eMatch != null) {
-//			CalculationType phase = eMatch.getPhase();
-//			
-//			if (phase != null && phase.ordinal() > CalculationType.fetched.ordinal()) {
-//				return;
-//			}
-//		}
+		EMatch eMatch = matchRepository.findOne(ofnMatchId);
+		if (eMatch != null) {
+			CalculationType phase = eMatch.getPhase();
+			
+			if (phase != null && phase.ordinal() >= CalculationType.resulted.ordinal()) {
+				return;
+			}
+		}
 		matchRepository.save(EntityConverter.toEMatch(ofnMatch, CalculationType.calculated));
 		
 		MatchState matchState = ofnCalculateResult.getMatchState();
@@ -103,7 +109,9 @@ public class MatchPersistService {
 		}
 		
 		JiaoShouMatrices jsMatrices = ofnCalculateResult.getJiaoShou();
+		Float latestPk = null;
 		if (jsMatrices != null) {
+			latestPk = jsMatrices.getLatestPankou();
 			jiaoShouRepository.save(EntityConverter.toEJiaoShou(ofnMatchId, jsMatrices));
 		}
 		
@@ -145,6 +153,22 @@ public class MatchPersistService {
 					euroPlCompanyRepository.save(eEuroPlCompany);
 				}
 			}
+		}
+		
+		Float predictPk = ofnCalculateResult.getPredictPanKou();
+		if (predictPk != null) {
+			Float hostScore = null;
+			Float guestScore = null;
+			PredictResult predictRes = ofnCalculateResult.getPredictResult();
+			
+			if (predictRes != null) {
+				hostScore = predictRes.getHostScore();
+				guestScore = predictRes.getGuestScore();
+			}
+			
+			EPredictResult predict = EntityConverter.toEPredictResult(ofnMatchId, predictPk, latestPk, hostScore, guestScore);
+			
+			predictResultRepository.save(predict);
 		}
 	}
 	

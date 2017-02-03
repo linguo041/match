@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.reflect.TypeToken;
@@ -70,10 +71,13 @@ public class OFNParser {
 
 		try {
 			Document doc = Jsoup.connect(ANALYSIS_URL_PREFIX + oddsmid).get();
+			
 			Element script = doc.select("script").last();
 			String jsData = script.data();
 
 			ofnMatchData = new OFNMatchData();
+			
+			parseScore(doc, ofnMatchData);
 			Matcher matcher = KEY_VALUE_REG.matcher(jsData);
 
 			while (matcher.find()) {
@@ -87,6 +91,21 @@ public class OFNParser {
 		}
 		
 		return ofnMatchData;
+	}
+	
+	public void parseScore (Document doc, OFNMatchData ofnMatchData) {
+		Elements eles = doc.select(".spanVS");
+		
+		if (eles != null && eles.size() > 0) {
+			Element ele = eles.first();
+			String scoreText =  ele.text();
+			String scores[] = scoreText.split(":");
+			
+			if (scores != null && scores.length > 1) {
+				ofnMatchData.setHostScore(Integer.parseInt(scores[0]));
+				ofnMatchData.setGuestScore(Integer.parseInt(scores[1]));
+			}
+		}
 	}
 
 	

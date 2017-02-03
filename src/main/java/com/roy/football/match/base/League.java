@@ -35,9 +35,12 @@ public enum League {
 	America(107, 20), CannadaCup(700), AmericaPublic(569),
 	Argintina(108, 30),
 	Maxico(191, 18),
+	MaxicoCup(1204, 18),
 	ChiLi(192, 16),
 	ShenBaoluo(261, 20),
-	JieFangZhe(159, 16)
+	JieFangZhe(159, 16),
+	
+	AfricaCup(383, 12)
 	;
 	
 	League(int leagueId) {

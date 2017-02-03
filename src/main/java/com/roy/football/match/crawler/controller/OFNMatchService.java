@@ -74,7 +74,7 @@ public class OFNMatchService {
 			
 			for (JinCaiMatch jcMatch : jinCaiMatches) {
 
-				if (filterValidMatch(jcMatch, now)) {
+				if (true/*filterValidMatch(jcMatch, now)*/) {
 					Future <OFNExcelData> f = calculateExecutorService.submit(new Callable<OFNExcelData>(){
 						@Override
 						public OFNExcelData call() throws Exception {
