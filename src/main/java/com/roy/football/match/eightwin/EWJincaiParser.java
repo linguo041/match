@@ -15,9 +15,13 @@ import org.springframework.stereotype.Component;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.httpRequest.HttpRequestException;
 import com.roy.football.match.httpRequest.HttpRequestService;
+import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class EWJincaiParser {
 	private final static String JINCAI_ODD_HISTORY_URL = "http://www.8win.com/buy/add/odd/history";
 	
@@ -32,8 +36,7 @@ public class EWJincaiParser {
 
 			return convertJson(resData, ewMatchId);
 		} catch (HttpRequestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("Unable to get 8win jincai euro with id %s", oddsmid), e);
 		}
 		return null;
 	}
@@ -61,8 +64,7 @@ public class EWJincaiParser {
 				}
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("Unable to parse 8win jincai euro with 8win id %s", ewMatchId), e);
 		}
 		
 		return jincaiPls;
@@ -83,8 +85,7 @@ public class EWJincaiParser {
 			
 			return dateStr + dayInWeek + oddsmidString.substring(6);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("Unable to pase to 8win id %s", oddsmid), e);
 		}
 		
 		return null;

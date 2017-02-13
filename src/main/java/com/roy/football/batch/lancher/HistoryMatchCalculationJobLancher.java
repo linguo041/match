@@ -32,7 +32,7 @@ public class HistoryMatchCalculationJobLancher {
         JobExecution jobExecution = main.jobLauncher.run(main.historyMatchCalculationJob, new JobParameters());
  
         // do not close, since the sub-thread would use.
-//        context.close();
+        context.close();
  
     }
 }

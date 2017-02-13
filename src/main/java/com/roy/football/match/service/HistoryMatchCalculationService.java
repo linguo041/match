@@ -40,7 +40,10 @@ import com.roy.football.match.jpa.repositories.MatchResultRepository;
 import com.roy.football.match.jpa.service.MatchPersistService;
 import com.roy.football.match.okooo.OkoooMatchCrawler;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class HistoryMatchCalculationService {
 	@Autowired
 	private OFNParser parser;
@@ -81,13 +84,12 @@ public class HistoryMatchCalculationService {
 				}
 			}
 			
-			try {
-				for (Future<Void> f : futures) {
-					f.get();
+			for (Future<Void> f : futures) {
+				try {
+					f.get(30, TimeUnit.SECONDS);
+				} catch (Exception e) {
+					log.error("Unable to parse and calculate match.");
 				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -98,6 +100,7 @@ public class HistoryMatchCalculationService {
 	
 	private void parseAndCalculate (EMatch match) {
 		Long oddsmid = match.getOfnMatchId();
+		log.debug("start to parse and calculate match {}", match);
 		
 		try {
 			// get match base data
@@ -113,7 +116,9 @@ public class HistoryMatchCalculationService {
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();
 			for (Company comp : Company.values()) {
 				List<EuroPl> euroPls = parser.parseEuroData(oddsmid, comp);
-				euroMap.put(comp, euroPls);
+				if (euroPls != null && euroPls.size() > 0) {
+					euroMap.put(comp, euroPls);
+				}
 			}
 
 			ofnMatch.setEuroPls(euroMap);
@@ -132,7 +137,7 @@ public class HistoryMatchCalculationService {
 			
 			matchResultCalculator.calculateAndPersist(match, ofnMatch.getHostScore(), ofnMatch.getGuestScore());
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(String.format("Unable to parse and calculate match %s.", oddsmid), e);
 		}		
 	}
 }

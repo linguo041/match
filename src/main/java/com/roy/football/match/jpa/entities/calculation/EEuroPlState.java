@@ -29,9 +29,9 @@ public class EEuroPlState implements Serializable{
 	@Column(name = "ofn_match_id", nullable = false)
     private Long ofnMatchId;
 	
-//	@OneToMany(cascade={CascadeType.ALL})
-//	@JoinColumn(name="ofn_match_id")
-	@Transient
+	@OneToMany(cascade={CascadeType.ALL})
+	@JoinColumn(name="ofn_match_id")
+//	@Transient
 	private Set<EEuroPlCompany> companyPls;
 	
 	@Column(name = "avg_win")

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.roy.football.match.OFN.parser.OFNResultCrawler;
+import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.MatchResult;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.jpa.EntityConverter;
@@ -46,31 +47,32 @@ public class MatchResultCalculator {
 				result.setHostScore(hostScore);
 				result.setGuestScore(guestScore);
 			}
-
-			EMatchResult matchResult = EntityConverter.toEMatchResult(ofnMatchId, result);
-
-			matchResult.setPkResult(checkPkResult(ofnMatchId, result));
-			matchResult.setDxResult(checkDaXiaoResult(ofnMatchId, result));
-			matchResult.setPlResult(checkPlResult(result));
 			
-			EMatchResultDetail detail = matchResult.getEMatchResultDetail();
-			detail.setHostId(match.getHostId());
-			detail.setHostName(match.getHostName());
-			detail.setGuestId(match.getGuestId());
-			detail.setGuestName(match.getGuestName());
-			
-			matchResultRepository.save(matchResult);
-		}
-		
-		if (CalculationType.resulted != match.getPhase()) {
-			match.setPhase(CalculationType.resulted);
-			matchRepository.save(match);
+			if (result != null) {
+				EMatchResult matchResult = EntityConverter.toEMatchResult(ofnMatchId, result);
+
+				matchResult.setPkResult(checkPkResult(ofnMatchId, result));
+				matchResult.setDxResult(checkDaXiaoResult(ofnMatchId, result));
+				matchResult.setPlResult(checkPlResult(result));
+				
+				EMatchResultDetail detail = matchResult.getEMatchResultDetail();
+				detail.setHostId(match.getHostId());
+				detail.setHostName(match.getHostName());
+				detail.setGuestId(match.getGuestId());
+				detail.setGuestName(match.getGuestName());
+				
+				matchResultRepository.save(matchResult);
+				
+				if (CalculationType.resulted != match.getPhase()) {
+					match.setPhase(CalculationType.resulted);
+					matchRepository.save(match);
+				}
+			}
 		}
 	}
 	
-	
 	private ResultGroup checkPkResult (Long ofnMatchId, MatchResult result) {
-		EAsiaPk asiaPk = asiaPkRepository.findOne(ofnMatchId);
+		EAsiaPk asiaPk = asiaPkRepository.findByOfnMatchIdAndCompany(ofnMatchId, Company.Aomen);
 		if (asiaPk != null) {
 			float pk = asiaPk.getCurrentPk();
 			float pkResult = result.getHostScore() - result.getGuestScore();

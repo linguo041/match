@@ -3,6 +3,7 @@ package com.roy.football.match.OFN;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.DaxiaoMatrices;
@@ -19,8 +20,12 @@ import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.okooo.OkoooMatchCrawler;
 import com.roy.football.match.process.Calculator;
+import com.roy.football.match.service.HistoryMatchCalculationService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchData> {
 	@Autowired
 	private BaseDataCalculator baseCalculator;
@@ -70,8 +75,11 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		MatchState matchState = latestMatchCalculator.calucate(matchData);
 		calResult.setMatchState(matchState);
 		
-		PankouMatrices pkMatrices = pankouCalculator.calucate(matchData);
+		PankouMatrices pkMatrices = pankouCalculator.calucate(matchData, Company.Aomen);
 		calResult.setPkMatrices(pkMatrices);
+		
+		PankouMatrices ysbPkMatrices = pankouCalculator.calucate(matchData, Company.YiShenBo);
+		calResult.setYsbPkMatrices(ysbPkMatrices);
 		
 		DaxiaoMatrices dxMatrices = dxCalculator.calucate(matchData);
 		calResult.setDxMatrices(dxMatrices);
@@ -102,7 +110,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 				PredictResult predictRes = pankouKiller.calculate(calResult);
 				calResult.setPredictResult(predictRes);
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("Unable to predict match result.", e);
 			}
 		}
 	}

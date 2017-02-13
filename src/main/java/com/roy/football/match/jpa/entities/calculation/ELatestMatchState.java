@@ -42,9 +42,9 @@ public class ELatestMatchState implements Serializable{
 //	@Column(name = "guest_id", nullable = false)
 //    private Long guestId;
 	
-//	@OneToMany(cascade={CascadeType.ALL})
-//	@JoinColumn(name="ofn_match_id")
-	@Transient
+	@OneToMany(cascade={CascadeType.ALL})
+	@JoinColumn(name="ofn_match_id")
+//	@Transient
 	private Set<ELatestMatchDetail> latestDetails;
 	
 	@Column(name = "host_att_to_guest")

@@ -93,11 +93,20 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 		this.exchanges = exchanges;
 	}
 
+	public PankouMatrices getYsbPkMatrices() {
+		return ysbPkMatrices;
+	}
+
+	public void setYsbPkMatrices(PankouMatrices ysbPkMatrices) {
+		this.ysbPkMatrices = ysbPkMatrices;
+	}
+
 	private League league;
 	private ClubMatrices clubMatrices;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
 	private PankouMatrices pkMatrices;
+	private PankouMatrices ysbPkMatrices;
 	private DaxiaoMatrices dxMatrices;
 	private Float predictPanKou;
 	private PredictResult predictResult;

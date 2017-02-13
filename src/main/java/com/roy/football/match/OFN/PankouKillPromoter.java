@@ -129,9 +129,6 @@ public class PankouKillPromoter {
 			dxWeight = dxMatrices.getXiaoChangeRate() - dxMatrices.getDaChangeRate();
 //			float dxPk = MatchUtil.getCalculatedPk(dxMatrices.getCurrentPk());
 			
-			System.out.println(String.format("Host [ goal: %.2f, variation: %.2f, AdjRate: %.2f, dxWeight %.2f]", hgoal, hvariation, hAdjRate, dxWeight));
-			System.out.println(String.format("Guest[ goal: %.2f, variation: %.2f, AdjRate: %.2f, dxWeight %.2f]", ggoal, gvariation, gAdjRate, dxWeight));
-
 			hgoal += hvariation * hAdjRate;
 			ggoal += gvariation * gAdjRate;
 
@@ -627,6 +624,11 @@ public class PankouKillPromoter {
 			OFNCalculateResult calResult) {
 		MatchExchangeData exchange = calResult.getExchanges();
 		EuroMatrices euroMatrices = calResult.getEuroMatrices();
+		
+		if (exchange == null || euroMatrices == null) {
+			return;
+		}
+		
 		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
 		EuroMatrix jincaiMatrix = companyEus.get(Company.Jincai);
 		EuroMatrix aomenMatrix = companyEus.get(Company.Aomen);

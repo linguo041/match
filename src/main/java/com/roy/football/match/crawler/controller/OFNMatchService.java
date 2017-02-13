@@ -41,7 +41,10 @@ import com.roy.football.match.jpa.service.MatchPersistService;
 import com.roy.football.match.okooo.OkoooMatchCrawler;
 import com.roy.football.match.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class OFNMatchService {
 	
 	@Autowired
@@ -92,8 +95,7 @@ public class OFNMatchService {
 				try {
 					excelDatas.add(f.get());
 				} catch (InterruptedException | ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.error("Unable to calculate match.", e);
 				}
 			}
 		}
@@ -115,7 +117,7 @@ public class OFNMatchService {
 		Long oddsmid = jcMatch.getOddsmid();
 		Long matchDayId = jcMatch.getXid();
 		League league = League.getLeagueById(jcMatch.getLid());
-		EuroPl euroAverage = new EuroPl(jcMatch.getOh(), jcMatch.getOd(), jcMatch.getOd(), null);
+		EuroPl euroAverage = new EuroPl(jcMatch.getOh(), jcMatch.getOd(), jcMatch.getOa(), null);
 		
 		try {
 			// get match base data
@@ -143,6 +145,9 @@ public class OFNMatchService {
 			List<AsiaPl> asiapls = parser.parseAsiaData(oddsmid, Company.Aomen);
 			ofnMatch.setAoMen(asiapls);
 			
+			List<AsiaPl> ysb = parser.parseAsiaData(oddsmid, Company.YiShenBo);
+			ofnMatch.setYsb(ysb);
+			
 			List<AsiaPl> daxiaopls = parser.parseDaxiaoData(oddsmid, Company.Aomen);
 			ofnMatch.setDaxiao(daxiaopls);
 
@@ -160,7 +165,7 @@ public class OFNMatchService {
 
 			return outputFormater.format(ofnMatch, calculateResult);
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(String.format("Unable to calculate match %s.", jcMatch), e);
 		}
 		return null;
 	}
@@ -174,8 +179,7 @@ public class OFNMatchService {
 				writer.write(datas, workBook);
 			}
 
-			String fileName = System.getProperty("user.dir") + "\\data\\match-" + DateUtil.formatSimpleDate(new Date())+".xlsx";
-			System.out.println(fileName);
+			String fileName = System.getProperty("user.dir") + "/data/match-" + DateUtil.formatSimpleDate(new Date())+".xlsx";
 			
 			File file = new File (fileName);
 			
@@ -186,7 +190,7 @@ public class OFNMatchService {
 				workBook.write(new FileOutputStream(file));
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Unable to write excel.", e);
 		} finally {
 
 		}

@@ -27,10 +27,22 @@ public class EPredictResult implements Serializable {
     private Long ofnMatchId;
 	
 	@Column(name = "last_match_pk")
-    private Float last_match_pk;
+    private Float lastMatchPk;
+	
+//	@Column(name = "this_match_pk")
+//    private Float thisMatchPk;
+//	
+//	@Column(name = "this_match_pk_ratio")
+//    private Float thisMatchPkRatio;
 	
 	@Column(name = "predict_pk")
     private Float predictPk;
+	
+//	@Column(name = "hot_ratio")
+//    private Integer hotRatio;
+//	
+//	@Column(name = "cross_match")
+//    private Long crossMatch;
 	
 	@Column(name = "host_score")
 	private Float hostScore;

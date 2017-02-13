@@ -21,10 +21,12 @@ import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.base.League;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
 @Table(name = "matches")
+@ToString
 public class EMatch implements Serializable{
 
 	private static final long serialVersionUID = -2092993255372976173L;

@@ -168,6 +168,14 @@ public class OFNMatchData implements MatchData{
 		this.guestScore = guestScore;
 	}
 
+	public List<AsiaPl> getYsb() {
+		return ysb;
+	}
+
+	public void setYsb(List<AsiaPl> ysb) {
+		this.ysb = ysb;
+	}
+
 	private Long okoooMatchId;
 	private Long matchDayId;
 	private Long matchId;
@@ -185,6 +193,7 @@ public class OFNMatchData implements MatchData{
 	private Map<Company, List<EuroPl>> euroPls;
 	private List<AsiaPl> aoMen;
 	private List<AsiaPl> daxiao;
+	private List<AsiaPl> ysb;
 	private Integer hostScore;
 	private Integer guestScore;
 }

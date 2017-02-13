@@ -1,5 +1,6 @@
 package com.roy.football.match.okooo;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -17,12 +18,17 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.util.DateUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class OkoooMatchCrawler {
 	private final static String OKOOO_JINCAI_URL = "http://www.okooo.com/jingcai/";
 	private final static String OKOOO_BIFA_URL = "http://www.okooo.com/soccer/match/{matchId}/exchanges/";
+	private final static String OKOOO_HISTORY_URL = "http://www.okooo.com/soccer/match/{matchId}/history/";
 	private final static String OKOOO_ALL_MATCH_SELECT = "div.touzhu_1";
 	private final static String OKOOO_MATCH_SELECT = "div.touzhu_1[data-end=0]";
 	private final static int MAX_BODY_SIZE = 1024*1024*10;
@@ -35,7 +41,10 @@ public class OkoooMatchCrawler {
 	public MatchExchangeData getExchangeData (Long matchId) {
 		
 		try {
-			Document doc = Jsoup.connect(getExchangeUrl(matchId)).get();
+			Document doc = Jsoup.connect(getExchangeUrl(matchId))
+					.userAgent("Mozilla")
+					.referrer(getExchangeUrlReferer(matchId))
+					.get();
 			
 			Elements eles = doc.select(".bfTable table");
 			
@@ -50,7 +59,7 @@ public class OkoooMatchCrawler {
 
 			return exchangeData;
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error(String.format("Unable to parse exchange data from okooo with okooo match id", matchId), e);
 		}
 		
 		return null;
@@ -85,21 +94,19 @@ public class OkoooMatchCrawler {
 	}
 	*/
 	
-	public Long getOkoooMatchId (Long matchDayId) {
+	public synchronized Long getOkoooMatchId (Long matchDayId) {
 		
 		try {
 			Date matchDate = DateUtil.parseSimpleDate("20" + matchDayId / 1000);
-			
 			Calendar calendar = Calendar.getInstance();
-			
 			calendar.setTime(matchDate);
 			int week = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-			
 			long matchOrder = (week == 0 ? 7 : week) * 1000 + matchDayId % 1000;
-			
+
 			Long okMatchId = okMatches.getIfPresent(matchOrder);
 			
 			if (okMatchId == null) {
+				log.info(String.format("No ok match found for match order %s, recraw.", matchOrder));
 				craw(false, matchDate);
 				
 				return okMatches.getIfPresent(matchOrder);
@@ -107,8 +114,7 @@ public class OkoooMatchCrawler {
 			
 			return okMatchId;
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("Unable to parse to oc match id from match day id %s", matchDayId), e);
 		}
 		
 		return null;
@@ -134,17 +140,21 @@ public class OkoooMatchCrawler {
 
 				String matchIdStr = element.attr("data-mid");
 				String matchOrderStr = element.attr("data-morder");
-				
-				System.out.println(matchOrderStr + "     " + matchIdStr);
 
 				okMatches.put(Long.parseLong(matchOrderStr), Long.parseLong(matchIdStr));
+				log.info(String.format("match order: %s,    match id: %s", matchOrderStr,  matchIdStr));
 			}
 		} catch (Exception e) {
+			log.error(String.format("Unable to craw to oc matches for %s", matchDate), e);
 		}
 	}
 
 	private String getExchangeUrl (long matchId) {
 		return OKOOO_BIFA_URL.replace("{matchId}", matchId+"");
+	}
+	
+	private String getExchangeUrlReferer (long matchId) {
+		return OKOOO_HISTORY_URL.replace("{matchId}", matchId+"");
 	}
 	
 	private void parseBaseTable (MatchExchangeData exchangeData, Element element) {
@@ -164,7 +174,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setBfDrawExchange(Long.parseLong(bfDrawExchange));
 			exchangeData.setBfLoseExchange(Long.parseLong(bfLoseExchange));
 		} catch (Exception e) {
-			// ignore
+			log.error("bf exchange parse error.", e);
 		}
 		
 		try {
@@ -172,7 +182,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setJcDrawExchange(Long.parseLong(jcDrawExchange));
 			exchangeData.setJcLoseExchange(Long.parseLong(jcLoseExchange));
 		} catch (Exception e) {
-			// ignore
+			log.error("jc exchange parse error.", e);
 		}
 	}
 	
@@ -202,6 +212,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setBfDrawGain(Integer.parseInt(bfDrawGain));
 			exchangeData.setBfLoseGain(Integer.parseInt(bfLoseGain));
 		} catch (Exception e) {
+			log.error("bf exchange parse error.", e);
 		}
 		
 		
@@ -213,6 +224,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setJcDrawGain(Integer.parseInt(jcDrawGain));
 			exchangeData.setJcLoseGain(Integer.parseInt(jcLoseGain));
 		} catch (Exception e) {
+			log.error("jc exchange parse error.", e);
 		}
 	}
 	
@@ -226,7 +238,8 @@ public class OkoooMatchCrawler {
 	}
 
 	
-	public static void main (String [] args) {
-		System.out.println(new OkoooMatchCrawler().parsePercentNum("6.06%"));
+	public static void main (String [] args) throws IOException {
+		Document doc = Jsoup.connect("http://www.okooo.com/soccer/match/926771/exchanges/").userAgent("Mozilla").get();
+		System.out.println(doc);
 	}
 }

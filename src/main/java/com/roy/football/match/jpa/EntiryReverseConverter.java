@@ -197,7 +197,7 @@ public class EntiryReverseConverter {
 		return matrix;
 	}
 	
-	public static ClubMatrices toEMatchClubState (Long ofnMatchId, Long hostId, Long guestId, EMatchClubState eMatchClubState) {
+	public static ClubMatrices fromEMatchClubState (Long ofnMatchId, Long hostId, Long guestId, EMatchClubState eMatchClubState) {
 		ClubMatrices clubState = new ClubMatrices();
 		
 		Lists.newArrayList(eMatchClubState.getHostLabel().split(","));

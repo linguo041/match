@@ -74,9 +74,10 @@ public class EntityConverter {
 		return ematch;
 	}
 	
-	public static EAsiaPk toEAsiaPk (Long ofnMatchId, PankouMatrices pkMatrics) {
+	public static EAsiaPk toEAsiaPk (Long ofnMatchId, PankouMatrices pkMatrics, Company company) {
 		EAsiaPk easiaPk = new EAsiaPk();
 		easiaPk.setOfnMatchId(ofnMatchId);
+		easiaPk.setCompany(company);
 		
 		AsiaPl main = pkMatrics.getMainPk();
 		easiaPk.setMainPk(main.getPanKou());
@@ -250,11 +251,23 @@ public class EntityConverter {
 		eLatestMatchState.setGuestAttackVariationToHost(matchState.getGuestAttackVariationToHost());
 		
 		Set<ELatestMatchDetail> latestDetails = Sets.newHashSet();
-		latestDetails.add(toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.host6, matchState.getHostState6()));
-		latestDetails.add(toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.host10, matchState.getHostState10()));
-		latestDetails.add(toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guest6, matchState.getGuestState6()));
-		latestDetails.add(toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guest10, matchState.getGuestState10()));
-		
+		ELatestMatchDetail detailH6 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.host6, matchState.getHostState6());
+		ELatestMatchDetail detailH10 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.host10, matchState.getHostState10());
+		ELatestMatchDetail detailG6 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guest6, matchState.getGuestState6());
+		ELatestMatchDetail detailG10 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guest10, matchState.getGuestState10());
+		if (detailH6 != null) {
+			latestDetails.add(detailH6);
+		}
+		if (detailH10 != null) {
+			latestDetails.add(detailH10);
+		}
+		if (detailG6 != null) {
+			latestDetails.add(detailG6);
+		}
+		if (detailG10 != null) {
+			latestDetails.add(detailG10);
+		}
+
 		eLatestMatchState.setLatestDetails(latestDetails);
 		
 		return eLatestMatchState;
@@ -282,9 +295,10 @@ public class EntityConverter {
 		return eLatestMatchDetail;
 	}
 	
-	public static EMatchClubState toEMatchClubState (Long ofnMatchId, Long hostId, Long guestId, ClubMatrices clubMatrices) {
+	public static EMatchClubState toEMatchClubState (Long ofnMatchId, League league, Long hostId, Long guestId, ClubMatrices clubMatrices) {
 		EMatchClubState eMatchClubState = new EMatchClubState();
 		eMatchClubState.setOfnMatchId(ofnMatchId);
+		eMatchClubState.setLeague(league);
 		eMatchClubState.setHostId(hostId);
 		eMatchClubState.setGuestId(guestId);
 		eMatchClubState.setHostLevel(clubMatrices.getHostLevel());
@@ -364,10 +378,10 @@ public class EntityConverter {
 		return resultDetail;
 	}
 	
-	public static EPredictResult toEPredictResult (Long ofnMatchId, Float predictPk, Float lastPk, Float hostScore, Float guestScore) {
+	public static EPredictResult toEPredictResult (Long ofnMatchId, Float predictPk, Float lastMatchPk, Float hostScore, Float guestScore) {
 		EPredictResult pr = new EPredictResult();
 		pr.setOfnMatchId(ofnMatchId);
-		pr.setLast_match_pk(lastPk);
+		pr.setLastMatchPk(lastMatchPk);
 		pr.setPredictPk(predictPk);
 		pr.setHostScore(hostScore);
 		pr.setGuestScore(guestScore);

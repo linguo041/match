@@ -29,13 +29,17 @@ import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.httpRequest.HttpRequestException;
 import com.roy.football.match.httpRequest.HttpRequestService;
+import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.util.GsonConverter;
 import com.roy.football.match.util.MatchUtil;
 import com.roy.football.match.util.StringUtil;
 import com.roy.football.match.util.XmlParseException;
 import com.roy.football.match.util.XmlParser;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class OFNParser {
 	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.159cai.com/match/analysis/";
@@ -59,8 +63,7 @@ public class OFNParser {
 
 			return response.getRows();
 		} catch (HttpRequestException | XmlParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("unable to parse jincai matches.", e);
 		}
 
 		return null;
@@ -86,8 +89,7 @@ public class OFNParser {
 				generateMatchData(key, val, ofnMatchData);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("unable to parse match data %s", oddsmid), e);
 		}
 		
 		return ofnMatchData;
@@ -135,8 +137,7 @@ public class OFNParser {
 			}
 			
 		} catch (HttpRequestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("unable to parse match euro data: match [%s], company [%s]", oddsmid, company), e);
 		}
 		return null;
 	}
@@ -176,8 +177,7 @@ public class OFNParser {
 			}
 			
 		} catch (HttpRequestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", oddsmid, company), e);
 		}
 		return null;
 	}
@@ -212,8 +212,7 @@ public class OFNParser {
 			}
 			
 		} catch (HttpRequestException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(String.format("unable to parse match daxiao data: match [%s], company [%s]", oddsmid, company), e);
 		}
 		return null;
 	}
@@ -273,8 +272,6 @@ public class OFNParser {
 					//TODO - 
 				default :
 					break;
-					
-				
 			}
 		}
 	}

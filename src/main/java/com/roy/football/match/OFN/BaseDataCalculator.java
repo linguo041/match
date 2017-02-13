@@ -10,8 +10,12 @@ import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
 import com.roy.football.match.base.MatrixType;
 import com.roy.football.match.process.Calculator;
+import com.roy.football.match.service.HistoryMatchCalculationService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class BaseDataCalculator extends AbstractBaseDataCalculator implements Calculator <ClubMatrices, OFNMatchData> {
 
 	@Override
@@ -31,7 +35,7 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 
 				return clubBaseMatx;
 			} catch (CommonException e) {
-				// ignore..
+				log.error(String.format("Unable to calculate the base data for match %s", matchData.getMatchId()), e);
 			}
 		}
 		

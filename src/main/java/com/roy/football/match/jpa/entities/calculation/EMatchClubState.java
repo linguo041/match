@@ -42,17 +42,17 @@ public class EMatchClubState implements Serializable{
 	@Column(name = "guest_id", nullable = false)
     private Long guestId;
 	
-//	@OneToMany(cascade={CascadeType.ALL})
-//	@JoinColumn(name="ofn_match_id")
-	@Transient
+	@OneToMany(cascade={CascadeType.ALL})
+	@JoinColumn(name="ofn_match_id")
+//	@Transient
 	private Set<EMatchClubDetail> clubStateDetails;
 	
 	@Column(name = "host_level")
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.ORDINAL)
 	private TeamLevel hostLevel;
 	
 	@Column(name = "guest_level")
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.ORDINAL)
 	private TeamLevel guestLevel;
 	
 	@Column(name = "host_label")

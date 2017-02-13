@@ -11,8 +11,12 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.roy.football.match.OFN.response.MatchResult;
+import com.roy.football.match.service.HistoryMatchCalculationService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class OFNResultCrawler {
 	private final static String DETAIL_URL_PREIX = "http://bf.159cai.com/detail/index/";
 	private final static NumberFormat NF_FORMAT = NumberFormat.getPercentInstance();
@@ -27,8 +31,8 @@ public class OFNResultCrawler {
 			parseOther(res, doc);
 			
 			return res;
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			log.warn(String.format("Unable to parse match result %s.", matchId), e);
 		}
 		
 		return null;
@@ -42,8 +46,8 @@ public class OFNResultCrawler {
 			
 			String[] tokens = scoreText.split("-");
 			
-			int hostScore = Integer.parseInt(tokens[0].trim());
-			int guestScore = Integer.parseInt(tokens[1].trim());
+			Integer hostScore = Integer.parseInt(tokens[0].trim());
+			Integer guestScore = Integer.parseInt(tokens[1].trim());
 			
 			res.setHostScore(hostScore);
 			res.setGuestScore(guestScore);
@@ -107,7 +111,8 @@ public class OFNResultCrawler {
 	private Float parsePercentNum(String num) {
 		try {
 			return ((Double)NF_FORMAT.parse(num)).floatValue();
-		} catch (ParseException e) {
+		} catch (Exception e) {
+			log.warn("unable to parse percent number {}.", num);
 		}
 		
 		return null;
@@ -117,6 +122,7 @@ public class OFNResultCrawler {
 		try {
 			return Integer.parseInt(num.trim());
 		} catch (Exception e) {
+			log.warn("unable to parse int number {}.", num);
 		}
 		
 		return null;

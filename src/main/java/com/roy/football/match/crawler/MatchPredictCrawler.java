@@ -41,7 +41,7 @@ public class MatchPredictCrawler implements BrokenNewsFetch {
 			e2.printStackTrace();
 		}
 		System.out.println(allTeamNews.toString());
-		FileUtil.writeToFile(allTeamNews.toString(), "c:/match-2016-4-16.txt");
+//		FileUtil.writeToFile(allTeamNews.toString(), "c:/match-2016-4-16.txt");
 	}
 	
 	

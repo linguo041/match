@@ -14,6 +14,7 @@ create table matches (
 
 create table match_pankou (
   ofn_match_id bigint not null,
+  company varchar(40) not null,
   origin_h_win decimal(10,3),
   origin_a_win decimal(10,3),
   origin_pk decimal(10,3),
@@ -26,7 +27,7 @@ create table match_pankou (
   home_win_change_rate decimal(10,4),
   away_win_change_rate decimal(10,4),
   hours int,
-  primary key (ofn_match_id)
+  primary key (ofn_match_id, company)
 ) ENGINE=InnoDB;
 
 create table match_daxiao_pk (
@@ -147,8 +148,8 @@ create table match_club_state (
   league varchar(20),
   host_id int,
   guest_id int,
-  host_level varchar(20),
-  guest_level varchar(20),
+  host_level int,
+  guest_level int,
   host_label varchar(100),
   guest_label varchar(100),
   host_att_guest_def decimal(10,4),

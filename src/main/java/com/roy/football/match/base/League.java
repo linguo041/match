@@ -24,9 +24,11 @@ public enum League {
 	EChao(165, 16), RussiaCup(232, 16),
 	NorChao(104, 16), NorCup (227, 16),
 	Sweden(103, 16, Company.Sweden),
+	BiJia(100, 16),
 
 	RiLian(102, 18, Company.Aomen), RiYi(347, 22, Company.Aomen),
 	RiLianBei(158, 8, Company.Aomen),
+	RiXinBei(392, 8, Company.Aomen),
 	HanZhiLian(250, 12, Company.Aomen),
 	AoChao(339, 10, Company.Aomen),
 	YaGuan(139, 16, Company.Aomen),

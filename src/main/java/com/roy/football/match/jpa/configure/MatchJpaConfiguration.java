@@ -26,9 +26,14 @@ public class MatchJpaConfiguration {
     public DataSource jpaDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/football?useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;connectTimeout=5000&amp;socketTimeout=60000");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/football?useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;connectTimeout=5000&amp;socketTimeout=60000&amp;useSSL=false");
         dataSource.setUsername("gambler");
         dataSource.setPassword("bet@match888");
+        
+        Properties properties = new Properties();
+        properties.setProperty("useSSL", "false");
+        properties.setProperty("autoReconnect", "true");
+        dataSource.setConnectionProperties(properties);
         return dataSource;
     }
 
@@ -52,7 +57,7 @@ public class MatchJpaConfiguration {
 		factoryBean.setPersistenceUnitName("match");
 		Properties jpaProperties = new Properties();
 		jpaProperties.setProperty("hibernate.id.new_generator_mappings", "false");
-		jpaProperties.setProperty("hibernate.show_sql", "true");
+		jpaProperties.setProperty("hibernate.show_sql", "false");
 		factoryBean.setJpaProperties(jpaProperties);
 		return factoryBean;
     }
