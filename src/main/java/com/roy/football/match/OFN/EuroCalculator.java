@@ -17,11 +17,15 @@ import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.base.League;
+import com.roy.football.match.crawler.controller.OFNMatchService;
 import com.roy.football.match.process.Calculator;
 import com.roy.football.match.util.EuroUtil;
 import com.roy.football.match.util.MatchUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class EuroCalculator extends AbstractBaseDataCalculator implements Calculator<EuroMatrices, OFNMatchData>{
 	
 	private final static int PL_CHECKED_HOURS = 32;
@@ -121,8 +125,13 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		if (euroPls != null && euroPls.size() > 0) {
 			euMatrix = new EuroMatrix();
 			euMatrix.setOriginEuro(euroPls.get(0));
-			EuroPl currentEuroPl = euroPls.get(euroPls.size()-1);
-			euMatrix.setCurrentEuro(currentEuroPl);
+			
+			for (int index = euroPls.size()-1; index >=0; index--) {
+				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3) {
+					euMatrix.setCurrentEuro(euroPls.get(index));
+					break;
+				}
+			}
 
 			float hours = 0;
 			EuroPl temp = null;
@@ -239,8 +248,15 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			euMatrix = new EuroMatrix();
 			euMatrix.setOriginEuro(euroPls.get(0));
 			euMatrix.setOriginEuro(euroPls.get(0));
-			EuroPl currentEuroPl = euroPls.get(euroPls.size()-1);
-			euMatrix.setCurrentEuro(currentEuroPl);
+			
+			for (int index = euroPls.size()-1; index >=0; index--) {
+				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3) {
+					euMatrix.setCurrentEuro(euroPls.get(index));
+					break;
+				}/* else {
+					log.info(String.format("pl time exceed match time - 0.3h, pl: %s, match: %s", euroPls.get(index), matchDt));
+				}*/
+			}
 
 			EuroPl main = null;
 			float hours = 0;

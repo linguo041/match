@@ -63,12 +63,12 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 			)
 	  -- pk
       and (abs(mpk1.main_pk) <= 0.75
-			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.35
+			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.25
 		or (abs(mpk1.main_pk) > 0.75
-			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.45))
+			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.3))
 	  and abs((mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.25
       and abs((mpk.current_pk-(mpk.current_h_win-mpk.current_a_win)/2) - (mpk1.current_pk-(mpk1.current_h_win-mpk1.current_a_win)/2)) <= 0.15
-	  and abs(mpk.home_win_change_rate - mpk1.home_win_change_rate) <= 0.08
+	  and abs(mpk.home_win_change_rate - mpk1.home_win_change_rate) <= 0.1
 	  -- state
 	  and abs(mls.hot_point - mls1.hot_point) <= 4
       and (abs(mpk1.main_pk) <= 0.75 and abs((mls.host_att_to_guest - mls.guest_att_to_host) - (mls1.host_att_to_guest - mls1.guest_att_to_host)) < 0.35
@@ -82,7 +82,8 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 	  -- js
       -- and (abs(mj.win_draw_pk_rate - mj1.win_draw_pk_rate) < 0.4 or abs(mj.win_draw_rate - mj1.win_draw_rate) < 0.4)
 	  -- pl
-      and (abs(mce1.main_win_pl - mce.main_win_pl) <= 0.05 or abs(mce1.main_lose_pl - mce.main_lose_pl) <= 0.05 or abs(mce1.main_draw_pl - mce.main_draw_pl) <= 0.1)
+	  and (abs(mce1.main_win_pl - mce.main_win_pl) <= 0.05 or abs(mce1.main_lose_pl - mce.main_lose_pl) <= 0.05 or abs(mce1.main_draw_pl - mce.main_draw_pl) <= 0.1
+		or abs(mce1.current_win_pl - mce.current_win_pl) <= 0.05 or abs(mce1.current_lose_pl - mce.current_lose_pl) <= 0.05 or abs(mce1.current_draw_pl - mce.current_draw_pl) <= 0.1)
 	  group by m1.ofn_match_id
       order by m1.match_time asc
 ) t 

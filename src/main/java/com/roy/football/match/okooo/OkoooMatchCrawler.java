@@ -107,7 +107,7 @@ public class OkoooMatchCrawler {
 			
 			if (okMatchId == null) {
 				log.info(String.format("No ok match found for match order %s, recraw.", matchOrder));
-				craw(false, matchDate);
+				craw(true, matchDate);
 				
 				return okMatches.getIfPresent(matchOrder);
 			}
