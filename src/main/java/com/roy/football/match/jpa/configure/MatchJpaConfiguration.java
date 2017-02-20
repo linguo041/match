@@ -2,6 +2,8 @@ package com.roy.football.match.jpa.configure;
 
 import java.util.Properties;
 
+import javax.inject.Provider;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
@@ -17,6 +19,8 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+
+import com.mysema.query.jpa.impl.JPAQueryFactory;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.roy.football.match.jpa.repositories")
@@ -67,6 +71,10 @@ public class MatchJpaConfiguration {
 		return new JpaTransactionManager(entityManagerFactory);
 	}
 	
-	
+	@Bean JPAQueryFactory jpaQueryFactory(
+	        @Qualifier(value = "entityManagerFactory")
+	        Provider<EntityManager> entityManager) {
+	        return new JPAQueryFactory(entityManager);
+	    }
 
 }

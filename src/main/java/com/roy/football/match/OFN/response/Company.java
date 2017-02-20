@@ -1,32 +1,30 @@
 package com.roy.football.match.OFN.response;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public enum Company {
-	Jincai(10000, PaidLevel.Low), William (451, PaidLevel.High), Ladbrokes(449, PaidLevel.High), Interwetten(211, PaidLevel.Middle),
-	Aomen (442, PaidLevel.Middle), YiShenBo(454, PaidLevel.Middle), SNAI(325, PaidLevel.High), Sweden(370, PaidLevel.High);
+	Jincai(10000, 1L, 1585L, PaidLevel.Low), William (451, 293L, 21L, PaidLevel.High),
+	Ladbrokes(449, 2L, 26L, PaidLevel.High), Interwetten(211, 4L, 140L, PaidLevel.Middle),
+	Aomen (442, 5L, 196L, PaidLevel.Middle), YiShenBo(454, 9L, 184L, PaidLevel.Middle), SNAI(325, 8L, 174L, PaidLevel.High),
+	Sweden(370, 225L, 298L, PaidLevel.High);
 	
 	Company (long cid, PaidLevel paidLevel) {
-		setCompanyId(cid);
-		setPaidLevel(paidLevel);
+		this.companyId = cid;
+		this.paidLevel = paidLevel;
+	}
+	
+	Company (long cid, Long fmCid, Long acCid, PaidLevel paidLevel) {
+		this.companyId = cid;
+		this.fmCompanyId = fmCid;
+		this.acCompanyId = acCid;
+		this.paidLevel = paidLevel;
 	}
 	
 	public String toString () {
 		return this.name();
-	}
-
-	public Long getCompanyId() {
-		return companyId;
-	}
-
-	public void setCompanyId(Long companyId) {
-		this.companyId = companyId;
-	}
-
-	public PaidLevel getPaidLevel() {
-		return paidLevel;
-	}
-
-	public void setPaidLevel(PaidLevel paidLevel) {
-		this.paidLevel = paidLevel;
 	}
 
 	public static Company companyIdOf (Long companyId) {
@@ -42,6 +40,8 @@ public enum Company {
 	}
 
 	private Long companyId;
+	private Long fmCompanyId;
+	private Long acCompanyId;
 	private PaidLevel paidLevel;
 	
 	public static enum PaidLevel {

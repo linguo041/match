@@ -221,4 +221,15 @@ create table match_predict (
   primary key (ofn_match_id)
 ) ENGINE=InnoDB;
 
+create table league (
+	league_id bigint not null,
+	name varchar(20),
+	main_company varchar(20),
+	team_num int,
+	state int,
+	goal_per_match decimal(10,4),
+	net_goal_per_match decimal(10,4)，
+	primary key (league_id)
+) ENGINE=InnoDB;
 
+create index league_name ON football.league (name);

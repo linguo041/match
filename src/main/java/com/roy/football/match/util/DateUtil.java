@@ -9,6 +9,7 @@ import java.util.TimeZone;
 
 public class DateUtil {
 	public final static String simple_date_format = "yyyyMMdd";
+	public final static String harfYear_date_format = "yyMMdd";
 	public static final String simple_date_format_dot = "yyyy.MM.dd";
 	public static final String simple_date_format_dash = "yyyy-MM-dd";
 	public static final String simple_date_format_slash = "yyyy/MM/dd";
@@ -25,12 +26,31 @@ public class DateUtil {
 	public final static TimeZone PST_TIMEZONE = TimeZone.getTimeZone("PST");
 
     private static ThreadLocal<DateFormat> simpleDateThread = new ThreadLocal<DateFormat>();
+    private static ThreadLocal<DateFormat> harfYearDateThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithDashThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> dateTimeThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> dateTimeComplexThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithDatabaseThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithSlashThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> eightWinDateThread = new ThreadLocal<DateFormat>();
+    
+    public static DateFormat getHarfYearFormat() {
+    	DateFormat df = harfYearDateThread.get();
+    	if (df == null) {
+    		df = new SimpleDateFormat(harfYear_date_format);
+    		harfYearDateThread.set(df);
+    	}
+
+    	return df;
+    }
+
+    public static Date parseHarfYearDate (String dateStr) throws ParseException {
+        return getHarfYearFormat().parse(dateStr);
+    }
+
+    public static String formatHarfYearDate (Date date) {
+        return getHarfYearFormat().format(date);
+    }
     
     // date format: yyyyMMdd
     public static DateFormat getSimpleDateFormat() {
@@ -50,6 +70,7 @@ public class DateUtil {
     public static String formatEightWinDate (Date date) {
         return getEightWinFormat().format(date);
     }
+    
     
     public static DateFormat getEightWinFormat() {
     	DateFormat df = eightWinDateThread.get();

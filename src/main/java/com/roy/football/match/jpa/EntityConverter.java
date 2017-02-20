@@ -34,6 +34,7 @@ import com.roy.football.match.jpa.entities.calculation.EExchange;
 import com.roy.football.match.jpa.entities.calculation.EJiaoShou;
 import com.roy.football.match.jpa.entities.calculation.ELatestMatchDetail;
 import com.roy.football.match.jpa.entities.calculation.ELatestMatchState;
+import com.roy.football.match.jpa.entities.calculation.ELeague;
 import com.roy.football.match.jpa.entities.calculation.EMatch;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubDetail;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubState;
@@ -146,7 +147,7 @@ public class EntityConverter {
 		}
 		
 		EuroPl avg = euroMatrices.getCurrEuroAvg();
-		if (avg != null) {
+		if (avg != null && avg.getEWin() != null) {
 			eEuroPlState.setAvgWin(avg.getEWin());
 			eEuroPlState.setAvgDraw(avg.getEDraw());
 			eEuroPlState.setAvgLose(avg.getELose());
@@ -386,5 +387,15 @@ public class EntityConverter {
 		pr.setHostScore(hostScore);
 		pr.setGuestScore(guestScore);
 		return pr;
+	}
+	
+	public static ELeague toEleague (League league) {
+		ELeague el = new ELeague();
+		el.setLeagueId(league.getLeagueId());
+		el.setName(league.toString());
+		el.setMainCompany(league.getMajorCompany());
+		el.setState(league.isState());
+		el.setTeamNum(league.getClubNum());
+		return el;
 	}
 }

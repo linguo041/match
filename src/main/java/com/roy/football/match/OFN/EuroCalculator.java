@@ -51,7 +51,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				}
 
 				EuroPl avg = matchData.getEuroAvg();
-				if (avg == null) {
+				if (avg == null || avg.getEWin() == null) {
 					avg = calEuroAvg(companyEus);
 				}
 				euroMatrices.setCurrEuroAvg(avg);
