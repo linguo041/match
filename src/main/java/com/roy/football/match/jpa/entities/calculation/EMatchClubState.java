@@ -21,10 +21,12 @@ import com.roy.football.match.base.TeamLabel;
 import com.roy.football.match.base.TeamLevel;
 
 import lombok.Data;
+import lombok.ToString;
 
 @Data
 @Entity
 @Table(name = "match_club_state")
+@ToString
 public class EMatchClubState implements Serializable{
 
 	private static final long serialVersionUID = 6253082811418037813L;

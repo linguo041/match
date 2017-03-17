@@ -1,5 +1,7 @@
 package com.roy.football.batch.lancher;
 
+import java.util.concurrent.CompletionService;
+
 import javax.batch.operations.JobRestartException;
 
 import org.springframework.batch.core.Job;
@@ -33,6 +35,5 @@ public class HistoryMatchCalculationJobLancher {
  
         // do not close, since the sub-thread would use.
         context.close();
- 
     }
 }

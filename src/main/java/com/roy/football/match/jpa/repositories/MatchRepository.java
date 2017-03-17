@@ -16,7 +16,7 @@ public interface MatchRepository extends CrudRepository<EMatch, Long>{
 	
 	@Query("select m from EMatch m"
 			+ "      left join EEuroPlCompany pl on m.ofnMatchId = pl.ofnMatchId"
-			+ " where m.matchTime > '2015-10-01 00:00:00'"
+			+ " where m.matchTime > '2016-08-01 00:00:00'"
 			+ "   and m.phase = 2"
 			+ "   and m.league != 'Friendly'"
 			+ " group by m.ofnMatchId"

@@ -161,3 +161,60 @@ select m.ofn_match_id, m.league, m.match_time, m.host_name, m.guest_name, mr.hos
       and mls.hot_point > -2
 	  and cal_phase = 2
      order by m.match_time desc;
+
+select p.league,  p.matches, p.goal/p.matches goal_per_match, p.net_goal/p.matches net_goal_per_match,
+	p.shot/p.matches shot_per_match, p.shot_on_target/p.matches sot_per_match, p.fault/p.matches fault_per_match
+ from (
+	select t.league, count(t.ofn_match_id) matches, sum(t.goal) goal, sum(t.net_goal) net_goal, sum(t.shot) shot, sum(t.shot_on_target) shot_on_target, sum(t.fault) fault
+	 from (
+		select m.ofn_match_id, m.league,
+				(mrd.host_score +mrd.guest_score) goal,
+                abs(mrd.host_score-mrd.guest_score) net_goal,
+				(mrd.host_shot +mrd.guest_shot) shot,
+				(mrd.host_shot_on_target +mrd.guest_shot_on_target) shot_on_target,
+				(mrd.host_fault +mrd.guest_fault) fault
+			  from matches m, match_result mr, match_result_detail mrd 
+			 where 1=1
+			   and m.ofn_match_id = mr.ofn_match_id
+			   and m.ofn_match_id = mrd.ofn_match_id) as t
+	 where 1=1
+		and t.goal is not null
+		and t.shot is not null
+		and t.shot_on_target is not null
+		and t.fault is not null
+	 group by t.league
+) as p where p.matches > 20;
+
+/* Check how many matches don't have euro data*/
+select count(p.ofn_match_id) from (
+select m.* from matches m left join match_company_euro mce
+ on m.ofn_match_id = mce.ofn_match_id
+where 1=1
+  and m.cal_phase =2 
+  and league != 'Friendly'
+  and m.match_time > '2016-01-01 00:00:00'
+  group by m.ofn_match_id
+  having count(mce.ofn_match_id) < 1) p;
+
+
+
+update league,
+(select p.league,  p.matches, p.goal/p.matches goal_per_match, p.net_goal/p.matches net_goal_per_match
+  from(
+    select t.league, count(t.ofn_match_id) matches, sum(t.goal) goal, sum(t.net_goal) net_goal
+	 from (
+		select m.ofn_match_id, m.league,
+				(mrd.host_score +mrd.guest_score) goal,
+                abs(mrd.host_score-mrd.guest_score) net_goal
+		  from matches m, match_result_detail mrd 
+	     where 1=1
+		   and m.ofn_match_id = mrd.ofn_match_id
+		  ) as t
+	where 1=1
+	  and t.goal is not null
+	group by t.league
+	) p where p.matches > 20) tmp 
+set league.goal_per_match = tmp.goal_per_match, league.net_goal_per_match=tmp.net_goal_per_match
+where league.name = tmp.league;
+
+

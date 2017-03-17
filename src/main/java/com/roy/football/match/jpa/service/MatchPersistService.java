@@ -129,6 +129,7 @@ public class MatchPersistService {
 		if (clubMatrices != null) {
 			EMatchClubState eMatchClubState = EntityConverter.toEMatchClubState(ofnMatchId,
 					ofnMatch.getLeague(), ofnMatch.getHostId(), ofnMatch.getGuestId(), clubMatrices);
+
 			matchClubStateRepository.save(eMatchClubState);
 			
 //			for (EMatchClubDetail eMatchClubDetail : eMatchClubState.getClubStateDetails()) {

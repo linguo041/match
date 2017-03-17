@@ -268,6 +268,7 @@ public class EntiryReverseConverter {
 		result.setHostShotOnTarget(detail.getHostShotOnTarget());
 		result.setHostSave(detail.getHostSave());
 		result.setHostCorner(detail.getHostCorner());
+		result.setHostYellowCard(detail.getHostYellowCard());
 		result.setHostFault(detail.getHostFault());
 		result.setHostOffside(detail.getHostOffside());
 		result.setHostTime(detail.getHostTime());
@@ -279,6 +280,7 @@ public class EntiryReverseConverter {
 		result.setGuestShotOnTarget(detail.getGuestShotOnTarget());
 		result.setGuestSave(detail.getGuestSave());
 		result.setGuestCorner(detail.getGuestCorner());
+		result.setGuestYellowCard(detail.getGuestYellowCard());
 		result.setGuestFault(detail.getGuestFault());
 		result.setGuestOffside(detail.getGuestOffside());
 		result.setGuestTime(detail.getGuestTime());

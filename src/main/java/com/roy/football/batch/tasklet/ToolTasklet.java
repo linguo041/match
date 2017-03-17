@@ -12,6 +12,7 @@ import com.roy.football.match.jpa.entities.calculation.ELeague;
 import com.roy.football.match.jpa.repositories.ELeagueRepository;
 import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.service.MatchEuroRecalculateService;
+import com.roy.football.match.service.TeamService;
 
 public class ToolTasklet implements Tasklet{
 	
@@ -20,12 +21,17 @@ public class ToolTasklet implements Tasklet{
 	
 	@Autowired 
 	private MatchEuroRecalculateService matchEuroRecalculateService;
+	
+	@Autowired 
+	private TeamService teamService;
 
 
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
-		recalculateMissedEuro();
+//		recalculateMissedEuro();
+		fetchTeamRanking();
+//		fetchTeamName();
 		
 		return null;
 	}
@@ -41,4 +47,13 @@ public class ToolTasklet implements Tasklet{
 	private void recalculateMissedEuro () {
 		matchEuroRecalculateService.recalculate();
 	}
+	
+	private void fetchTeamName () {
+		teamService.fetchTeamName();
+	}
+	
+	private void fetchTeamRanking () {
+		teamService.fetchTeamRanking();;
+	}
+
 }
