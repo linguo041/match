@@ -253,20 +253,20 @@ public class EntityConverter {
 		
 		Set<ELatestMatchDetail> latestDetails = Sets.newHashSet();
 		ELatestMatchDetail detailH6 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.host6, matchState.getHostState6());
-		ELatestMatchDetail detailH10 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.host10, matchState.getHostState10());
+		ELatestMatchDetail detailHH5 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.hostHome5, matchState.getHostHome5());
 		ELatestMatchDetail detailG6 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guest6, matchState.getGuestState6());
-		ELatestMatchDetail detailG10 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guest10, matchState.getGuestState10());
+		ELatestMatchDetail detailGA5 = toLatestMatchMatrices(ofnMatchId, LatestMatchMatrixType.guestAway5, matchState.getGuestAway5());
 		if (detailH6 != null) {
 			latestDetails.add(detailH6);
 		}
-		if (detailH10 != null) {
-			latestDetails.add(detailH10);
+		if (detailHH5 != null) {
+			latestDetails.add(detailHH5);
 		}
 		if (detailG6 != null) {
 			latestDetails.add(detailG6);
 		}
-		if (detailG10 != null) {
-			latestDetails.add(detailG10);
+		if (detailGA5 != null) {
+			latestDetails.add(detailGA5);
 		}
 
 		eLatestMatchState.setLatestDetails(latestDetails);
@@ -286,8 +286,8 @@ public class EntityConverter {
 		eLatestMatchDetail.setPoint(latestMatchMatrices.getPoint());
 		eLatestMatchDetail.setMatchGoal(latestMatchMatrices.getMatchGoal());
 		eLatestMatchDetail.setMatchMiss(latestMatchMatrices.getMatchMiss());
-		eLatestMatchDetail.setGVariation(latestMatchMatrices.getgVariation());
-		eLatestMatchDetail.setMVariation(latestMatchMatrices.getmVariation());
+		eLatestMatchDetail.setGVariation(latestMatchMatrices.getGVariation());
+		eLatestMatchDetail.setMVariation(latestMatchMatrices.getMVariation());
 		eLatestMatchDetail.setWinRate(latestMatchMatrices.getWinRate());
 		eLatestMatchDetail.setWinPkRate(latestMatchMatrices.getWinPkRate());
 		eLatestMatchDetail.setWinDrawRate(latestMatchMatrices.getWinDrawRate());

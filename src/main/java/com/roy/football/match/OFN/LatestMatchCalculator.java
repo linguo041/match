@@ -1,9 +1,12 @@
 package com.roy.football.match.OFN;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.stat.StatUtils;
 import org.springframework.stereotype.Component;
 
 import com.roy.football.match.OFN.response.ClubDatas;
@@ -11,13 +14,16 @@ import com.roy.football.match.OFN.response.ClubDatas.ClubData;
 import com.roy.football.match.OFN.response.FinishedMatch;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
-import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
 import com.roy.football.match.base.League;
 import com.roy.football.match.process.Calculator;
+import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.util.MatchUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class LatestMatchCalculator extends AbstractBaseDataCalculator implements Calculator<MatchState, OFNMatchData> {
 
 	@Override
@@ -27,24 +33,24 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		}
 
 		MatchState matchState = new MatchState();
-		ClubDatas clubData = matchData.getBaseData();
-		ClubData hostClubData = null;
-		ClubData guestClubData = null;
 
 		League le = matchData.getLeague();
 
-		if (clubData != null) {
-			hostClubData = clubData.getHostData();
-			guestClubData = clubData.getGuestData();
-		}
+//		ClubDatas clubData = matchData.getBaseData();
+//		if (clubData != null) {
+//			ClubData hostClubData = clubData.getHostData();
+//			ClubData guestClubData = clubData.getGuestData();
+//		}
 
 		calculateMatchMatrices(matchState, matchData.getHostMatches(),
-				matchData.getHostId(), matchData.getMatchTime(), hostClubData, true, le);
+				matchData.getHostId(), matchData.getMatchTime(), true, le);
 		calculateMatchMatrices(matchState, matchData.getGuestMatches(),
-				matchData.getGuestId(), matchData.getMatchTime(), guestClubData, false, le);
+				matchData.getGuestId(), matchData.getMatchTime(), false, le);
 		matchState.setCalculatePk(getPankouByFinishedMatches(matchData, le));
 
-		calMatchStateIndex(matchState);
+		if (!calMatchStateIndex(matchState, matchData.isSameCityOrNeutral(), matchData.getLevelDiff(), le)) {
+			log.warn(String.format("No enough matches to calculate for matchId:%d, league:%s", matchData.getMatchId(), le));
+		}
 		
 		calucateHotDiff(matchState);
 		
@@ -71,24 +77,45 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matchState.setHotPoint(pointDiff);
 	}
 	
-	private void calMatchStateIndex (MatchState matchState) {
-		LatestMatchMatrices hostMatches = matchState.getHostState6();
-		LatestMatchMatrices guestMatches = matchState.getGuestState6();
+	private boolean calMatchStateIndex (MatchState matchState, boolean isSameCityOrNeutral, int levelDiff, League le) {
+		LatestMatchMatrices hostMatches = matchState.getHostHome5();
+		LatestMatchMatrices guestMatches = matchState.getGuestAway5();
 		
-		if (hostMatches == null) {
-			return;
+		if (isSameCityOrNeutral || le.isState() || hostMatches == null || guestMatches == null) {
+			hostMatches = matchState.getHostState6();
+			guestMatches = matchState.getGuestState6();
+		}
+		
+		if (hostMatches == null || guestMatches == null) {
+			return false;
 		}
 
-		float hgoal = 0.6f * hostMatches.getMatchGoal() + 0.4f * guestMatches.getMatchMiss();
-		float ggoal = 0.6f * guestMatches.getMatchGoal() + 0.4f * hostMatches.getMatchMiss();
+		// h_goal = (h_goal_avg - h_variance * (h_goal_avg - g_lose_avg) / h_goal_avg) *(4 - (h_level - g_level))/7
+		//        + (g_lose_avg + g_variance * (h_goal_avg - g_lose_avg) / h_goal_avg) *(4 + (h_level - g_level))/7
+		float hgoal =  (hostMatches.getMatchGoal()
+							 - hostMatches.getGVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/hostMatches.getMatchGoal()
+					   ) * (4 - levelDiff)/7
+					 + (guestMatches.getMatchMiss()
+							 + guestMatches.getMVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/hostMatches.getMatchGoal()
+					   ) * (4 + levelDiff)/7;
+		// g_goal = (g_goal_avg - g_variance * (g_goal_avg - h_lose_avg) / g_goal_avg) *(4 + (h_level - g_level))/7
+		//        + (h_lose_avg + h_variance * (g_goal_avg - h_lose_avg) / g_goal_avg) *(4 - (h_level - g_level))/7
+		float ggoal = (guestMatches.getMatchGoal()
+							- guestMatches.getGVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/guestMatches.getMatchGoal()
+					  ) * (4 + levelDiff)/7
+					+ (hostMatches.getMatchMiss()
+							+ hostMatches.getMVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/guestMatches.getMatchGoal()
+					  ) * (4 - levelDiff)/7;
 
-		float hvariation = 0.6f * hostMatches.getgVariation() + 0.4f * guestMatches.getmVariation();
-		float gvariation = 0.6f * guestMatches.getgVariation() + 0.4f * hostMatches.getmVariation();
+		float hvariation = hostMatches.getGVariation() * (4 - levelDiff)/7 + guestMatches.getMVariation() * (4 + levelDiff)/7;
+		float gvariation = guestMatches.getGVariation() * (4 + levelDiff)/7 + hostMatches.getMVariation() * (4 - levelDiff)/7;
 
 		matchState.setHostAttackToGuest(hgoal);
 		matchState.setGuestAttackToHost(ggoal);
 		matchState.setHostAttackVariationToGuest(hvariation);
 		matchState.setGuestAttackVariationToHost(gvariation);
+		
+		return true;
 	}
 	
 	private Float getPankouByFinishedMatches (OFNMatchData matchData, League le) {
@@ -185,149 +212,156 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 	
 	private void calculateMatchMatrices (MatchState matchState,
-			List<FinishedMatch> matches, Long teamId, Date matchDate, ClubData club, boolean isHost, League league) {
+			List<FinishedMatch> matches, Long teamId, Date matchDate, boolean isHost, League league) {
 		if (matchState != null && matches != null && matches.size() > 0) {
-			int winNum = 0;
-			int drawNum = 0;
-			int loseNum = 0;
-			int allNum = 0;
-			int winPkNum = 0;
-			int drawPkNum = 0;
-			int losePkNum = 0;
-			int goals = 0;
-			int misses = 0;
-			float points = 0;
-
-			boolean checkVariation = false;
-			float goalPerMatch = 0;
-			float missPerMatch = 0;
-			float gVariation = 0;
-			float mVariation = 0;
+			int index_H = 0;
+			int index_A = 0;
 			
-			if (club != null && club.getAllNum() != 0) {
-				goalPerMatch = club.getAllGoal() / club.getAllNum();
-				missPerMatch = club.getAllMiss() / club.getAllNum();
-				checkVariation = true;
-			}
+			int winNum_H = 0;
+			int drawNum_H = 0;
+			int loseNum_H = 0;
+			int winPkNum_H = 0;
+			int drawPkNum_H = 0;
+			int losePkNum_H = 0;
+			double[] goals_H = new double[20];
+			double[] misses_H = new double[20];
+			float points_H = 0;
+			
+			int winNum_A = 0;
+			int drawNum_A = 0;
+			int loseNum_A = 0;
+			int winPkNum_A = 0;
+			int drawPkNum_A = 0;
+			int losePkNum_A = 0;
+			double[] goals_A = new double[20];
+			double[] misses_A = new double[20];
+			float points_A = 0;
 			
 			for (int i = 0; i < matches.size(); i++) {
 				FinishedMatch match = matches.get(i);
 				
-				if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, i,
-							league.isState() ? MatchUtil.STATE_LATEST_MIN_MATCH_DAY : MatchUtil.CLUB_LATEST_MIN_MATCH_DAY)
+				if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, league.isState(), i)
 						|| matchDate.getTime() <= match.getMatchTime().getTime()) {
 					continue;
 				}
 				
-				float point = 0;
-
 				// home match
 				if (teamId.equals(match.getHostId())) {
+					float point = 0;
+					
 					if (match.getHscore() > match.getAscore()) {
-						winNum ++;
+						winNum_H ++;
 						point = 3;
 					} else if (match.getHscore() == match.getAscore()) {
-						drawNum ++;
+						drawNum_H ++;
 						point = 1;
 					} else {
-						loseNum ++;
+						loseNum_H ++;
 					}
 
-					goals += match.getHscore();
-					misses += match.getAscore();
-					
-					if (checkVariation) {
-						gVariation += Math.abs(match.getHscore() - goalPerMatch);
-						mVariation += Math.abs(match.getAscore() - missPerMatch);
-					}
+					goals_H[index_H] = match.getHscore();
+					misses_H[index_H] = match.getAscore();
+					index_H++;
 					
 					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
-						winPkNum ++;
+						winPkNum_H ++;
 						if (point != 3) {
 							point += 0.5;
 						}
 					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
-						drawPkNum ++;
+						drawPkNum_H ++;
 					} else {
-						losePkNum ++;
+						losePkNum_H ++;
 						if (point != 0) {
 							point -= 0.5;
 						}
 					}
+					
+					points_H += point;
 				} else { // away match
+					float point = 0;
+					
 					if (match.getAscore() > match.getHscore()) {
-						winNum ++;
+						winNum_A ++;
 						point = 3;
 					} else if (match.getAscore() == match.getHscore()) {
-						drawNum ++;
+						drawNum_A ++;
 						point = 1;
 					} else {
-						loseNum ++;
+						loseNum_A ++;
 					}
 
-					goals += match.getAscore();
-					misses += match.getHscore();
-					
-					if (checkVariation) {
-						gVariation += Math.abs(match.getAscore() - goalPerMatch);
-						mVariation += Math.abs(match.getHscore() - missPerMatch);
-					}
+					goals_A[index_A] = match.getAscore();
+					misses_A[index_A] = match.getHscore();
+					index_A++;
 					
 					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
-						winPkNum ++;
+						winPkNum_A ++;
 						if (point != 3) {
 							point += 0.5;
 						}
 					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
-						drawPkNum ++;
+						drawPkNum_A ++;
 					} else {
-						losePkNum ++;
+						losePkNum_A ++;
 						if (point != 0) {
 							point -= 0.5;
 						}
 					}
+					
+					points_A += point;
 				}
-				
-				allNum ++;
-				points += point;
 
 				// calculate the latest 6 matches
-				if (allNum <= 6) {
+				if (index_H + index_A >= 4 && index_H + index_A <= 6) {
+					LatestMatchMatrices latest6 = getMatchMatricesData(winNum_H + winNum_A,
+							drawNum_H + drawNum_A, loseNum_H + loseNum_A, index_H + index_A,
+							StatUtils.sum(goals_H) + StatUtils.sum(goals_A),
+							StatUtils.sum(misses_H) + StatUtils.sum(misses_A),
+							winPkNum_H + winPkNum_A, drawPkNum_H + drawPkNum_A, points_H + points_A,
+							StatUtils.variance(ArrayUtils.addAll(goals_H, goals_A), 0, index_H + index_A),
+							StatUtils.variance(ArrayUtils.addAll(misses_H, misses_A), 0, index_H + index_A));
+					
 					if (isHost) {
-						matchState.setHostState6(setMatchMatricesData(winNum,
-								drawNum, loseNum, allNum, goals, misses,
-								winPkNum, drawPkNum, points, gVariation,
-								mVariation));
+						matchState.setHostState6(latest6);
 					} else {
-						matchState.setGuestState6(setMatchMatricesData(winNum,
-								drawNum, loseNum, allNum, goals, misses,
-								winPkNum, drawPkNum, points, gVariation,
-								mVariation));
+						matchState.setGuestState6(latest6);
 					}
 				}
 				
-				// calculate the latest 10 matches
-				if (allNum == 10) {
-					if (isHost) {
-						matchState.setHostState10(setMatchMatricesData(winNum,
-								drawNum, loseNum, allNum, goals, misses,
-								winPkNum, drawPkNum, points, gVariation,
-								mVariation));
-					} else {
-						matchState.setGuestState10(setMatchMatricesData(winNum,
-								drawNum, loseNum, allNum, goals, misses,
-								winPkNum, drawPkNum, points, gVariation,
-								mVariation));
+				if (isHost) {
+					if (index_H >= 3 && index_H <= 5) {
+						LatestMatchMatrices hostHome5 = getMatchMatricesData(winNum_H,
+								drawNum_H, loseNum_H, index_H,
+								StatUtils.sum(goals_H, 0, index_H),
+								StatUtils.sum(misses_H, 0, index_H),
+								winPkNum_H, drawPkNum_H, points_H,
+								StatUtils.variance(goals_H, 0, index_H),
+								StatUtils.variance(misses_H, 0, index_H));
+						matchState.setHostHome5(hostHome5);
 					}
-					
+				} else {
+					if (index_A >= 3 && index_A <= 5) {
+						LatestMatchMatrices guestAway5 = getMatchMatricesData(winNum_A,
+								drawNum_A, loseNum_A, index_A,
+								StatUtils.sum(goals_A, 0, index_A),
+								StatUtils.sum(misses_A, 0, index_A),
+								winPkNum_A, drawPkNum_A, points_A,
+								StatUtils.variance(goals_A, 0, index_A),
+								StatUtils.variance(misses_A, 0, index_A));
+						matchState.setGuestAway5(guestAway5);
+					}
+				}
+				
+				if (index_H >= 5 && index_A >= 5 || index_H + index_A >= 20) {
 					break;
 				}
 			}
 		}
 	}
 
-	private LatestMatchMatrices setMatchMatricesData (int winNum,
-			int drawNum, int loseNum, int allNum, int goals, int misses, int winPkNum, int drawPkNum, float points, float gVariation, float mVariation) {
+	private LatestMatchMatrices getMatchMatricesData (int winNum,
+			int drawNum, int loseNum, int allNum, double goals, double misses, int winPkNum, int drawPkNum, float points, double gVariation, double mVariation) {
 		LatestMatchMatrices matrices =  new LatestMatchMatrices();
 		matrices.setMatchGoal((float)goals/allNum);
 		matrices.setMatchMiss((float)misses/allNum);
@@ -335,9 +369,23 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matrices.setWinDrawRate((float) (winNum + drawNum)/allNum);
 		matrices.setWinPkRate((float) winPkNum / allNum);
 		matrices.setWinDrawPkRate((float) (winPkNum + drawPkNum) / allNum);
-		matrices.setgVariation(gVariation / allNum);
-		matrices.setmVariation(mVariation / allNum);
+		matrices.setGVariation((float)gVariation);
+		matrices.setMVariation((float)mVariation);
 		matrices.setPoint(points);
 		return matrices;
+	}
+	
+	public static void main (String args []) {
+		double a[] = new double[10];
+		double b[] = new double[10];
+		
+		a[0] = 1;
+		a[1] = 2;
+		a[2] = 2;
+		a[3] = 1;
+		a[4] = 2;
+		
+		System.out.println(StatUtils.mean(a, 0, 5));
+		System.out.println(StatUtils.variance(a, 0, 5));
 	}
 }

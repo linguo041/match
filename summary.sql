@@ -8,6 +8,7 @@ select t.ofn_match_id, t.league, t.match_time, t.host_name, t.guest_name, t.res,
 -- 			t.draw_pk_cnt / (t.win_pk_cnt + t.draw_pk_cnt + t.lose_pk_cnt), ' - ',
 -- 			t.lose_pk_cnt / (t.win_pk_cnt + t.draw_pk_cnt + t.lose_pk_cnt)) win_draw_lose_pk_rate,
         /*t.win_cnt + t.draw_cnt + t.lose_cnt as total,*/
+        concat(t.predict_host_score, ' - ', predict_guest_score) predict_score,
         case when t.main_pk != t.current_pk then concat(t.main_pk, ' -> ', t.current_pk) else t.main_pk end as main_current_pk,
 		t.predict_pk,
 		concat(t.main, ' -> ', t.current) as main_current,
@@ -38,7 +39,8 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 		concat(mce1.win_change_per_hour, ' ', mce1.draw_change_per_hour, ' ', mce1.lose_change_per_hour) aomen_pl_change,
 		mls1.hot_point, mls1.host_att_to_guest, mls1.guest_att_to_host,
 		mcs1.host_level, mcs1.guest_level, mcs1.host_att_guest_def, mcs1.guest_att_host_def,
-		m1.cal_phase, mes1.main_avg_win_diff, mes1.main_avg_draw_diff, mes1.main_avg_lose_diff
+		m1.cal_phase, mes1.main_avg_win_diff, mes1.main_avg_draw_diff, mes1.main_avg_lose_diff,
+		cast(mp1.host_score as decimal(5,2)) predict_host_score, cast(mp1.guest_score as decimal(5,2)) predict_guest_score
 	from matches m
         left join league l on m.league = l.name
 		left join match_club_state mcs on m.ofn_match_id = mcs.ofn_match_id
@@ -65,7 +67,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
             -- and cal_phase = 1
 			-- and match_time > '2017-02-10 00:00:00'
 			-- and match_time < '2017-02-12 00:00:00'
-			and match_time > '2017-03-12 00:00:00'
+			and match_time > '2017-03-15 00:00:00'
 			-- and match_day_id is not null
 			)
       and m.match_time > '2015-01-01 00:00:00'

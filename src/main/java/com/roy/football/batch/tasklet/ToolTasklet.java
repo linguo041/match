@@ -7,6 +7,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.roy.football.match.base.League;
+import com.roy.football.match.crawler.controller.OFNMatchService;
 import com.roy.football.match.jpa.EntityConverter;
 import com.roy.football.match.jpa.entities.calculation.ELeague;
 import com.roy.football.match.jpa.repositories.ELeagueRepository;
@@ -24,16 +25,24 @@ public class ToolTasklet implements Tasklet{
 	
 	@Autowired 
 	private TeamService teamService;
+	
+	@Autowired
+	private OFNMatchService ofnMatchService;
 
 
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
 //		recalculateMissedEuro();
-		fetchTeamRanking();
+//		fetchTeamRanking();
 //		fetchTeamName();
+		processOneMatch();
 		
 		return null;
+	}
+	
+	private void processOneMatch () {
+		ofnMatchService.processMatch(1046629L, 170315008L, League.RiLianBei);
 	}
 	
 	private void saveLeagues () {

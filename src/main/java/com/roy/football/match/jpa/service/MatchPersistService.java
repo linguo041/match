@@ -106,7 +106,7 @@ public class MatchPersistService {
 		matchRepository.save(EntityConverter.toEMatch(ofnMatch, CalculationType.calculated));
 		
 		MatchState matchState = ofnCalculateResult.getMatchState();
-		if (matchState != null) {
+		if (matchState != null && matchState.getHostAttackToGuest() != null) {
 			ELatestMatchState eLatestMatchState = EntityConverter.toELatestMatchState(ofnMatchId,
 					ofnMatch.getLeague(), matchState);
 			latestMatchStateRepository.save(eLatestMatchState);

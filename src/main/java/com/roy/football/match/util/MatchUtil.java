@@ -108,11 +108,14 @@ public class MatchUtil {
 	}
 	
 	public static boolean isMatchTooOld (Date matchDate, Date currentDate, int indicator) {
-		return isMatchTooOld(matchDate, currentDate, indicator, CLUB_LATEST_MIN_MATCH_DAY);
+		return isMatchTooOld(matchDate, currentDate, false, indicator);
 	}
-	
-	public static boolean isMatchTooOld (Date matchDate, Date currentDate, int indicator, int init) {
-		if (currentDate.getTime() - matchDate.getTime() > (long)24 * 3600 * 1000 * (7 * indicator + init)) {
+
+	public static boolean isMatchTooOld (Date matchDate, Date currentDate, boolean isState, int indicator) {
+		long span = 86400000L * (isState 
+						? (indicator * 10 + STATE_LATEST_MIN_MATCH_DAY)
+						: (indicator * 7 + CLUB_LATEST_MIN_MATCH_DAY));
+		if (currentDate.getTime() - matchDate.getTime() > span) {
 			return true;
 		} else {
 			return false;

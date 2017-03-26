@@ -24,7 +24,7 @@ public class ToolJobLancher {
     @Qualifier("toolJob")
     Job toolJob;
  
-    public static void main(String... args) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, org.springframework.batch.core.repository.JobRestartException {
+    public static void main(String... args) throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException, org.springframework.batch.core.repository.JobRestartException, InterruptedException {
  
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ToolJobConfiguration.class);
  
@@ -33,6 +33,7 @@ public class ToolJobLancher {
         JobExecution jobExecution = main.jobLauncher.run(main.toolJob, new JobParameters());
  
         // do not close, since the sub-thread would use.
+        Thread.sleep(5000);
         context.close();
  
     }

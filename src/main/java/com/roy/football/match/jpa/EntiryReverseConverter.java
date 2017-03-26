@@ -172,9 +172,11 @@ public class EntiryReverseConverter {
 			
 			switch (type) {
 				case host6: ms.setHostState6(fromELatestMatchDetail(emd)); break;
-				case host10: ms.setHostState10(fromELatestMatchDetail(emd)); break;
+//				case host10: ms.setHostState10(fromELatestMatchDetail(emd)); break;
 				case guest6: ms.setGuestState6(fromELatestMatchDetail(emd)); break;
-				case guest10: ms.setGuestState10(fromELatestMatchDetail(emd)); break;
+//				case guest10: ms.setGuestState10(fromELatestMatchDetail(emd)); break;
+				case hostHome5: ms.setHostHome5(fromELatestMatchDetail(emd)); break;
+				case guestAway5: ms.setGuestAway5(fromELatestMatchDetail(emd)); break;
 			}
 		}
 		
@@ -187,8 +189,8 @@ public class EntiryReverseConverter {
 		matrix.setPoint(latestDetail.getPoint());
 		matrix.setMatchGoal(latestDetail.getMatchGoal());
 		matrix.setMatchMiss(latestDetail.getMatchMiss());
-		matrix.setgVariation(latestDetail.getGVariation());
-		matrix.setmVariation(latestDetail.getMVariation());
+		matrix.setGVariation(latestDetail.getGVariation());
+		matrix.setMVariation(latestDetail.getMVariation());
 		matrix.setWinRate(latestDetail.getWinRate());
 		matrix.setWinPkRate(latestDetail.getWinPkRate());
 		matrix.setWinDrawRate(latestDetail.getWinDrawRate());

@@ -60,11 +60,18 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			return null;
 		}
 		OFNCalculateResult calResult= new OFNCalculateResult();
+		
+		TeamLevel hostLevel = null;
+		TeamLevel guestLevel = null;
 
 		ClubMatrices matrices = baseCalculator.calucate(matchData);
 		if (matrices != null) {
 			baseMatrixCalculator.calucate(matrices);
 			calResult.setClubMatrices(matrices);
+			
+			hostLevel = matrices.getHostLevel();
+			guestLevel = matrices.getGuestLevel();
+			matchData.setLevelDiff(hostLevel.ordinal() - guestLevel.ordinal());
 		}
 
 		calResult.setLeague(matchData.getLeague());
