@@ -91,20 +91,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		}
 
 		// h_goal = (h_goal_avg - h_variance * (h_goal_avg - g_lose_avg) / h_goal_avg) *(4 - (h_level - g_level))/7
-		//        + (g_lose_avg + g_variance * (h_goal_avg - g_lose_avg) / h_goal_avg) *(4 + (h_level - g_level))/7
+		//        + (g_lose_avg + g_variance * (h_goal_avg - g_lose_avg) / g_lose_avg) *(4 + (h_level - g_level))/7
 		float hgoal =  (hostMatches.getMatchGoal()
 							 - hostMatches.getGVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/hostMatches.getMatchGoal()
 					   ) * (4 - levelDiff)/7
 					 + (guestMatches.getMatchMiss()
-							 + guestMatches.getMVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/hostMatches.getMatchGoal()
+							 + guestMatches.getMVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/guestMatches.getMatchMiss()
 					   ) * (4 + levelDiff)/7;
 		// g_goal = (g_goal_avg - g_variance * (g_goal_avg - h_lose_avg) / g_goal_avg) *(4 + (h_level - g_level))/7
-		//        + (h_lose_avg + h_variance * (g_goal_avg - h_lose_avg) / g_goal_avg) *(4 - (h_level - g_level))/7
+		//        + (h_lose_avg + h_variance * (g_goal_avg - h_lose_avg) / h_lose_avg) *(4 - (h_level - g_level))/7
 		float ggoal = (guestMatches.getMatchGoal()
 							- guestMatches.getGVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/guestMatches.getMatchGoal()
 					  ) * (4 + levelDiff)/7
 					+ (hostMatches.getMatchMiss()
-							+ hostMatches.getMVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/guestMatches.getMatchGoal()
+							+ hostMatches.getMVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/hostMatches.getMatchMiss()
 					  ) * (4 - levelDiff)/7;
 
 		float hvariation = hostMatches.getGVariation() * (4 - levelDiff)/7 + guestMatches.getMVariation() * (4 + levelDiff)/7;
