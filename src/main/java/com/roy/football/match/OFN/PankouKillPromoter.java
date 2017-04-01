@@ -342,11 +342,19 @@ public class PankouKillPromoter {
 	}
 	
 	private void killPkPlUnmatchChange (Float pkChange, Float winPlChange, Float losePlChange, Float pankou, Set<ResultGroup> killGps) {
-		if (pankou > 0.3) {
+		if (pankou > 0.1) {
 			if (winPlChange + pkChange > 0.1 || winPlChange + pkChange < -0.1) {
 				killGps.add(ResultGroup.Three);
 			}
-		} else if (pankou < -0.3) {
+		} else if (pankou < -0.1) {
+			if (losePlChange - pkChange > 0.1 || losePlChange - pkChange < -0.1) {
+				killGps.add(ResultGroup.Zero);
+			}
+		} else {
+			if (winPlChange + pkChange > 0.1 || winPlChange + pkChange < -0.1) {
+				killGps.add(ResultGroup.Three);
+			}
+			
 			if (losePlChange - pkChange > 0.1 || losePlChange - pkChange < -0.1) {
 				killGps.add(ResultGroup.Zero);
 			}
