@@ -203,7 +203,7 @@ public class PankouKillPromoter {
 			killByEuro(killResult.getKillByPl(), calResult.getEuroMatrices(), pkMatrices, league);
 		}
 		
-		killByExchange(killResult, calResult);
+//		killByExchange(killResult, calResult);
 		
 		return killResult;
 	}
@@ -341,6 +341,18 @@ public class PankouKillPromoter {
 		return rgs;
 	}
 	
+	private void killPkPlUnmatchChange (Float pkChange, Float winPlChange, Float losePlChange, Float pankou, Set<ResultGroup> killGps) {
+		if (pankou > 0.3) {
+			if (winPlChange + pkChange > 0.1 || winPlChange + pkChange < -0.1) {
+				killGps.add(ResultGroup.Three);
+			}
+		} else if (pankou < -0.3) {
+			if (losePlChange - pkChange > 0.1 || losePlChange - pkChange < -0.1) {
+				killGps.add(ResultGroup.Zero);
+			}
+		}
+	}
+	
 	private void killByEuro (Set<ResultGroup> killGps, EuroMatrices euMatrices, PankouMatrices pkMatrices, League league) {
 
 		if (euMatrices != null && pkMatrices != null) {
@@ -406,6 +418,10 @@ public class PankouKillPromoter {
 					jaDrawDiff = MatchUtil.getEuDiff(jincai.getCurrentEuro().getEDraw(), euroAvg.getEDraw(), false);
 					jaLoseDiff = MatchUtil.getEuDiff(jincai.getCurrentEuro().getELose(), euroAvg.getELose(), false);
 				}
+				
+				killPkPlUnmatchChange(MatchUtil.getCalculatedPk(aomenCurrPk) - MatchUtil.getCalculatedPk(aomenMainPk),
+						aomenWinChange * currAomenEu.getEWin(),
+						aomenLoseChange * currAomenEu.getELose(), aomenPk, killGps);
 
 				// the main company and lab is higher than the average, or aomen is higher than average and aomen is adjusted high
 				if (aomenPk >= 1) {
@@ -705,7 +721,7 @@ public class PankouKillPromoter {
 	}
 
 	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, ClubMatrices clubMatrices,
-			MatchState matchState, Float mainPk, Float currentPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices) {
+			MatchState matchState, Float predictPk, Float mainPk, Float currentPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices) {
 		if (rgs == null) {
 			rgs = new TreeSet<ResultGroup> ();
 		}
@@ -741,8 +757,9 @@ public class PankouKillPromoter {
 			// host is good (not very good), and host didn't perform bad
 			if (hostAttGuestDefComp < 1.5 * guestAttHostDefComp && hostAttGuestDefComp >= 0.7 * guestAttHostDefComp
 					&& (hotPoint <= 4 || hasLatest && latestGuestAttack >= 0.7 * latestHostAttack)) {
-				if (mainPk - currentPk > 0.03
-						|| main.getaWin() <= 0.92 && current.getaWin() <= 0.92) {
+				if ((mainPk - currentPk > 0.03
+						|| main.getaWin() <= 0.92 && current.getaWin() <= 0.92)
+						&& predictPk < mainPk + 0.2) {
 					rgs.add(ResultGroup.One);
 					rgs.add(ResultGroup.Zero);
 				}
@@ -752,8 +769,9 @@ public class PankouKillPromoter {
 			else if ((guestAttHostDefComp < 1.4 * hostAttGuestDefComp) && guestAttHostDefComp > 0.7 * hostAttGuestDefComp
 					&& (hotPoint >= -4 || hasLatest && latestHostAttack >= 0.7 * latestGuestAttack)) {
 
-				if (currentPk - mainPk > 0.03  // pk is up, but not more
-						|| main.gethWin() <= 0.92 && current.gethWin() <= 0.92) {
+				if ((currentPk - mainPk > 0.03  // pk is up, but not more
+						|| main.gethWin() <= 0.92 && current.gethWin() <= 0.92)
+						&& predictPk > mainPk - 0.2) { // since the two teams are equality, the base won't not override the predict
 					rgs.add(ResultGroup.Three);
 					rgs.add(ResultGroup.One);
 				}
@@ -774,8 +792,8 @@ public class PankouKillPromoter {
 			float mainPk = MatchUtil.getCalculatedPk(main);
 			float currentPk = MatchUtil.getCalculatedPk(current);
 
-			promoteByBase(rgs, hotPoint, clubMatrices, matchState, mainPk,
-					currentPk, main, current, euroMatrices);
+			promoteByBase(rgs, hotPoint, clubMatrices, matchState, predictPk,
+					mainPk, currentPk, main, current, euroMatrices);
 			
 			LatestMatchMatrices host6Match = matchState.getHostState6();
 			LatestMatchMatrices guest6Match = matchState.getGuestState6();
