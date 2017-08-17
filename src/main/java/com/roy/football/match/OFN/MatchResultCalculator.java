@@ -42,7 +42,7 @@ public class MatchResultCalculator {
 		
 		if (dbResult == null) {
 			MatchResult result = ofnResultCrawler.craw(ofnMatchId);
-			if (result == null) {
+			if (result == null && hostScore != null) {
 				result = new MatchResult();
 				result.setHostScore(hostScore);
 				result.setGuestScore(guestScore);

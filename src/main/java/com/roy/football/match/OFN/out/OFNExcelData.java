@@ -173,7 +173,7 @@ public class OFNExcelData {
 	private String bifa;
 	@Header(order=139, title="exg jc_gain")
 	private String jincaiJY;
-	@Header(order=140, title="Kill[pk |pl ~ex]")
+	@Header(order=140, title="Kill[~pk !pl @plpk ~ex]")
 	private String kill;
 	@Header(order=150, title="Promote")
 	private String promote;

@@ -66,7 +66,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
             -- and cal_phase = 1
 			-- and match_time > '2017-02-10 00:00:00'
 			-- and match_time < '2017-02-12 00:00:00'
-			and match_time > '2017-03-09 00:00:00'
+			and match_time > '2017-07-06 00:00:00'
 			-- and match_day_id is not null
 			)
       and m.match_time > '2015-01-01 00:00:00'

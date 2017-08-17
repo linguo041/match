@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -32,7 +34,7 @@ public class OFNResultCrawler {
 			
 			return res;
 		} catch (Exception e) {
-			log.warn(String.format("Unable to parse match result %s.", matchId), e);
+			log.warn(String.format("Unable to parse match result %s, with error: %s", matchId, e.getMessage()));
 		}
 		
 		return null;

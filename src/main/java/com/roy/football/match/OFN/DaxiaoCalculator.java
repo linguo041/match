@@ -29,7 +29,7 @@ public class DaxiaoCalculator extends AbstractBaseDataCalculator implements Calc
 				dxMatrices.setCurrentPk(latestPl);
 				float medianPk = 0.5f * (latestPl.gethWin() + latestPl.getaWin());
 				
-				AsiaPl main = null;
+				AsiaPl main = pks.get(0);
 				float maxHours = 0;
 				AsiaPl temp = null;
 				float winWeight = 0;
@@ -88,13 +88,13 @@ public class DaxiaoCalculator extends AbstractBaseDataCalculator implements Calc
 					totalHours += currentHours;
 				}
 
-				if (currentHours >= maxHours) {
+				if (currentHours >= maxHours && temp != null) {
 					main = temp;
 				}
 
 				dxMatrices.setMainPk(main);
-				dxMatrices.setDaChangeRate(winWeight / (totalHours * 0.85f));
-				dxMatrices.setXiaoChangeRate(loseWeight / (totalHours * 0.85f));
+				dxMatrices.setDaChangeRate(totalHours > 0 ? winWeight / (totalHours * 0.85f) : 0);
+				dxMatrices.setXiaoChangeRate(totalHours > 0 ? loseWeight / (totalHours * 0.85f) : 0);
 				dxMatrices.setHours(totalHours);
 				return dxMatrices;
 			}

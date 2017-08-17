@@ -10,6 +10,7 @@ public enum League {
 	AsiaYu(161, Company.Aomen, true),
 	BoluoCup(704, true),
 	MeiZhouCup(162, true),
+	LianHeHui(291, true),
 	ANYMOUS1(297, true),
 	
 	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William), YingZhuZong(55, 20, Company.William),

@@ -59,7 +59,7 @@ public class OkoooMatchCrawler {
 
 			return exchangeData;
 		} catch (Exception e) {
-			log.error(String.format("Unable to parse exchange data from okooo with okooo match id", matchId), e);
+			log.error(String.format("Unable to parse exchange data from okooo with okooo match id [%s], with error\n: %s", matchId, e.getMessage()));
 		}
 		
 		return null;
@@ -174,7 +174,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setBfDrawExchange(Long.parseLong(bfDrawExchange));
 			exchangeData.setBfLoseExchange(Long.parseLong(bfLoseExchange));
 		} catch (Exception e) {
-			log.error("bf exchange parse error.", e);
+			log.error("bf exchange parse error:" + e.getMessage());
 		}
 		
 		try {
@@ -182,7 +182,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setJcDrawExchange(Long.parseLong(jcDrawExchange));
 			exchangeData.setJcLoseExchange(Long.parseLong(jcLoseExchange));
 		} catch (Exception e) {
-			log.error("jc exchange parse error.", e);
+			log.error("jc exchange parse error:" + e.getMessage());
 		}
 	}
 	
@@ -212,7 +212,7 @@ public class OkoooMatchCrawler {
 			exchangeData.setBfDrawGain(Integer.parseInt(bfDrawGain));
 			exchangeData.setBfLoseGain(Integer.parseInt(bfLoseGain));
 		} catch (Exception e) {
-			log.error("bf exchange parse error.", e);
+			log.error("bf exchange parse error:" + e.getMessage());
 		}
 		
 		
@@ -224,13 +224,13 @@ public class OkoooMatchCrawler {
 			exchangeData.setJcDrawGain(Integer.parseInt(jcDrawGain));
 			exchangeData.setJcLoseGain(Integer.parseInt(jcLoseGain));
 		} catch (Exception e) {
-			log.error("jc exchange parse error.", e);
+			log.error("jc exchange parse error:" + e.getMessage());
 		}
 	}
 	
 	private Float parsePercentNum(String num) {
 		try {
-			return ((Double)NF_FORMAT.parse(num)).floatValue();
+			return (NF_FORMAT.parse(num)).floatValue();
 		} catch (ParseException e) {
 		}
 		
@@ -238,8 +238,10 @@ public class OkoooMatchCrawler {
 	}
 
 	
-	public static void main (String [] args) throws IOException {
+	public static void main (String [] args) throws Exception {
 		Document doc = Jsoup.connect("http://www.okooo.com/soccer/match/926771/exchanges/").userAgent("Mozilla").get();
 		System.out.println(doc);
+		
+//		System.out.println((NF_FORMAT.parse("10%")).floatValue());
 	}
 }

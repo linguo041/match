@@ -125,13 +125,16 @@ public class OFNMatchService {
 			ofnMatch.setMatchDayId(matchDayId);
 			ofnMatch.setLeague(league);
 			ofnMatch.setEuroAvg(euroAverage);
-			ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));
+			
+			if (matchDayId != null) {
+				ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));
+			}
 
 			// get euro peilv
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();
 			for (Company comp : Company.values()) {
 				if (comp == Company.Jincai) {
-					List<EuroPl> euroPls = ewJincaiParser.getJincaiEuro(matchDayId);
+					List<EuroPl> euroPls = getJincaiPls(oddsmid, matchDayId);
 					euroMap.put(comp, euroPls);
 				} else {
 					List<EuroPl> euroPls = parser.parseEuroData(oddsmid, comp);
@@ -203,6 +206,14 @@ public class OFNMatchService {
 		int day = cal.get(Calendar.DAY_OF_MONTH);
 		
 		return (day + month * 100 + (year - 2000) * 10000) * 1000;
+	}
+	
+	private List<EuroPl> getJincaiPls (Long oddsmid, Long matchDayId) {
+		if (matchDayId != null) {
+			return ewJincaiParser.getJincaiEuro(matchDayId);
+		} else {
+			return parser.parseEuroData(oddsmid, Company.Jincai);
+		}
 	}
 	
 	private boolean filterValidMatch (JinCaiMatch jcMatch, Date now) {

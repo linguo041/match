@@ -78,7 +78,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		for (Map.Entry<Company, EuroMatrix> entry : companyEus.entrySet()) {
 			EuroMatrix em = entry.getValue();
 			
-			if (em != null) {
+			if (em != null && em.getCurrentEuro() != null) {
 				EuroPl eu = em.getCurrentEuro();
 				num ++;
 				win += eu.getEWin();
@@ -87,7 +87,11 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			}
 		}
 		
-		return new EuroPl(win / num, draw / num, lose / num, null);
+		if (num > 0) {
+			return new EuroPl(win / num, draw / num, lose / num, null);
+		} else {
+			return null;
+		}
 	}
 	
 	private EuroMatrix getEuroMatrix (List<EuroPl> euroPls, Date matchDt) {
@@ -130,6 +134,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3) {
 					euMatrix.setCurrentEuro(euroPls.get(index));
 					break;
+				} else {
+					// remove the pl which is too close the started time, and not quite useful
+					euroPls.remove(index);
 				}
 			}
 
@@ -247,15 +254,15 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		if (euroPls != null && euroPls.size() > 0) {
 			euMatrix = new EuroMatrix();
 			euMatrix.setOriginEuro(euroPls.get(0));
-			euMatrix.setOriginEuro(euroPls.get(0));
 			
 			for (int index = euroPls.size()-1; index >=0; index--) {
 				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3) {
 					euMatrix.setCurrentEuro(euroPls.get(index));
 					break;
-				}/* else {
-					log.info(String.format("pl time exceed match time - 0.3h, pl: %s, match: %s", euroPls.get(index), matchDt));
-				}*/
+				} else {
+					// remove the pl which is too close the started time, and not quite useful
+					euroPls.remove(index);
+				}
 			}
 
 			EuroPl main = null;

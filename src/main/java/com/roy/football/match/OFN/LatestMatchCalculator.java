@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 
 import com.roy.football.match.OFN.response.ClubDatas;
@@ -54,6 +55,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		
 		calucateHotDiff(matchState);
 		
+//		log.info(matchState.toString());
+		
 		return matchState;
 	}
 
@@ -92,20 +95,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 
 		// h_goal = (h_goal_avg - h_variance * (h_goal_avg - g_lose_avg) / h_goal_avg) *(4 - (h_level - g_level))/7
 		//        + (g_lose_avg + g_variance * (h_goal_avg - g_lose_avg) / g_lose_avg) *(4 + (h_level - g_level))/7
-		float hgoal =  (hostMatches.getMatchGoal()
+		float hgoal =  (hostMatches.getMatchGoal() == 0 ? 0 : (hostMatches.getMatchGoal()
 							 - hostMatches.getGVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/hostMatches.getMatchGoal()
-					   ) * (4 - levelDiff)/7
-					 + (guestMatches.getMatchMiss()
+					   ) * (4 - levelDiff)/7)
+					 + (guestMatches.getMatchMiss() == 0 ? 0 : (guestMatches.getMatchMiss()
 							 + guestMatches.getMVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/guestMatches.getMatchMiss()
-					   ) * (4 + levelDiff)/7;
+					   ) * (4 + levelDiff)/7);
 		// g_goal = (g_goal_avg - g_variance * (g_goal_avg - h_lose_avg) / g_goal_avg) *(4 + (h_level - g_level))/7
 		//        + (h_lose_avg + h_variance * (g_goal_avg - h_lose_avg) / h_lose_avg) *(4 - (h_level - g_level))/7
-		float ggoal = (guestMatches.getMatchGoal()
+		float ggoal = (guestMatches.getMatchGoal() == 0 ? 0 : (guestMatches.getMatchGoal()
 							- guestMatches.getGVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/guestMatches.getMatchGoal()
-					  ) * (4 + levelDiff)/7
-					+ (hostMatches.getMatchMiss()
+					  ) * (4 + levelDiff)/7)
+					+ (hostMatches.getMatchMiss() == 0 ? 0 : (hostMatches.getMatchMiss()
 							+ hostMatches.getMVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/hostMatches.getMatchMiss()
-					  ) * (4 - levelDiff)/7;
+					  ) * (4 - levelDiff)/7);
 
 		float hvariation = hostMatches.getGVariation() * (4 - levelDiff)/7 + guestMatches.getMVariation() * (4 + levelDiff)/7;
 		float gvariation = guestMatches.getGVariation() * (4 + levelDiff)/7 + hostMatches.getMVariation() * (4 - levelDiff)/7;
@@ -241,7 +244,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				FinishedMatch match = matches.get(i);
 				
 				if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, league.isState(), i)
-						|| matchDate.getTime() <= match.getMatchTime().getTime()) {
+						|| matchDate.getTime() <= match.getMatchTime().getTime()
+						|| match.getAsiaPanKou().trim().isEmpty()) {
 					continue;
 				}
 				
@@ -268,6 +272,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						if (point != 3) {
 							point += 0.5;
 						}
+						
+						goals_H[index_H] *= 1.2;
+						misses_H[index_H] *= 0.8;
 					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
 						drawPkNum_H ++;
 					} else {
@@ -275,6 +282,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						if (point != 0) {
 							point -= 0.5;
 						}
+						
+						goals_H[index_H] *= 0.8;
+						misses_H[index_H] *= 1.2;
 					}
 					
 					points_H += point;
@@ -300,6 +310,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						if (point != 3) {
 							point += 0.5;
 						}
+						
+						goals_A[index_A] *= 1.2;
+						misses_A[index_A] *= 0.8;
 					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
 						drawPkNum_A ++;
 					} else {
@@ -307,6 +320,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 						if (point != 0) {
 							point -= 0.5;
 						}
+						
+						goals_A[index_A] *= 0.8;
+						misses_A[index_A] *= 1.2;
 					}
 					
 					points_A += point;
@@ -319,8 +335,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 							StatUtils.sum(goals_H) + StatUtils.sum(goals_A),
 							StatUtils.sum(misses_H) + StatUtils.sum(misses_A),
 							winPkNum_H + winPkNum_A, drawPkNum_H + drawPkNum_A, points_H + points_A,
-							StatUtils.variance(ArrayUtils.addAll(goals_H, goals_A), 0, index_H + index_A),
-							StatUtils.variance(ArrayUtils.addAll(misses_H, misses_A), 0, index_H + index_A));
+							FastMath.sqrt(StatUtils.variance(ArrayUtils.addAll(goals_H, goals_A), 0, index_H + index_A)),
+							FastMath.sqrt(StatUtils.variance(ArrayUtils.addAll(misses_H, misses_A), 0, index_H + index_A)));
 					
 					if (isHost) {
 						matchState.setHostState6(latest6);
@@ -336,8 +352,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 								StatUtils.sum(goals_H, 0, index_H),
 								StatUtils.sum(misses_H, 0, index_H),
 								winPkNum_H, drawPkNum_H, points_H,
-								StatUtils.variance(goals_H, 0, index_H),
-								StatUtils.variance(misses_H, 0, index_H));
+								FastMath.sqrt(StatUtils.variance(goals_H, 0, index_H)),
+								FastMath.sqrt(StatUtils.variance(misses_H, 0, index_H)));
 						matchState.setHostHome5(hostHome5);
 					}
 				} else {
@@ -347,12 +363,14 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 								StatUtils.sum(goals_A, 0, index_A),
 								StatUtils.sum(misses_A, 0, index_A),
 								winPkNum_A, drawPkNum_A, points_A,
-								StatUtils.variance(goals_A, 0, index_A),
-								StatUtils.variance(misses_A, 0, index_A));
+								FastMath.sqrt(StatUtils.variance(goals_A, 0, index_A)),
+								FastMath.sqrt(StatUtils.variance(misses_A, 0, index_A)));
 						matchState.setGuestAway5(guestAway5);
 					}
 				}
 				
+//				log.info(match.toString());
+
 				if (index_H >= 5 && index_A >= 5 || index_H + index_A >= 20) {
 					break;
 				}
@@ -379,13 +397,16 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		double a[] = new double[10];
 		double b[] = new double[10];
 		
-		a[0] = 1;
-		a[1] = 2;
-		a[2] = 2;
-		a[3] = 1;
-		a[4] = 2;
+		a[0] = 0;
+		a[1] = 0;
+		a[2] = 0;
+		a[3] = 5;
+		a[4] = 1;
 		
 		System.out.println(StatUtils.mean(a, 0, 5));
 		System.out.println(StatUtils.variance(a, 0, 5));
+		System.out.println(FastMath.sqrt(StatUtils.variance(a, 0, 5)));
+		System.out.println(StatUtils.populationVariance(a, 0, 5));
+		System.out.println(FastMath.sqrt(StatUtils.populationVariance(a, 0, 5)));
 	}
 }

@@ -27,6 +27,7 @@ import com.roy.football.match.base.League;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLevel;
 import com.roy.football.match.okooo.MatchExchangeData;
+import com.roy.football.match.okooo.MatchExchangeData.ExchangeType;
 import com.roy.football.match.util.DateUtil;
 import com.roy.football.match.util.EuroUtil;
 import com.roy.football.match.util.MatchUtil;
@@ -181,8 +182,7 @@ public class OFNOutputFormater {
 			MatchExchangeData exgData = calculateResult.getExchanges();
 			if (exgData != null) {
 				String bfjcRate = "";
-				if (exgData.getBfWinExchange() != null && exgData.getBfWinExgRt() != null
-						&& exgData.getJcWinExgRt() != null && exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 200000) {
+				if (exgData.hasExchangeData(ExchangeType.bf, false) && exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 200000) {
 					bfjcRate = String.format("%.1f : %.1f : %.1f\n%.1f : %.1f : %.1f",
 							exgData.getBfWinExgRt() * 100,
 							exgData.getBfDrawExgRt() * 100,
@@ -192,7 +192,7 @@ public class OFNOutputFormater {
 							exgData.getJcLoseExgRt() * 100);
 				}
 
-				if (exgData.getJcWinExchange() != null && exgData.getJcTotalExchange() > 900000) {
+				if (exgData.hasExchangeData(ExchangeType.jc, true) && exgData.getJcTotalExchange() > 900000) {
 					bfjcRate = bfjcRate.equals("") ? String.format("%.1f : %.1f : %.1f",
 								exgData.getJcWinExgRt() * 100,
 								exgData.getJcDrawExgRt() * 100,
@@ -212,14 +212,19 @@ public class OFNOutputFormater {
 			if (predictRes != null) {
 				Set<ResultGroup> killByPk = predictRes.getKpResult().getKillByPk();
 				Set<ResultGroup> killByPl = predictRes.getKpResult().getKillByPl();
+				Set<ResultGroup> killByPlPkUnmatch = predictRes.getKpResult().getKillByPlPkUnmatch();
 				Set<ResultGroup> killByEx = predictRes.getKpResult().getKillByExchange();
 				String kill = "";
 				if (killByPk != null && killByPk.size() > 0) {
-					kill = getSetVals(killByPk);
+					kill = " ~" + getSetVals(killByPk);
 				}
 				
 				if (killByPl != null && killByPl.size() > 0) {
-					kill = kill + " |"+ getSetVals(killByPl);
+					kill = kill + " !"+ getSetVals(killByPl);
+				}
+				
+				if (killByPlPkUnmatch != null && killByPlPkUnmatch.size() > 0) {
+					kill = kill + " @"+ getSetVals(killByPlPkUnmatch);
 				}
 				
 				if (killByEx != null && killByEx.size() > 0) {

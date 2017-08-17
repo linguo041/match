@@ -198,7 +198,7 @@ public class OFNParser {
 				for (String[] as : datas) {
 					AsiaPl asia = new AsiaPl();
 					asia.sethWin(Float.parseFloat(as[0]));
-					asia.setaWin(Float.parseFloat(as[2]) - 1);
+					asia.setaWin(Float.parseFloat(as[2]));
 					
 					Float pankouVal = Float.parseFloat(as[1]) / 4;
 					asia.setPanKou(pankouVal);
