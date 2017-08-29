@@ -11,6 +11,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.mysema.query.jpa.impl.JPAQueryFactory;
 import com.roy.football.match.base.LatestMatchMatrixType;
 import com.roy.football.match.base.League;
 import com.roy.football.match.crawler.controller.OFNMatchService;
@@ -24,6 +25,7 @@ import com.roy.football.match.jpa.repositories.LatestMatchStateRepository;
 import com.roy.football.match.jpa.repositories.MatchClubStateRepository;
 import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.service.MatchEuroRecalculateService;
+import com.roy.football.match.service.PredictScoreFactorClusterService;
 import com.roy.football.match.service.TeamService;
 
 public class ToolTasklet implements Tasklet{
@@ -45,8 +47,10 @@ public class ToolTasklet implements Tasklet{
 	
 	@Autowired
 	private MatchClubStateRepository matchClubStateRepository;
-
-
+	
+	@Autowired
+	private PredictScoreFactorClusterService predictScoreFactorClusterService;
+	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -55,20 +59,29 @@ public class ToolTasklet implements Tasklet{
 //		fetchTeamName();
 //		saveLeagues();
 		processOneMatch();
+//		predictFactor();
 //		adjustVariance();
 		
 		return null;
 	}
 	
 	private void processOneMatch () {
-		ofnMatchService.processMatch(1035536L, 170813034L, League.NorChao);
+		ofnMatchService.processMatch(1115554L, 170823005L, League.OuGuan);
 	}
 	
 	private void saveLeagues () {
 		for (League le : League.values()) {
-			ELeague eleague = EntityConverter.toEleague(le);
+			ELeague eleagueInDB = eLeagueRepository.findOne(le.getLeagueId());
 			
-			eLeagueRepository.save(eleague);
+			if (eleagueInDB != null) {
+				eleagueInDB.setMainCompany(le.getMajorCompany());
+				eleagueInDB.setTeamNum(le.getClubNum());
+				eleagueInDB.setState(le.isState());
+				eLeagueRepository.save(eleagueInDB);
+			} else {
+				ELeague eleague = EntityConverter.toEleague(le);
+				eLeagueRepository.save(eleague);
+			}
 		}
 	}
 
@@ -84,13 +97,17 @@ public class ToolTasklet implements Tasklet{
 		teamService.fetchTeamRanking();;
 	}
 	
+	private void predictFactor () {
+		predictScoreFactorClusterService.cluster();
+	}
+	
 	private void adjustVariance () {
 		Iterable<ELatestMatchState> states = latestMatchStateRepository.findAll();
-		
 		Iterator<ELatestMatchState> its = states.iterator();
-		
 		while (its.hasNext()) {
 			ELatestMatchState state = its.next();
+			
+//			ELatestMatchState state = latestMatchStateRepository.findOne(1092723L);
 			
 			System.out.println(state.toString());
 			
@@ -108,11 +125,11 @@ public class ToolTasklet implements Tasklet{
 			ELatestMatchDetail guestMatches = null;
 			
 			for (ELatestMatchDetail detail : details) {
-				Float gv = detail.getGVariation();
-				Float mv = detail.getMVariation();
+//				Float gv = detail.getGVariation();
+//				Float mv = detail.getMVariation();
 				
-				detail.setGVariation((float)FastMath.sqrt(gv));
-				detail.setMVariation((float)FastMath.sqrt(mv));
+//				detail.setGVariation((float)FastMath.sqrt(gv));
+//				detail.setMVariation((float)FastMath.sqrt(mv));
 				
 				if (LatestMatchMatrixType.hostHome5 == detail.getType()
 						|| LatestMatchMatrixType.host6 == detail.getType() && hostMatches == null) {
@@ -132,18 +149,18 @@ public class ToolTasklet implements Tasklet{
 			// h_goal = (h_goal_avg - h_variance * (h_goal_avg - g_lose_avg) / h_goal_avg) *(4 - (h_level - g_level))/7
 			//        + (g_lose_avg + g_variance * (h_goal_avg - g_lose_avg) / g_lose_avg) *(4 + (h_level - g_level))/7
 			float hgoal =  (hostMatches.getMatchGoal() == 0 ? 0 : (hostMatches.getMatchGoal()
-								 - hostMatches.getGVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/hostMatches.getMatchGoal()
+								 - hostMatches.getGVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/Math.max(hostMatches.getMatchGoal(), guestMatches.getMatchMiss())
 						   ) * (4 - levelDiff)/7)
 						 + (guestMatches.getMatchMiss() == 0 ? 0 : (guestMatches.getMatchMiss()
-								 + guestMatches.getMVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/guestMatches.getMatchMiss()
+								 + guestMatches.getMVariation() * (hostMatches.getMatchGoal() - guestMatches.getMatchMiss())/Math.max(hostMatches.getMatchGoal(), guestMatches.getMatchMiss())
 						   ) * (4 + levelDiff)/7);
 			// g_goal = (g_goal_avg - g_variance * (g_goal_avg - h_lose_avg) / g_goal_avg) *(4 + (h_level - g_level))/7
 			//        + (h_lose_avg + h_variance * (g_goal_avg - h_lose_avg) / h_lose_avg) *(4 - (h_level - g_level))/7
 			float ggoal = (guestMatches.getMatchGoal() == 0 ? 0 : (guestMatches.getMatchGoal()
-								- guestMatches.getGVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/guestMatches.getMatchGoal()
+								- guestMatches.getGVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/Math.max(guestMatches.getMatchGoal(), hostMatches.getMatchMiss())
 						  ) * (4 + levelDiff)/7)
 						+ (hostMatches.getMatchMiss() == 0 ? 0 : (hostMatches.getMatchMiss()
-								+ hostMatches.getMVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/hostMatches.getMatchMiss()
+								+ hostMatches.getMVariation() * (guestMatches.getMatchGoal() - hostMatches.getMatchMiss())/Math.max(guestMatches.getMatchGoal(), hostMatches.getMatchMiss())
 						  ) * (4 - levelDiff)/7);
 			
 			float hvariation = hostMatches.getGVariation() * (4 - levelDiff)/7 + guestMatches.getMVariation() * (4 + levelDiff)/7;

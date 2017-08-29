@@ -30,7 +30,9 @@ public enum ErrorType {
 	
 	UnableUploadDealsListing(30, "Unable to upload deals listings, with error message [%s]"),
 	UnableSubmitDealsListing(31, "Unable to submit deals listings, with error message [%s]"),
-	DateExpiredException(32, "The [%s] date value [%s] is expired.");
+	DateExpiredException(32, "The [%s] date value [%s] is expired."),
+	
+	UnableToPerseMatchData(100, "Unable to parse match data with detail [%s]"),;
 	
 	ErrorType(int code, String errorMsg) {
 		this.code = code;

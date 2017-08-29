@@ -322,21 +322,26 @@ public class EntityConverter {
 	}
 	
 	public static EMatchClubDetail toEMatchClubDetail (Long ofnMatchId, Long teamId, MatrixType type, ClubMatrix clubMatrix) {
+		
+		
 		EMatchClubDetail eMatchClubDetail = new EMatchClubDetail();
 		eMatchClubDetail.setOfnMatchId(ofnMatchId);
 		eMatchClubDetail.setTeamId(teamId);
 		eMatchClubDetail.setType(type);
-		eMatchClubDetail.setNum(clubMatrix.getNum());
-		eMatchClubDetail.setGoals(clubMatrix.getGoals());
-		eMatchClubDetail.setMisses(clubMatrix.getMisses());
-		eMatchClubDetail.setPoint(clubMatrix.getPoint());
-		eMatchClubDetail.setPm(clubMatrix.getPm());
-		eMatchClubDetail.setWinRt(clubMatrix.getWinRt());
-		eMatchClubDetail.setWinDrawRt(clubMatrix.getWinDrawRt());
-		eMatchClubDetail.setDrawLoseRt(clubMatrix.getDrawLoseRt());
-		eMatchClubDetail.setWinGoals(clubMatrix.getWinGoals());
-		eMatchClubDetail.setWinLoseDiff(clubMatrix.getWinLoseDiff());
 		
+		if (clubMatrix != null) {
+			eMatchClubDetail.setNum(clubMatrix.getNum());
+			eMatchClubDetail.setGoals(clubMatrix.getGoals());
+			eMatchClubDetail.setMisses(clubMatrix.getMisses());
+			eMatchClubDetail.setPoint(clubMatrix.getPoint());
+			eMatchClubDetail.setPm(clubMatrix.getPm());
+			eMatchClubDetail.setWinRt(clubMatrix.getWinRt());
+			eMatchClubDetail.setWinDrawRt(clubMatrix.getWinDrawRt());
+			eMatchClubDetail.setDrawLoseRt(clubMatrix.getDrawLoseRt());
+			eMatchClubDetail.setWinGoals(clubMatrix.getWinGoals());
+			eMatchClubDetail.setWinLoseDiff(clubMatrix.getWinLoseDiff());
+		}
+
 		return eMatchClubDetail;
 	}
 	

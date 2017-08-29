@@ -9,7 +9,7 @@ import org.wltea.analyzer.Lexeme;
 public class ChineseAnalyzerMain {
 	
 	public static void main (String [] args) throws IOException {
-		String text="Ä«¶û±¾³Ç½ü10¸öÖ÷³¡8Ê¤2Æ½±£³Ö²»°Ü£¬¶øÆä½ü22¸öÖ÷³¡½öÓÐ2¸º£¬³É¼¨Îª15Ê¤5Æ½2¸º¡£";
+		String text="çŽ‹äºŒè™Žæ‰“è™Ž";
 	    StringReader sr=new StringReader(text);
 	    IKSegmentation ik=new IKSegmentation(sr, true);
 	    Lexeme lex=null;

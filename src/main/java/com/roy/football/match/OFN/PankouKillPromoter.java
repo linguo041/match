@@ -60,6 +60,7 @@ public class PankouKillPromoter {
 		float gvariation = 1;
 
 		/*<<<<  calculate the score according to the base data & latest matches  <<<< */
+		/*<<<<  0.3*base + 0.45*latest + 0.25*jiaoshou  >>>> */
 		ClubMatrices clubMatrices = calResult.getClubMatrices();
 
 		if (clubMatrices != null) {
@@ -92,8 +93,8 @@ public class PankouKillPromoter {
 			float jsGgoal = jiaoShou.getGgoalPerMatch();
 			
 			// Multiple 0.5 to avoid duplicate adding weight
-			hgoal = 0.6f * hgoal + 0.4f * jsHgoal;
-			ggoal = 0.6f * ggoal + 0.4f * jsGgoal;
+			hgoal = 0.75f * hgoal + 0.25f * jsHgoal;
+			ggoal = 0.75f * ggoal + 0.25f * jsGgoal;
 		}
 		/* >>>> end >>>>*/
 
@@ -108,32 +109,43 @@ public class PankouKillPromoter {
 		}
 
 //		Float hotPoint = calResult.getHotPoint();
+		float bhgoal = hgoal;
+		float bggoal = ggoal;
 
 		PankouMatrices pkMatrices = calResult.getPkMatrices();
 		if (pkMatrices != null && predictPk != null) {
-			// adjust the goals according to the diff of predict and original pk
+			// adjust the predict goals according to the company's original pk
+			// 	expected = predict(base) refers to standard (company's original)
 			AsiaPl origPkpl = pkMatrices.getOriginPk();
 			float origPk = MatchUtil.getCalculatedPk(origPkpl);
 			float predictDiff = 0.5f * (predictPk - origPk);
 			hgoal -= predictDiff;
 			ggoal += predictDiff;
+			
+			bhgoal = hgoal;
+			bggoal = ggoal;
 
+			// agjust the predicted goals according to the changes
 			float pkComp = pkMatrices.getHwinChangeRate() - pkMatrices.getAwinChangeRate();
 			hAdjRate = -1 * pkComp;
 			gAdjRate = pkComp;
-
+			
+			hgoal += hvariation * hAdjRate;
+			ggoal += gvariation * gAdjRate;
 		}
-		
+
 		// daxiao
 		DaxiaoMatrices dxMatrices = calResult.getDxMatrices();
 		float dxWeight = 0;
 		if (dxMatrices != null && dxMatrices.getHours() > 0) {
-			dxWeight = dxMatrices.getXiaoChangeRate() - dxMatrices.getDaChangeRate();
-//			float dxPk = MatchUtil.getCalculatedPk(dxMatrices.getCurrentPk());
+			// adjust total goals refers to the standard (company's pk) 
+			float dxPk = MatchUtil.getCalculatedPk(dxMatrices.getOriginPk());
+			float predictDxPk = bhgoal+bggoal;
+			float predictDxDiff = 0.5f * (predictDxPk - dxPk);
+			hgoal -= predictDxDiff;
+			ggoal -= predictDxDiff;
 			
-			hgoal += hvariation * hAdjRate;
-			ggoal += gvariation * gAdjRate;
-
+			dxWeight = dxMatrices.getXiaoChangeRate();
 			hgoal *= (1 + dxWeight);
 			ggoal *= (1 + dxWeight);
 		}

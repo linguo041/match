@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.roy.football.match.OFN.parser.MatchParseException;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.context.MatchContext;
@@ -15,7 +16,7 @@ import com.roy.football.match.crawler.controller.OFNMatchService;
 
 public class Main {
 	
-	public static void main (String []  args) {
+	public static void main (String []  args) throws MatchParseException {
 		OFNMatchService simpleController = new OFNMatchService();
 		
 		simpleController.process();

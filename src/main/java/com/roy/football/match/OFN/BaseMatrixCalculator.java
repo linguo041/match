@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
@@ -109,7 +110,7 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 	
 	private void measureTeamPositiveLabel (ClubMatrix matrix, MatrixType type, List<TeamLabel> labels) {
 	
-		if (matrix == null || labels == null) {
+		if (matrix == null || CollectionUtils.isEmpty(labels)) {
 			return;
 		}
 
@@ -130,7 +131,7 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 	
 	private void measureTeamNegativeLabel (ClubMatrix matrix, MatrixType type, List<TeamLabel> labels) {
 		
-		if (matrix == null || labels == null) {
+		if (matrix == null || CollectionUtils.isEmpty(labels)) {
 			return;
 		}
 

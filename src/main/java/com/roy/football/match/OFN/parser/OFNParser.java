@@ -50,7 +50,7 @@ public class OFNParser {
 	private final static String HOME_PANKOU = "H";
 	private final static String AWAY_PANKOU = "A";
 
-	public List<JinCaiMatch> parseJinCaiMatches () {
+	public List<JinCaiMatch> parseJinCaiMatches () throws MatchParseException {
 
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
@@ -63,13 +63,11 @@ public class OFNParser {
 
 			return response.getRows();
 		} catch (HttpRequestException | XmlParseException e) {
-			log.error("unable to parse jincai matches.", e);
+			throw new MatchParseException("unable to parse jincai matches", e);
 		}
-
-		return null;
 	}
 	
-	public OFNMatchData parseMatchData (Long oddsmid) {
+	public OFNMatchData parseMatchData (Long oddsmid) throws MatchParseException {
 		OFNMatchData ofnMatchData = null;
 
 		try {
@@ -89,7 +87,7 @@ public class OFNParser {
 				generateMatchData(key, val, ofnMatchData);
 			}
 		} catch (IOException e) {
-			log.error(String.format("unable to parse match data %s", oddsmid), e);
+			throw new MatchParseException("Parse match detail: ofn_match_id:"+ oddsmid, e);
 		}
 		
 		return ofnMatchData;
@@ -111,7 +109,7 @@ public class OFNParser {
 	}
 
 	
-	public List <EuroPl> parseEuroData (Long oddsmid, Company company) {
+	public List <EuroPl> parseEuroData (Long oddsmid, Company company) throws MatchParseException {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
@@ -137,12 +135,12 @@ public class OFNParser {
 			}
 			
 		} catch (HttpRequestException e) {
-			log.error(String.format("unable to parse match euro data: match [%s], company [%s]", oddsmid, company), e);
+			throw new MatchParseException(String.format("Parse euro pl: ofn_match_id: %d, company: %s", oddsmid, company), e);
 		}
 		return null;
 	}
 	
-	public List<AsiaPl> parseAsiaData (Long oddsmid, Company company) {
+	public List<AsiaPl> parseAsiaData (Long oddsmid, Company company) throws MatchParseException {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
@@ -177,12 +175,12 @@ public class OFNParser {
 			}
 			
 		} catch (HttpRequestException e) {
-			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", oddsmid, company), e);
+			throw new MatchParseException(String.format("Parse asia pk: ofn_match_id: %d, company: %s", oddsmid, company), e);
 		}
 		return null;
 	}
 	
-	public List<AsiaPl> parseDaxiaoData (Long oddsmid, Company company) {
+	public List<AsiaPl> parseDaxiaoData (Long oddsmid, Company company) throws MatchParseException {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
@@ -212,7 +210,7 @@ public class OFNParser {
 			}
 			
 		} catch (HttpRequestException e) {
-			log.error(String.format("unable to parse match daxiao data: match [%s], company [%s]", oddsmid, company), e);
+			throw new MatchParseException(String.format("Parse asia daxiao pk: ofn_match_id: %d, company: %s", oddsmid, company), e);
 		}
 		return null;
 	}

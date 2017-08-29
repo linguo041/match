@@ -67,16 +67,16 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
             -- and cal_phase = 1
 			-- and match_time > '2017-02-10 00:00:00'
 			-- and match_time < '2017-02-12 00:00:00'
-			and match_time > '2017-08-13 00:00:00'
+			and match_time > '2017-08-26 00:00:00'
 			-- and match_day_id is not null
 			)
-      and m.match_time > '2015-06-01 00:00:00'
+      and m.match_time > '2015-10-01 00:00:00'
       and m.cal_phase = 2
 	  and abs(l1.goal_per_match - l.goal_per_match) <= 0.32 + abs(l1.goal_per_match - 2.68) * 0.65
       and l.state = 0
 	  -- pk
       and (abs(mpk1.main_pk-0.2) <= 0.75
-			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.22
+			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.3
 		or (abs(mpk1.main_pk-0.2) > 0.75
 			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.3))
 	  and abs((mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.08
@@ -88,12 +88,12 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
       and abs((mls.host_att_to_guest - mls.guest_att_to_host) - (mls1.host_att_to_guest - mls1.guest_att_to_host)) < 0.45
       -- and abs((mls.host_att_variation_to_guest - mls.guest_att_variation_to_host) - (mls1.host_att_variation_to_guest - mls1.guest_att_variation_to_host)) < 0.75
       -- base
-      and (abs(mpk1.main_pk-0.2) <= 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.35
-		or abs(mpk1.main_pk-0.2) > 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.48)
+      and (abs(mpk1.main_pk-0.2) <= 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.4
+		or abs(mpk1.main_pk-0.2) > 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.5)
       and abs(mcs.host_level - mcs1.host_level) <= 1
 	  and abs(mcs.guest_level - mcs1.guest_level) <= 1
 	  -- js
-      -- and (abs(mj.win_draw_pk_rate - mj1.win_draw_pk_rate) < 0.4 or abs(mj.win_draw_rate - mj1.win_draw_rate) < 0.4)
+      -- and (abs(mj.win_draw_pk_rate - mj1.win_draw_pk_rate) <= 0.4 or abs(mj.win_draw_rate - mj1.win_draw_rate) <= 0.4)
 	  -- pl
 	  and (mce1.main_win_pl < 2.601 and abs(mce1.main_win_pl - mce.main_win_pl) <= mce1.main_win_pl * 0.06
 		or mce1.main_lose_pl < 2.601 and abs(mce1.main_lose_pl - mce.main_lose_pl) <= mce1.main_lose_pl * 0.06)

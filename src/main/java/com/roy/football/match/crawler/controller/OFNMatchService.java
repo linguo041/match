@@ -27,6 +27,7 @@ import com.roy.football.match.OFN.OFNCalcucator;
 import com.roy.football.match.OFN.out.OFNExcelData;
 import com.roy.football.match.OFN.out.OFNOutputFormater;
 import com.roy.football.match.OFN.out.PoiWriter;
+import com.roy.football.match.OFN.parser.MatchParseException;
 import com.roy.football.match.OFN.parser.OFNParser;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
@@ -64,7 +65,7 @@ public class OFNMatchService {
 	@Autowired
 	public ExecutorService calculateExecutorService;
 	
-	public void process () {	
+	public void process () throws MatchParseException {	
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
 		
 		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatches();
@@ -208,7 +209,7 @@ public class OFNMatchService {
 		return (day + month * 100 + (year - 2000) * 10000) * 1000;
 	}
 	
-	private List<EuroPl> getJincaiPls (Long oddsmid, Long matchDayId) {
+	private List<EuroPl> getJincaiPls (Long oddsmid, Long matchDayId) throws MatchParseException {
 		if (matchDayId != null) {
 			return ewJincaiParser.getJincaiEuro(matchDayId);
 		} else {

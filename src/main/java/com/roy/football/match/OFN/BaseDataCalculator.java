@@ -53,8 +53,10 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			throw new CommonException("Club base data is empty.");
 		}
 		
-		ClubMatrix matrix = new ClubMatrix();
-		if (type == MatrixType.All) {
+		ClubMatrix matrix = null;
+		
+		if (type == MatrixType.All && clubData.getAllNum() > 0) {
+			matrix = new ClubMatrix();
 			matrix.setNum(clubData.getAllNum());
 			matrix.setWinRt((float)clubData.getAllWin() / clubData.getAllNum());
 			matrix.setWinDrawRt((float)(clubData.getAllWin() + clubData.getAllDraw()) / clubData.getAllNum());
@@ -65,7 +67,8 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setMisses(clubData.getAllMiss());
 			matrix.setPm(clubData.getPm().getAllPm());
 			matrix.setPoint(clubData.getAllScore());
-		} else if (type == MatrixType.Home) {
+		} else if (type == MatrixType.Home && clubData.getHomeNum() > 0) {
+			matrix = new ClubMatrix();
 			matrix.setNum(clubData.getHomeNum());
 			matrix.setWinRt((float)clubData.getHomeWin() / clubData.getHomeNum());
 			matrix.setWinDrawRt((float)(clubData.getHomeWin() + clubData.getHomeDraw()) / clubData.getHomeNum());
@@ -76,7 +79,8 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 			matrix.setMisses(clubData.getHomeMiss());
 			matrix.setPm(clubData.getPm().getHomePm());
 			matrix.setPoint(clubData.getHomeScore());
-		} else if (type == MatrixType.Away) {
+		} else if (type == MatrixType.Away && clubData.getAwayNum() > 0) {
+			matrix = new ClubMatrix();
 			matrix.setNum(clubData.getAwayNum());
 			matrix.setWinRt((float)clubData.getAwayWin() / clubData.getAwayNum());
 			matrix.setWinDrawRt((float)(clubData.getAwayWin() + clubData.getAwayDraw()) / clubData.getAwayNum());

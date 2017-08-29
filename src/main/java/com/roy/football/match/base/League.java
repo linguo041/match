@@ -13,7 +13,8 @@ public enum League {
 	LianHeHui(291, true),
 	ANYMOUS1(297, true),
 	
-	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William), YingZhuZong(55, 20, Company.William),
+	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William),
+	YingZhuZong(55, 10, Company.William), YingLianBei(53, 10, Company.William),
 	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William), ShuZhuZong(145, 10, Company.William),
 	XiJia(85, 20),
 	DeJia(39, 18), DeYi(140, 18), DeBei(52, 18),
@@ -32,6 +33,7 @@ public enum League {
 	RiXinBei(392, 8, Company.Aomen),
 	HanZhiLian(250, 12, Company.Aomen),
 	AoChao(339, 10, Company.Aomen),
+	AoZhuZhong(1303, 4, Company.Aomen),
 	YaGuan(139, 16, Company.Aomen),
 
 	BrazilJia(160, 20), BrazilCup(266, 20),
@@ -42,6 +44,7 @@ public enum League {
 	ChiLi(192, 16),
 	ShenBaoluo(261, 20),
 	JieFangZhe(159, 16),
+	NanQiuBei(216, 4),
 	
 	AfricaCup(383, 12)
 	;

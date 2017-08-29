@@ -99,6 +99,7 @@ public class MatchPersistService {
 		if (eMatch != null) {
 			CalculationType phase = eMatch.getPhase();
 			
+			// TODO - if the formula has changed, always re-calculate
 			if (phase != null && phase.ordinal() >= CalculationType.resulted.ordinal()) {
 				return;
 			}
