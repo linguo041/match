@@ -43,6 +43,10 @@ public class OFNOutputFormater {
 		excelData.setLeagueName(ofnMatch.getLeague().name());
 		
 		excelData.setMatchInfor(String.format("%s\r\n%s", ofnMatch.getHostName(), ofnMatch.getGuestName()));
+		
+		if (ofnMatch.getHostScore() != null) {
+			excelData.setResult(String.format("%s : %s", ofnMatch.getHostScore(), ofnMatch.getGuestScore()));
+		}
 
 		if (calculateResult != null) {
 			ClubMatrices matrices = calculateResult.getClubMatrices();
@@ -55,7 +59,7 @@ public class OFNOutputFormater {
 				
 				hostGuestCompFormat.append("B   %.1f : %.1f");
 				hostGuestCompArgs.add(matrices.getHostAttGuestDefInx());
-				hostGuestCompArgs.add(matrices.getHostAttGuestDefInx());
+				hostGuestCompArgs.add(matrices.getGuestAttHostDefInx());
 			}
 
 			MatchState matchState = calculateResult.getMatchState();

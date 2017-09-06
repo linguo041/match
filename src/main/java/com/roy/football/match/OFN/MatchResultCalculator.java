@@ -17,6 +17,7 @@ import com.roy.football.match.jpa.repositories.AsiaPkRepository;
 import com.roy.football.match.jpa.repositories.DaXiaoPkRepository;
 import com.roy.football.match.jpa.repositories.MatchRepository;
 import com.roy.football.match.jpa.repositories.MatchResultRepository;
+import com.roy.football.match.util.MatchUtil;
 
 @Service
 public class MatchResultCalculator {
@@ -36,11 +37,19 @@ public class MatchResultCalculator {
 	private MatchRepository matchRepository;
 
 	public void calculateAndPersist (EMatch match, Integer hostScore, Integer guestScore) {
+		calculateAndPersist(match, hostScore, guestScore, false);
+	}
+	
+	public void calculateAndPersist (EMatch match, Integer hostScore, Integer guestScore, boolean recraw) {
 		Long ofnMatchId = match.getOfnMatchId();
+		
+		if (!MatchUtil.isMatchFinished(match.getMatchTime())) {
+			return;
+		}
 		
 		EMatchResult dbResult = matchResultRepository.findOne(ofnMatchId);
 		
-		if (dbResult == null) {
+		if (recraw || dbResult == null) {
 			MatchResult result = ofnResultCrawler.craw(ofnMatchId);
 			if (result == null && hostScore != null) {
 				result = new MatchResult();

@@ -3,11 +3,14 @@ package com.roy.football.match.jpa.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQueryFactory;
 import com.roy.football.match.base.League;
+import com.roy.football.match.jpa.entities.calculation.EMatch;
 import com.roy.football.match.util.DateUtil;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 
 import static com.roy.football.match.jpa.entities.calculation.QEMatch.eMatch;
@@ -38,5 +41,19 @@ public class MatchComplexQueryService {
 					eLatestMatchState.hostAttackToGuest, eLatestMatchState.guestAttackToHost,
 					eLatestMatchState.hostAttackVariationToGuest, eLatestMatchState.guestAttackVariationToHost,
 					eJiaoShou.hgoalPerMatch, eJiaoShou.ggoalPerMatch);
+	}
+	
+	public List<EMatch> findMatchesByDateRange (String from, String to) {
+		try {
+			return jpaQueryFactory.from(eMatch)
+					.where(eMatch.matchTime.between(
+							DateUtil.parseSimpleDateWithDash(from),
+							DateUtil.parseSimpleDateWithDash(to)))
+					.list(eMatch);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Collections.EMPTY_LIST;
 	}
 }

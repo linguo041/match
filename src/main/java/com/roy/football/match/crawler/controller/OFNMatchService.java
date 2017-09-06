@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,6 +105,16 @@ public class OFNMatchService {
 		writeExcel(excelDatas);
 	}
 	
+	public void processMatches (List<JinCaiMatch> matches) {
+		if (matches != null && !matches.isEmpty()) {
+			List<OFNExcelData> datas = matches.stream()
+					.map(jcMatch -> parseAndCalculate(jcMatch))
+					.collect(Collectors.toList());
+			
+			writeExcel(datas);
+		}
+	}
+	
 	public void processMatch (Long oddsmid, Long matchDayId, League league) {
 		JinCaiMatch jcMatch = new JinCaiMatch();
 		jcMatch.setOddsmid(oddsmid);
@@ -157,7 +168,6 @@ public class OFNMatchService {
 
 			// calculate
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);
-			calculator.predict(calculateResult);
 			
 			// TODO - split
 			if (matchPersistService != null) {

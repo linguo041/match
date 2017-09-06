@@ -96,7 +96,11 @@ public class MatchUtil {
 	public static boolean isMatchLatest (Date matchDate, Date currentDate, League league) {
 		double span = YEAR_TIME;
 		
-		if (league == League.EuroJingBiao || league == League.EuroYuYuan) {
+		if (league == League.EuroJingBiao || league == League.Euro21Outter
+				|| league == League.WorldCupAfricaYu || league == League.WorldCupAsiaYu
+				|| league == League.WorldCupEuroYu || league == League.WorldCupNAmericaYu
+				|| league == League.WorldCupSAmericaYu
+				|| league == League.LianHeHui) {
 			span = YEAR_TIME * 2;
 		}
 		
@@ -127,6 +131,10 @@ public class MatchUtil {
 		long aTime = another.getTime();
 		
 		return (float)(cTime - aTime) / 3600000;
+	}
+	
+	public static boolean isMatchFinished (Date matchTime) {
+		return new Date().getTime() - matchTime.getTime() > 3600000 * 2.2;
 	}
 	
 	public static Float parsePankouString (String pkString) {

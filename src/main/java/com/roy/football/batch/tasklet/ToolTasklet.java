@@ -3,6 +3,7 @@ package com.roy.football.batch.tasklet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.batch.core.StepContribution;
@@ -12,6 +13,7 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.mysema.query.jpa.impl.JPAQueryFactory;
+import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.base.LatestMatchMatrixType;
 import com.roy.football.match.base.League;
 import com.roy.football.match.crawler.controller.OFNMatchService;
@@ -19,14 +21,21 @@ import com.roy.football.match.jpa.EntityConverter;
 import com.roy.football.match.jpa.entities.calculation.ELatestMatchDetail;
 import com.roy.football.match.jpa.entities.calculation.ELatestMatchState;
 import com.roy.football.match.jpa.entities.calculation.ELeague;
+import com.roy.football.match.jpa.entities.calculation.EMatch;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubState;
 import com.roy.football.match.jpa.repositories.ELeagueRepository;
 import com.roy.football.match.jpa.repositories.LatestMatchStateRepository;
 import com.roy.football.match.jpa.repositories.MatchClubStateRepository;
+import com.roy.football.match.jpa.repositories.MatchRepository;
+import com.roy.football.match.jpa.service.MatchComplexQueryService;
 import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.service.MatchEuroRecalculateService;
+import com.roy.football.match.service.MatchResultRefetchService;
 import com.roy.football.match.service.PredictScoreFactorClusterService;
 import com.roy.football.match.service.TeamService;
+import com.roy.football.match.util.DateUtil;
+
+import static com.roy.football.match.jpa.entities.calculation.QEMatch.eMatch;
 
 public class ToolTasklet implements Tasklet{
 	
@@ -51,6 +60,12 @@ public class ToolTasklet implements Tasklet{
 	@Autowired
 	private PredictScoreFactorClusterService predictScoreFactorClusterService;
 	
+	@Autowired
+	private MatchResultRefetchService matchResultRefetchService;
+	
+	@Autowired
+	private MatchComplexQueryService matchComplexQueryService;
+	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -59,14 +74,37 @@ public class ToolTasklet implements Tasklet{
 //		fetchTeamName();
 //		saveLeagues();
 		processOneMatch();
+//		processMatches();
+//		recrawResult();
 //		predictFactor();
 //		adjustVariance();
 		
 		return null;
 	}
 	
+	private void recrawResult () {
+		matchResultRefetchService.recrawMatches();
+	}
+	
 	private void processOneMatch () {
-		ofnMatchService.processMatch(1115554L, 170823005L, League.OuGuan);
+		ofnMatchService.processMatch(1047319L, 170826005L, League.RiLian);
+	}
+	
+	private void processMatches () {
+		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-08-27", "2017-08-28");
+		
+		if (matches != null && !matches.isEmpty()) {
+			List<JinCaiMatch> jcMatches = matches.stream().map(match -> {
+				JinCaiMatch jcMatch = new JinCaiMatch();
+				jcMatch.setOddsmid(match.getOfnMatchId());
+				jcMatch.setXid(match.getMatchDayId());
+				jcMatch.setLid(match.getLeague().getLeagueId());
+				return jcMatch;
+			}).collect(Collectors.toList());
+			
+			ofnMatchService.processMatches(jcMatches);
+		}
+		
 	}
 	
 	private void saveLeagues () {
@@ -94,7 +132,7 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void fetchTeamRanking () {
-		teamService.fetchTeamRanking();;
+		teamService.fetchTeamRanking();
 	}
 	
 	private void predictFactor () {

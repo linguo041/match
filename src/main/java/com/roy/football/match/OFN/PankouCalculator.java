@@ -113,8 +113,8 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 					} else if (pk.getPanKou() < temp.getPanKou()) {
 						changePk = -0.125f;
 					} else {
-						// week the change
-						changePk = changePk * 0.9f;
+						// week the change if pankou changed
+						changePk = changePk * 0.8f;
 					}
 				}
 
