@@ -20,6 +20,7 @@ import com.roy.football.match.OFN.statics.matrices.OFNKillPromoteResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.base.League;
+import com.roy.football.match.base.MatchContinent;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLabel;
 import com.roy.football.match.okooo.MatchExchangeData;
@@ -372,21 +373,26 @@ public class PankouKillPromoter {
 		return rgs;
 	}
 	
-	private void killPkPlUnmatchChange (Float pkChange, Float winPlChange, Float losePlChange, Float pankou, Set<ResultGroup> killGps) {
+	private void killPkPlUnmatchChange (Float pkChange, Float winPlChange, Float losePlChange,
+			Float waWinRt, Float waLoseRt, Float aomenWinChange, Float aomenLoseChange, Float pankou, Set<ResultGroup> killGps) {
 		if (pankou > 0.1) {
-			if (winPlChange + pkChange > 0.125 || winPlChange + pkChange < -0.125) {
+			if ((winPlChange + pkChange > 0.125 || winPlChange + pkChange < -0.125)
+					&& waWinRt > -0.021 && aomenWinChange > -0.015) {
 				killGps.add(ResultGroup.Three);
 			}
 		} else if (pankou < -0.1) {
-			if (losePlChange - pkChange > 0.125 || losePlChange - pkChange < -0.125) {
+			if ((losePlChange - pkChange > 0.125 || losePlChange - pkChange < -0.125)
+					&& waLoseRt > -0.021 && aomenLoseChange > -0.015) {
 				killGps.add(ResultGroup.Zero);
 			}
 		} else {
-			if (winPlChange + pkChange > 0.125 || winPlChange + pkChange < -0.125) {
+			if ((winPlChange + pkChange > 0.125 || winPlChange + pkChange < -0.125)
+					&& waWinRt > -0.021 && aomenWinChange > -0.015) {
 				killGps.add(ResultGroup.Three);
 			}
 			
-			if (losePlChange - pkChange > 0.125 || losePlChange - pkChange < -0.125) {
+			if ((losePlChange - pkChange > 0.125 || losePlChange - pkChange < -0.125)
+					&& waLoseRt > -0.021 && aomenLoseChange > -0.015) {
 				killGps.add(ResultGroup.Zero);
 			}
 		}
@@ -425,6 +431,10 @@ public class PankouKillPromoter {
 				float willWinChange = will.getWinChange();
 				float willDrawChange = will.getDrawChange();
 				float willLoseChange = will.getLoseChange();
+				
+				float interWinChange = inter.getWinChange();
+				float interDrawChange = inter.getDrawChange();
+				float interLoseChange = inter.getLoseChange();
 				
 				float aomenWinChange = aomen.getWinChange();
 				float aomenDrawChange = aomen.getDrawChange();
@@ -476,7 +486,8 @@ public class PankouKillPromoter {
 				
 				killPkPlUnmatchChange(MatchUtil.getCalculatedPk(aomenCurrPk) - MatchUtil.getCalculatedPk(aomenMainPk),
 						aomenWinChange * currAomenEu.getEWin(),
-						aomenLoseChange * currAomenEu.getELose(), aomenPk, plPkUnmatchKillGps);
+						aomenLoseChange * currAomenEu.getELose(), aomenPk,
+						waWinRt, waLoseRt, aomenWinChange, aomenLoseChange, plPkUnmatchKillGps);
 
 				// the main company and lab is higher than the average, or aomen is higher than average and aomen is adjusted high
 				if (aomenPk >= 1) {
@@ -487,93 +498,122 @@ public class PankouKillPromoter {
 							killGps.add(ResultGroup.Three);
 						}
 					} else {
-						if (maWinRt > 0.062 && majorWinChange > -0.0251 && majorLoseChange < 0.02
-								|| waWinRt > 0.052 && laWinRt > 0.067 && aomenWinChange > -0.011
-								|| aaWinRt > 0.021 && aomenWinChange > 0.011) {
+						if ((maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.021
+								|| iaWinRt > 0.051 && interWinChange > -0.011 && interLoseChange < 0.021
+								|| aaWinRt > 0.021 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
+								&& (aaWinRt + aomenWinChange > -0.031)
+								&& (iaWinRt + interWinChange > -0.021)
+								&& waWinRt > 0.011 && willWinChange > -0.011) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (maDrawRt > 0.06 && majorDrawChange > -0.0251
-								|| waDrawRt > 0.067 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-								|| aomenDrawChange > 0.011 && aaDrawRt > 0.05) {
+						if ((maDrawRt > 0.06 && majorDrawChange > -0.025
+								|| iaDrawRt > 0.051 && interDrawChange > -0.011
+								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
+								&& (aaDrawRt + aomenDrawChange > -0.031)
+								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
-						if (maLoseRt > 0.06 && majorLoseChange > -0.0251 && majorWinChange < 0.02
-								|| waLoseRt > 0.06 && laLoseRt > 0.07 && aomenLoseChange > -0.0251
-								|| aomenLoseChange > 0.011 && aaLoseRt > 0.05) {
+						if ((maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.021
+								|| iaLoseRt > 0.051 && interLoseChange > -0.011 && interWinChange < 0.021
+								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
+								&& (aaLoseRt + aomenLoseChange > -0.041)
+								&& (iaLoseRt + interLoseChange > -0.021)
+								&& waLoseRt > 0.021 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
 					}
 				} else if (aomenPk >= 0.4) {
 					if (isAomenMajor) {
 						if ((aaWinRt > 0.021 && aomenWinChange > -0.001
-									|| yaWinRt > 0.051 && ysbWinChange > -0.001
+//									|| yaWinRt > 0.051 && ysbWinChange > -0.001
 									|| jaWinDiff > -0.031 && jcWinChange > -0.001)
 								&& yaWinRt > 0.01 && aaWinRt > -0.01) {
 							killGps.add(ResultGroup.Three);
 						}
 						if ((aaDrawRt > 0.021 && aomenDrawChange > -0.001
-									|| yaDrawRt > 0.051 && ysbDrawChange > -0.012
+//									|| yaDrawRt > 0.051 && ysbDrawChange > -0.012
 									|| jaDrawDiff > 0.045 && jcDrawChange > -0.012)
-								&& yaDrawRt > 0.01 && aaDrawRt > -0.012) {
+								&& yaDrawRt > 0.01 && aaDrawRt > -0.012 && aomenDrawChange > -0.012) {
 							killGps.add(ResultGroup.One);
 						}
 						if ((aaLoseRt > 0.021 && aomenLoseChange > -0.001
-									|| jaLoseDiff > 0.051 && jcLoseChange > -0.012
-									|| yaLoseRt > 0.051 && ysbLoseChange > -0.012)
+//									|| yaLoseRt > 0.051 && ysbLoseChange > -0.012
+									|| jaLoseDiff > 0.051 && jcLoseChange > -0.012)
 								&& yaLoseRt > 0.01 && aaLoseRt > -0.01) {
 							killGps.add(ResultGroup.Zero);
 						}
 					} else {
-						if (maWinRt > 0.06 && majorWinChange > -0.025 && majorLoseChange < 0.02
-								|| waWinRt > 0.052 && laWinRt > 0.065 && aomenWinChange > -0.0251
-								|| aomenWinChange > 0.011 && aaWinRt > 0.035) {
+						if ((maWinRt > 0.06 && majorWinChange > -0.02 && majorLoseChange < 0.02
+								|| iaWinRt > 0.051 && interWinChange > -0.01 && interLoseChange < 0.02
+								|| MatchContinent.Euro == league.getContinent() ? aaWinRt > 0.005 : aaWinRt > 0.021  // aomen follows will
+									&& aomenWinChange > -0.01 && aomenLoseChange < 0.02)
+								&& (aaWinRt + aomenWinChange > -0.031)
+								&& (iaWinRt + interWinChange > -0.021)
+								&& waWinRt > -0.011 && willWinChange > -0.011) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (maDrawRt > 0.06 && majorDrawChange > -0.025
-								|| waDrawRt > 0.067 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-								|| aomenDrawChange > 0.011 && aaDrawRt > 0.05) {
+						if ((maDrawRt > 0.05 && majorDrawChange > -0.025
+								|| iaDrawRt > 0.051 && interDrawChange > -0.01
+								|| aaDrawRt > 0.02 && aomenDrawChange > -0.01)
+								&& (aaDrawRt + aomenDrawChange > -0.031)
+								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
-						if (maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.02
-								|| waLoseRt > 0.052 && laLoseRt > 0.067 && aomenLoseChange > -0.0251
-								|| aomenLoseChange > 0.011 && aaLoseRt > 0.05) {
+						if ((maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.02
+								|| iaLoseRt > 0.051 && interLoseChange > -0.011 && interWinChange < 0.02
+								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.02)
+								&& (aaLoseRt + aomenLoseChange > -0.04)
+								&& (iaLoseRt + interLoseChange > -0.02)
+								&& waLoseRt > -0.011 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
 					}
 				} else if (aomenPk >= 0.25) {
 					if (isAomenMajor) {
 						if ((aaWinRt > 0.021 && aomenWinChange > -0.001
-								|| yaWinRt > 0.041 && ysbWinChange > -0.001
+//								|| yaWinRt > 0.041 && ysbWinChange > -0.001
 								|| jaWinDiff > -0.011 && jcWinChange > -0.001)
 							&& yaWinRt > 0.01 && aaWinRt > -0.01) {
 							killGps.add(ResultGroup.Three);
 						}
 						if ((aaDrawRt > 0.021 && aomenDrawChange > -0.001
-								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
+//								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
 								|| jaDrawDiff > 0.041 && jcDrawChange > -0.012)
 							&& yaDrawRt > 0.01 && aaDrawRt > -0.015) {
 							killGps.add(ResultGroup.One);
 						}
 						if ((aaLoseRt > 0.021 && aomenLoseChange > -0.001
-								|| jaLoseDiff > 0.041 && jcLoseChange > -0.012
-								|| yaLoseRt > 0.041 && ysbLoseChange > -0.012)
+//								|| yaLoseRt > 0.041 && ysbLoseChange > -0.012
+								|| jaLoseDiff > 0.041 && jcLoseChange > -0.012)
 							&& yaLoseRt > 0.01 && aaLoseRt > -0.015) {
 							killGps.add(ResultGroup.Zero);
 						}
 					} else {
-						if (maWinRt > 0.058 && majorWinChange > -0.025 && majorLoseChange < 0.02
-								|| waWinRt > 0.052 && laWinRt > 0.067 && aomenWinChange > -0.0251
-								|| aomenWinChange > 0.011 && aaWinRt > 0.035) {
+						if ((maWinRt > 0.051 && majorWinChange > -0.021 && majorLoseChange < 0.021
+								|| iaWinRt > 0.051 && interWinChange > -0.011 && interLoseChange < 0.021
+								|| MatchContinent.Euro == league.getContinent() ? aaWinRt > 0.005 : aaWinRt > 0.021  // aomen follows will
+										&& aomenWinChange > -0.011 && aomenLoseChange < 0.021)
+								&& (aaWinRt + aomenWinChange > -0.035)
+								&& (iaWinRt + interWinChange > -0.021)
+								&& waWinRt > -0.011 && willWinChange > -0.011) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (maDrawRt > 0.06 && majorDrawChange > -0.025
-								|| waDrawRt > 0.067 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-								|| aomenDrawChange > 0.011 && aaDrawRt > 0.045) {
+						if ((maDrawRt > 0.051 && majorDrawChange > -0.025
+								|| iaDrawRt > 0.051 && interDrawChange > -0.011
+								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
+								&& (aaDrawRt + aomenDrawChange > -0.031)
+								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
-						if (maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.02
-								|| waLoseRt > 0.052 && laLoseRt > 0.067 && aomenLoseChange > -0.0251
-								|| aomenLoseChange > 0.011 && aaLoseRt > 0.045) {
+						if ((maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.021
+								|| iaLoseRt > 0.051 && interLoseChange > -0.011 && interWinChange < 0.021
+								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
+								&& (aaLoseRt + aomenLoseChange > -0.041)
+								&& (iaLoseRt + interLoseChange > -0.021)
+								&& waLoseRt > -0.011 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
 					}
@@ -586,7 +626,7 @@ public class PankouKillPromoter {
 						}
 						if (aaDrawRt > 0.019 && aomenDrawChange > -0.001
 								&& jaDrawDiff + jcDrawChange > 0.001
-								&& waDrawRt > 0.021) {
+								&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
 						if (aaLoseRt > 0.019 && aomenLoseChange > -0.001
@@ -595,110 +635,148 @@ public class PankouKillPromoter {
 							killGps.add(ResultGroup.Zero);
 						}
 					} else {
-						if (maWinRt > 0.06 && majorWinChange > -0.025 && majorLoseChange < 0.02
-								|| waWinRt > 0.052 && laWinRt > 0.067 && aomenWinChange > -0.0261
-								|| aomenWinChange > 0.011 && aaWinRt > 0.04) {
+						if (maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.02
+								|| iaWinRt > 0.051 && interWinChange > -0.011 && interLoseChange < 0.021
+								|| aaWinRt > 0.021 && aomenWinChange > -0.011 && aomenLoseChange < 0.021
+								&& (aaWinRt + aomenWinChange > -0.031)
+								&& (iaWinRt + interWinChange > -0.021)
+								&& waWinRt > -0.011 && willWinChange > -0.011) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (maDrawRt > 0.06 && majorDrawChange > -0.025
-								|| waDrawRt > 0.067 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-								|| aomenDrawChange > 0.011 && aaDrawRt > 0.045) {
+						if ((maDrawRt > 0.051 && majorDrawChange > -0.025
+								|| iaDrawRt > 0.051 && interDrawChange > -0.011
+								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
+								&& (aaDrawRt + aomenDrawChange > -0.031)
+								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waDrawRt > -0.011 && willDrawChange > -0.011) {
 							killGps.add(ResultGroup.One);
 						}
-						if (maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.02
-								|| waLoseRt > 0.052 && laLoseRt > 0.067 && aomenLoseChange > -0.0251
-								|| aomenLoseChange > 0.011 && aaLoseRt > 0.04) {
+						if ((maLoseRt > 0.06 && majorLoseChange > -0.021 && majorWinChange < 0.021
+								|| iaLoseRt > 0.051 && interLoseChange > -0.011 && interWinChange < 0.021
+								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
+								&& (aaLoseRt + aomenLoseChange > -0.031)
+								&& (iaLoseRt + interLoseChange > -0.021)
+								&& waLoseRt > -0.011 && willLoseChange > -0.011) {
 							killGps.add(ResultGroup.Zero);
 						}
 					}
 				} else if (aomenPk >= -0.25) {
 					if (isAomenMajor) {
 						if ((aaWinRt > 0.021 && aomenWinChange > -0.001
-								|| yaWinRt > 0.041 && ysbWinChange > -0.001
+//								|| yaWinRt > 0.041 && ysbWinChange > -0.001
 								|| jaWinDiff > 0.041 && jcWinChange > -0.001)
 							&& yaWinRt > 0.01 && aaWinRt > -0.01) {
 							killGps.add(ResultGroup.Three);
 						}
 						if ((aaDrawRt > 0.021 && aomenDrawChange > -0.001
-								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
+//								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
 								|| jaDrawDiff > 0.041 && jcDrawChange > -0.012)
 							&& yaDrawRt > 0.01 && aaDrawRt > -0.015) {
 							killGps.add(ResultGroup.One);
 						}
 						if ((aaLoseRt > 0.021 && aomenLoseChange > -0.001
-								|| jaLoseDiff > -0.011 && jcLoseChange > -0.012
-								|| yaLoseRt > 0.041 && ysbLoseChange > -0.012)
+//								|| yaLoseRt > 0.041 && ysbLoseChange > -0.012
+								|| jaLoseDiff > -0.011 && jcLoseChange > -0.012)
 							&& yaLoseRt > 0.01 && aaLoseRt > -0.015) {
 							killGps.add(ResultGroup.Zero);
 						}
 					} else {
-						if (maWinRt > 0.06 && majorWinChange > -0.025 && majorLoseChange < 0.02
-								|| waWinRt > 0.052 && laWinRt > 0.067 && aomenWinChange > -0.0251
-								|| aomenWinChange > 0.011 && aaWinRt > 0.04) {
+						if ((maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.021
+								|| iaWinRt > 0.051 && interWinChange > -0.011 && interLoseChange < 0.021
+								|| aaWinRt > 0.021 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
+								&& (aaWinRt + aomenWinChange > -0.041)
+								&& (iaWinRt + interWinChange > -0.031)
+								&& waWinRt > -0.011 && willWinChange > -0.021) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (maDrawRt > 0.06 && majorDrawChange > -0.025
-								|| waDrawRt > 0.067 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-								|| aomenDrawChange > 0.011 && aaDrawRt > 0.045) {
+						if ((maDrawRt > 0.051 && majorDrawChange > -0.025
+								|| iaDrawRt > 0.051 && interDrawChange > -0.011
+								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
+								&& (aaDrawRt + aomenDrawChange > -0.031)
+								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
-						if (maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.02
-								|| waLoseRt > 0.052 && laLoseRt > 0.067 && aomenLoseChange > -0.0251
-								|| aomenLoseChange > 0.011 && aaLoseRt > 0.035) {
+						if ((maLoseRt > 0.51 && majorLoseChange > -0.025 && majorWinChange < 0.021
+								|| iaLoseRt > 0.051 && interLoseChange > -0.011 && interWinChange < 0.021
+								|| MatchContinent.Euro == league.getContinent() ? aaLoseRt > 0.005 : aaLoseRt > 0.021
+										&& aomenLoseChange > -0.011 && aomenWinChange < 0.021)
+								&& (aaLoseRt + aomenLoseChange > -0.031)
+								&& (iaLoseRt + interLoseChange > -0.021)
+								&& waLoseRt > -0.011 && willLoseChange > -0.011) {
 							killGps.add(ResultGroup.Zero);
 						}
 					}
 				} else if (aomenPk >= -1) {
 					if (isAomenMajor) {
 						if ((aaWinRt > -0.001 && aomenWinChange > -0.001
-								|| yaWinRt > 0.041 && ysbWinChange > -0.001
+//								|| yaWinRt > 0.041 && ysbWinChange > -0.001
 								|| jaWinDiff > 0.001 && jcWinChange > -0.001)
 							&& yaWinRt > 0.01 && aaWinRt > -0.01) {
 							killGps.add(ResultGroup.Three);
 						}
 						if ((aaDrawRt > 0.021 && aomenDrawChange > -0.001
-								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
+//								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
 								|| jaDrawDiff > 0.041 && jcDrawChange > -0.012)
 							&& yaDrawRt > 0.01 && aaDrawRt > -0.015) {
 							killGps.add(ResultGroup.One);
 						}
 						if ((aaLoseRt > 0.021 && aomenLoseChange > -0.001
-								|| jaLoseDiff > -0.031 && jcLoseChange > -0.012
-								|| yaLoseRt > 0.045 && ysbLoseChange > -0.012)
+//								|| yaLoseRt > 0.045 && ysbLoseChange > -0.012
+								|| jaLoseDiff > -0.031 && jcLoseChange > -0.012)
 							&& yaLoseRt > 0.01 && aaLoseRt > -0.015) {
 							killGps.add(ResultGroup.Zero);
 						}
 					} else {
-						if (maWinRt > 0.06 && majorWinChange > -0.025 && majorLoseChange < 0.02
-								|| waWinRt > 0.052 && laWinRt > 0.067 && aomenWinChange > -0.0251
-								|| aomenWinChange > 0.011 && aaWinRt > 0.05) {
+						if ((maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.021
+								|| iaWinRt > 0.051 && interWinChange > -0.011 && interLoseChange < 0.021
+								|| aaWinRt > 0.021 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
+								&& (aaWinRt + aomenWinChange > -0.041)
+								&& (iaWinRt + interWinChange > -0.021)
+								&& waWinRt > -0.011 && willWinChange > -0.021) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (maDrawRt > 0.06 && majorDrawChange > -0.025
-								|| waDrawRt > 0.065 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-								|| aomenDrawChange > 0.011 && aaDrawRt > 0.04) {
+						if ((maDrawRt > 0.051 && majorDrawChange > -0.025
+								|| iaDrawRt > 0.051 && interDrawChange > -0.011
+								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
+								&& (aaDrawRt + aomenDrawChange > -0.031)
+								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
-						if (maLoseRt > 0.06 && majorLoseChange > -0.025 && majorWinChange < 0.02
-								|| waLoseRt > 0.052 && laLoseRt > 0.067 && aomenLoseChange > -0.0251
-								|| aomenLoseChange > 0.011 && aaLoseRt > 0.035) {
+						if ((maLoseRt > 0.51 && majorLoseChange > -0.025 && majorWinChange < 0.021
+								|| iaLoseRt > 0.051 && interLoseChange > -0.011 && interWinChange < 0.021
+								|| MatchContinent.Euro == league.getContinent() ? aaLoseRt > 0.005 : aaLoseRt > 0.021
+										&& aomenLoseChange > -0.011 && aomenWinChange < 0.021)
+								&& (aaLoseRt + aomenLoseChange > -0.031)
+								&& (iaLoseRt + interLoseChange > -0.021)
+								&& waLoseRt > -0.011 && willLoseChange > -0.011) {
 							killGps.add(ResultGroup.Zero);
 						}
 					}
 				} else {
-					if (maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.02
-							|| waWinRt > 0.052 && laWinRt > 0.067 && aomenWinChange > -0.0251
-							|| aomenWinChange > 0.011 && aaWinRt > 0.05) {
+					if ((maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.021
+							|| iaWinRt > 0.051 && interWinChange > -0.011 && interLoseChange < 0.021
+							|| aaWinRt > 0.011 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
+							&& (aaWinRt + aomenWinChange > -0.041)
+							&& (iaWinRt + interWinChange > -0.031)
+							&& waWinRt > 0.021 && willWinChange > -0.021) {
 						killGps.add(ResultGroup.Three);
 					}
-					if (maDrawRt > 0.06 && majorDrawChange > -0.021
-							|| waDrawRt > 0.065 && laDrawRt > 0.05 && aomenDrawChange > -0.0251
-							|| aomenDrawChange > 0.011 && aaDrawRt > 0.045) {
+					if ((maDrawRt > 0.051 && majorDrawChange > -0.025
+							|| iaDrawRt > 0.051 && interDrawChange > -0.011
+							|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
+							&& (aaDrawRt + aomenDrawChange > -0.031)
+							&& (iaDrawRt + interDrawChange > -0.021)
+							&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 						killGps.add(ResultGroup.One);
 					}
-					if (maLoseRt > 0.06 && majorLoseChange > -0.021 && majorWinChange < 0.02
-							|| waLoseRt > 0.052 && laLoseRt > 0.067 && aomenLoseChange > -0.0251
-							|| aomenLoseChange > 0.011 && aaLoseRt > 0.035) {
+					if ((maLoseRt > 0.061 && majorLoseChange > -0.025 && majorWinChange < 0.021
+							|| iaLoseRt > 0.061 && interLoseChange > -0.011 && interWinChange < 0.021
+							|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
+							&& (aaLoseRt + aomenLoseChange > -0.031)
+							&& (iaLoseRt + interLoseChange > -0.021)
+							&& waLoseRt > 0.011 && willLoseChange > -0.011) {
 						killGps.add(ResultGroup.Zero);
 					}
 				}
@@ -797,7 +875,9 @@ public class PankouKillPromoter {
 
 	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, ClubMatrices clubMatrices,
 			MatchState matchState, Float predictPk, Float mainPk, Float currentPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices) {
-		if (rgs == null) {
+		if (rgs == null
+				|| clubMatrices.getHostAllMatrix() != null
+					&& clubMatrices.getHostAllMatrix().getNum() < 5) {
 			rgs = new TreeSet<ResultGroup> ();
 		}
 
@@ -1170,6 +1250,9 @@ public class PankouKillPromoter {
 				float waWinRt = MatchUtil.getEuDiff(currWillEu.getEWin(), euroAvg.getEWin(), false);
 				float waDrawRt = MatchUtil.getEuDiff(currWillEu.getEDraw(), euroAvg.getEDraw(), false);
 				float waLoseRt = MatchUtil.getEuDiff(currWillEu.getELose(), euroAvg.getELose(), false);
+				float willWinChange = will.getWinChange();
+				float willDrawChange = will.getDrawChange();
+				float willLoseChange = will.getLoseChange();
 				
 				float laWinRt = MatchUtil.getEuDiff(currLabEu.getEWin(), euroAvg.getEWin(), false);
 				float laDrawRt = MatchUtil.getEuDiff(currLabEu.getEDraw(), euroAvg.getEDraw(), false);
@@ -1217,10 +1300,10 @@ public class PankouKillPromoter {
 						}
 						if (pkDirection.ordinal() < PKDirection.Middle.ordinal()
 								&& hotPoint < 7
-								&& maDrawRt < 0.03 && majorDrawChange < 0.02
+								&& maDrawRt < 0.02 && majorDrawChange < 0.02
 								&& waDrawRt < -0.01
-								&& iaDrawRt < 0.01
-								&& aaDrawRt < -0.045 && aomenDrawChange < 0.01) {
+								&& iaDrawRt < -0.01
+								&& aaDrawRt < -0.051 && aomenDrawChange < 0.01) {
 							promoteGps.add(ResultGroup.One);
 						}
 						if (pkDirection.ordinal() < PKDirection.Middle.ordinal()
@@ -1269,11 +1352,13 @@ public class PankouKillPromoter {
 						}
 						if (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								&& hotPoint < 7
-								&& maDrawRt < 0.03 && majorDrawChange < 0.02
-								&& waDrawRt < 0.02
-								&& iaDrawRt < 0.02
+								&& maDrawRt < 0.021 && majorDrawChange < 0.02
+								&& waDrawRt < 0.001
+								&& iaDrawRt < 0.001
 								&& aaDrawRt < -0.012 && aomenDrawChange < 0.012
-								&& (waDrawRt < -0.025 && iaDrawRt < 0.012 || iaDrawRt < -0.025 && iaDrawChange < 0.012 || aaDrawRt <= -0.045)) {
+								&& (waDrawRt < -0.025 && willDrawChange < 0.012
+										|| iaDrawRt < -0.025 && iaDrawChange < 0.012
+										|| aaDrawRt <= -0.045)) {
 							promoteGps.add(ResultGroup.One);
 						}
 						if (pkDirection.ordinal() < PKDirection.Up.ordinal()
@@ -1282,7 +1367,8 @@ public class PankouKillPromoter {
 								&& laLoseRt < 0.045
 								&& iaLoseRt < 0.01
 								&& aaLoseRt < -0.02 && aomenLoseChange < 0.01
-								&& (iaLoseRt < -0.03 && iaLoseChange < 0.01 || aaLoseRt <= -0.045)) {
+								&& (iaLoseRt < -0.03 && iaLoseChange < 0.01
+										|| aaLoseRt <= -0.051)) {
 							promoteGps.add(ResultGroup.Zero);
 						}
 					}
@@ -1432,7 +1518,7 @@ public class PankouKillPromoter {
 						}
 						if (pkDirection.ordinal() > PKDirection.Up.ordinal()
 								&& hotPoint > -5.5f
-								&& aaDrawRt < -0.02 && aaDrawRt + aomenDrawChange < -0.015 && aomenDrawChange < 0.001
+								&& aaDrawRt < -0.021 && aaDrawRt + aomenDrawChange < -0.015 && aomenDrawChange < 0.001
 								&& waDrawRt < -0.01
 								&& iaDrawRt < 0.01
 								) {
@@ -1452,7 +1538,8 @@ public class PankouKillPromoter {
 								&& laWinRt < 0.04
 								&& iaWinRt < 0.01
 								&& aaWinRt < -0.02 && aomenWinChange < 0.01
-								&& (iaWinRt <= -0.03 && iaWinChange < 0.01 || aaWinRt <= -0.06)) {
+								&& (iaWinRt <= -0.03 && iaWinChange < 0.01
+									|| aaWinRt <= -0.065)) {
 							promoteGps.add(ResultGroup.Three);
 						}
 						if (pkDirection.ordinal() > PKDirection.Up.ordinal()
@@ -1461,7 +1548,8 @@ public class PankouKillPromoter {
 								&& waDrawRt < 0.03
 								&& iaDrawRt < 0.01
 								&& aaDrawRt < -0.02 && aomenDrawChange < 0.01
-								&& (iaDrawRt < -0.025 && iaDrawChange < 0.01 || aaDrawRt <= -0.04)) {
+								&& (iaDrawRt < -0.025 && iaDrawChange < 0.01
+										|| aaDrawRt <= -0.045)) {
 							promoteGps.add(ResultGroup.One);
 						}
 						if (pkDirection.ordinal() < PKDirection.Up.ordinal()

@@ -2,106 +2,100 @@ package com.roy.football.match.base;
 
 import com.roy.football.match.OFN.response.Company;
 
+import lombok.Getter;
+
+@Getter
 public enum League {
-	Friendly(166, true),
-	Country(61, true), 
-	EuroJingBiao(87, true),
-	AsiaYu(161, Company.Aomen, true),
-	WorldCupEuroYu(175, true),
-	WorldCupAsiaYu(141, Company.Aomen, true),
-	WorldCupAfricaYu(157, Company.William, true),
-	WorldCupSAmericaYu(126, Company.William, true),
-	WorldCupNAmericaYu(176, Company.William, true),
-	BoluoCup(704, true),
-	MeiZhouCup(162, true),
-	LianHeHui(291, true),
-	Euro21Outter(464, true),
-	ANYMOUS1(297, true),
+	Friendly(166, true, null),
+	Country(61, true, null), 
+	EuroJingBiao(87, true, MatchContinent.Euro),
+	AsiaYu(161, Company.Aomen, true, MatchContinent.Asia),
+	WorldCupEuroYu(175, true, MatchContinent.Euro),
+	WorldCupAsiaYu(141, Company.Aomen, true, MatchContinent.Asia),
+	WorldCupAfricaYu(157, Company.William, true, MatchContinent.Africa),
+	WorldCupSAmericaYu(126, Company.William, true, MatchContinent.America),
+	WorldCupNAmericaYu(176, Company.William, true, MatchContinent.America),
+	BoluoCup(704, true, MatchContinent.America),
+	MeiZhouCup(162, true, MatchContinent.America),
+	LianHeHui(291, true, null),
+	Euro21Outter(464, true, MatchContinent.Euro),
+	ANYMOUS1(297, true, null),
 	
-	YingChao(92, 20, Company.William), YingGuang(177, 24, Company.William), YingJia(178, 24, Company.William), YingYi(106, 24, Company.William),
-	YingZhuZong(55, 10, Company.William), YingLianBei(53, 10, Company.William),
-	ShuChao(76, 12, Company.William), ShuGuang(236, 10, Company.William), ShuZhuZong(145, 10, Company.William),
-	XiJia(85, 20),
-	DeJia(39, 18), DeYi(140, 18), DeBei(52, 18),
-	YiJia(34, 20, Company.SNAI), YiBei(332, 20, Company.SNAI),
-	FaJia(93, 20), FaYi(171, 20), FaBei(101, 20),
-	HeJia(99, 18), HeYi(202, 19),
-	PuChao(88, 18), PuLianBei(251, 18),
-	OuGuan(74, 16), OuLian(58, 16),
-	EChao(165, 16), RussiaCup(232, 16),
-	NorChao(104, 16), NorCup (227, 16),
-	Sweden(103, 16, Company.Sweden),
-	BiJia(100, 16),
+	YingChao(92, 20, Company.William, MatchContinent.Euro), YingGuang(177, 24, Company.William, MatchContinent.Euro),
+	YingJia(178, 24, Company.William, MatchContinent.Euro), YingYi(106, 24, Company.William, MatchContinent.Euro),
+	YingZhuZong(55, 10, Company.William, MatchContinent.Euro), YingLianBei(53, 10, Company.William, MatchContinent.Euro),
+	ShuChao(76, 12, Company.William, MatchContinent.Euro), ShuGuang(236, 10, Company.William, MatchContinent.Euro), ShuZhuZong(145, 10, Company.William, MatchContinent.Euro),
+	XiJia(85, 20, MatchContinent.Euro),
+	DeJia(39, 18, MatchContinent.Euro), DeYi(140, 18, MatchContinent.Euro), DeBei(52, 18, MatchContinent.Euro),
+	YiJia(34, 20, Company.SNAI, MatchContinent.Euro), YiBei(332, 20, Company.SNAI, MatchContinent.Euro),
+	FaJia(93, 20, MatchContinent.Euro), FaYi(171, 20, MatchContinent.Euro), FaBei(101, 20, MatchContinent.Euro),
+	HeJia(99, 18, MatchContinent.Euro), HeYi(202, 19, MatchContinent.Euro),
+	PuChao(88, 18, MatchContinent.Euro), PuLianBei(251, 18, MatchContinent.Euro),
+	OuGuan(74, 16, MatchContinent.Euro), OuLian(58, 16, MatchContinent.Euro),
+	EChao(165, 16, MatchContinent.Euro), RussiaCup(232, 16, MatchContinent.Euro),
+	NorChao(104, 16, MatchContinent.Euro), NorCup (227, 16, MatchContinent.Euro),
+	Sweden(103, 16, Company.Sweden, MatchContinent.Euro),
+	BiJia(100, 16, MatchContinent.Euro),
 
-	RiLian(102, 18, Company.Aomen), RiYi(347, 22, Company.Aomen),
-	RiLianBei(158, 8, Company.Aomen),
-	RiXinBei(392, 8, Company.Aomen),
-	HanZhiLian(250, 12, Company.Aomen),
-	AoChao(339, 10, Company.Aomen),
-	AoZhuZhong(1303, 4, Company.Aomen),
-	YaGuan(139, 16, Company.Aomen),
+	RiLian(102, 18, Company.Aomen, MatchContinent.Asia), RiYi(347, 22, Company.Aomen, MatchContinent.Asia),
+	RiLianBei(158, 8, Company.Aomen, MatchContinent.Asia),
+	RiXinBei(392, 8, Company.Aomen, MatchContinent.Asia),
+	HanZhiLian(250, 12, Company.Aomen, MatchContinent.Asia),
+	AoChao(339, 10, Company.Aomen, MatchContinent.Asia),
+	AoZhuZhong(1303, 4, Company.Aomen, MatchContinent.Asia),
+	YaGuan(139, 16, Company.Aomen, MatchContinent.Asia),
 
-	BrazilJia(160, 20), BrazilCup(266, 20),
-	America(107, 20), CannadaCup(700), AmericaPublic(569),
-	Argintina(108, 30), ArgintinaCup(1152, 8),
-	Maxico(191, 18), MaxicoCup(1204, 18),
-	ChiLi(192, 16),
-	ChiLiCup(753, 8),
-	ShenBaoluo(261, 20),
-	JieFangZhe(159, 16),
-	NanQiuBei(216, 4),
+	BrazilJia(160, 20, MatchContinent.America), BrazilCup(266, 20, MatchContinent.America),
+	America(107, 20, MatchContinent.America), CannadaCup(700, MatchContinent.America), AmericaPublic(569, MatchContinent.America),
+	Argintina(108, 30, MatchContinent.America), ArgintinaCup(1152, 8, MatchContinent.America),
+	Maxico(191, 18, MatchContinent.America), MaxicoCup(1204, 18, MatchContinent.America),
+	ChiLi(192, 16, MatchContinent.America),
+	ChiLiCup(753, 8, MatchContinent.America),
+	ShenBaoluo(261, 20, MatchContinent.America),
+	JieFangZhe(159, 16, MatchContinent.America),
+	NanQiuBei(216, 4, MatchContinent.America),
 	
-	AfricaCup(383, 12)
+	AfricaCup(383, 12, MatchContinent.Africa)
 	;
 	
-	League(int leagueId) {
+	League(int leagueId, MatchContinent con) {
 		this.leagueId = leagueId;
 		this.majorCompany = Company.William;
+		this.continent = con;
 	}
 	
-	League(int leagueId, boolean state) {
+	League(int leagueId, boolean state, MatchContinent con) {
 		this.leagueId = leagueId;
 		this.majorCompany = Company.William;
 		this.state = state;
+		this.continent = con;
 	}
 	
-	League(int leagueId, int clubNum) {
+	League(int leagueId, int clubNum, MatchContinent con) {
 		this.leagueId = leagueId;
 		this.clubNum = clubNum;
 		this.majorCompany = Company.William;
+		this.continent = con;
 	}
 	
-	League(int leagueId, Company comp) {
+	League(int leagueId, Company comp, MatchContinent con) {
 		this.leagueId = leagueId;
 		this.majorCompany = comp;
+		this.continent = con;
 	}
 	
-	League(int leagueId, Company comp, boolean state) {
+	League(int leagueId, Company comp,  boolean state, MatchContinent con) {
 		this.leagueId = leagueId;
 		this.majorCompany = comp;
 		this.state = state;
+		this.continent = con;
 	}
 	
-	League(int leagueId, int clubNum, Company comp) {
+	League(int leagueId, int clubNum, Company comp, MatchContinent con) {
 		this.leagueId = leagueId;
 		this.clubNum = clubNum;
 		this.majorCompany = comp;
-	}
-	
-	public long getLeagueId() {
-		return leagueId;
-	}
-
-	public void setLeagueId(long leagueId) {
-		this.leagueId = leagueId;
-	}
-
-	public int getClubNum() {
-		return clubNum;
-	}
-
-	public void setClubNum(int clubNum) {
-		this.clubNum = clubNum;
+		this.continent = con;
 	}
 	
 	public static League getLeagueById (long lid) {
@@ -113,25 +107,8 @@ public enum League {
 		return null;
 	}
 
-	public Company getMajorCompany() {
-		return majorCompany;
-	}
-
-	public void setMajorCompany(Company majorCompany) {
-		this.majorCompany = majorCompany;
-	}
-
-	public boolean isState() {
-		return state;
-	}
-
-	public void setState(boolean state) {
-		this.state = state;
-	}
-
-
-
 	private Company majorCompany;
+	private MatchContinent continent;
 	private long leagueId;
 	private int clubNum;
 	private boolean state;

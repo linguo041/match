@@ -47,8 +47,8 @@ public class MatchComplexQueryService {
 		try {
 			return jpaQueryFactory.from(eMatch)
 					.where(eMatch.matchTime.between(
-							DateUtil.parseSimpleDateWithDash(from),
-							DateUtil.parseSimpleDateWithDash(to)))
+							DateUtil.parseDateWithDataBase(from),
+							DateUtil.parseDateWithDataBase(to)))
 					.list(eMatch);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block

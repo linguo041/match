@@ -399,6 +399,7 @@ public class EntityConverter {
 		el.setLeagueId(league.getLeagueId());
 		el.setName(league.toString());
 		el.setMainCompany(league.getMajorCompany());
+		el.setContinent(league.getContinent());
 		el.setState(league.isState());
 		el.setTeamNum(league.getClubNum());
 		return el;

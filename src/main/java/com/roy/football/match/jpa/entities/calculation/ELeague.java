@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.roy.football.match.OFN.response.Company;
+import com.roy.football.match.base.MatchContinent;
 
 import lombok.Data;
 
@@ -25,6 +26,10 @@ public class ELeague {
 	@Column(name = "main_company")
 	@Enumerated(EnumType.STRING)
 	private Company mainCompany;
+	
+	@Column(name = "continent")
+	@Enumerated(EnumType.STRING)
+	private MatchContinent continent;
 	
 	@Column(name = "team_num")
 	private Integer teamNum;

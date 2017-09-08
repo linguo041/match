@@ -90,15 +90,15 @@ public class PoiWriter <T> implements Writer <T>{
 			cell.setCellValue(hc.getTitle());
 			int order = hc.getOrder();
 
-			if (order ==150) {
+			if (order ==160) {
 				sheet.setColumnWidth(i, 4 * 512);
-			}  else if (order == 140) {
+			}  else if (order == 150) {
 				sheet.setColumnWidth(i, 5 * 512);
 			} else if (order == 10 || order == 30 || order == 40
 					|| order ==100 || order==110 || order==130 
-					|| order ==160 || order ==170) {
+					|| order ==170 || order ==180) {
 				sheet.setColumnWidth(i, 6 * 512);
-			} else if (order==139) {
+			} else if (order==148) {
 				sheet.setColumnWidth(i, 7 * 512);
 			} else if (order==20 || order == 60 || order==80 || order==90) {
 				sheet.setColumnWidth(i, 8 * 512);

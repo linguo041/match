@@ -146,6 +146,7 @@ public class OFNOutputFormater {
 				Map<Company, EuroMatrix> companyEus = euroMatrics.getCompanyEus();
 				EuroMatrix jincai = companyEus.get(Company.Jincai);
 				EuroMatrix aomen = companyEus.get(Company.Aomen);
+				EuroMatrix inter = companyEus.get(Company.Interwetten);
 				if (euAvg != null) {
 					euAvgWin = euAvg.getEWin();
 					euAvgDraw = euAvg.getEDraw();
@@ -166,6 +167,21 @@ public class OFNOutputFormater {
 						euAvgWin, euAvgDraw, euAvgLose,
 						euJcWin, euJcDraw, euJcLose,
 						euJcWinChg, euJcDrawChg, euJcLoseChg));
+				
+				if (inter != null && inter.getCurrentEuro() != null) {
+					float iaWinDiff = MatchUtil.getEuDiff(inter.getCurrentEuro().getEWin(), euAvgWin, false);
+					float iaDrawDiff = MatchUtil.getEuDiff(inter.getCurrentEuro().getEDraw(), euAvgDraw, false);
+					float iaLoseDiff = MatchUtil.getEuDiff(inter.getCurrentEuro().getELose(), euAvgLose, false);
+					float euInterWinChg = inter.getWinChange();
+					float euInterDrawChg = inter.getDrawChange();
+					float euInterLoseChg = inter.getLoseChange();
+					
+					excelData.setInter(String.format("%s\n%.2f   %.2f   %.2f\n"
+							+ "%.2f   %.2f   %.2f",
+						Company.Interwetten,
+						iaWinDiff, iaDrawDiff, iaLoseDiff,
+						euInterWinChg, euInterDrawChg, euInterLoseChg));
+				}
 				
 				if (aomen != null && aomen.getCurrentEuro() != null) {
 					aaWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEWin(), euAvgWin, false);

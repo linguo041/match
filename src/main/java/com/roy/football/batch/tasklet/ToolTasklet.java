@@ -87,11 +87,11 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		ofnMatchService.processMatch(1047319L, 170826005L, League.RiLian);
+		ofnMatchService.processMatch(1076510L, 170826030L, League.YingGuang);
 	}
 	
 	private void processMatches () {
-		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-08-27", "2017-08-28");
+		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-08-19 19:00:00", "2017-08-21 11:00:00");
 		
 		if (matches != null && !matches.isEmpty()) {
 			List<JinCaiMatch> jcMatches = matches.stream().map(match -> {
@@ -113,6 +113,7 @@ public class ToolTasklet implements Tasklet{
 			
 			if (eleagueInDB != null) {
 				eleagueInDB.setMainCompany(le.getMajorCompany());
+				eleagueInDB.setContinent(le.getContinent());
 				eleagueInDB.setTeamNum(le.getClubNum());
 				eleagueInDB.setState(le.isState());
 				eLeagueRepository.save(eleagueInDB);
