@@ -39,6 +39,7 @@ import com.roy.football.match.jpa.repositories.MatchRepository;
 import com.roy.football.match.jpa.repositories.MatchResultRepository;
 import com.roy.football.match.jpa.service.MatchPersistService;
 import com.roy.football.match.okooo.OkoooMatchCrawler;
+import com.roy.football.match.util.MatchUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -102,6 +103,10 @@ public class HistoryMatchCalculationService {
 		Long oddsmid = match.getOfnMatchId();
 		log.debug("start to parse and calculate match {}", match);
 		
+		if (!MatchUtil.isMatchFinished(match.getMatchTime())) {
+			return;
+		}
+		
 		try {
 			// get match base data
 			OFNMatchData ofnMatch = parser.parseMatchData(oddsmid);
@@ -110,6 +115,7 @@ public class HistoryMatchCalculationService {
 			Long matchDayId = match.getMatchDayId();
 			if (matchDayId != null) {
 				ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));
+				ofnMatch.setMatchDayId(matchDayId);
 			}
 
 			// get euro peilv
@@ -126,6 +132,9 @@ public class HistoryMatchCalculationService {
 			// get asia peilv
 			List<AsiaPl> asiapls = parser.parseAsiaData(oddsmid, Company.Aomen);
 			ofnMatch.setAoMen(asiapls);
+			
+			List<AsiaPl> ysb = parser.parseAsiaData(oddsmid, Company.YiShenBo);
+			ofnMatch.setYsb(ysb);
 			
 			List<AsiaPl> daxiaopls = parser.parseDaxiaoData(oddsmid, Company.Aomen);
 			ofnMatch.setDaxiao(daxiaopls);

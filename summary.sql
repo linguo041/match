@@ -65,20 +65,21 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 			where 1=1
 			-- and ofn_match_id in (964419,964958,979148, 986449,964399, 986445, 961399, 969433, 979165, 962035, 959940, 959945, 986464)
             -- and cal_phase = 1
-			-- and match_time > '2017-02-10 00:00:00'
-			-- and match_time < '2017-02-12 00:00:00'
-			and match_time > '2017-08-29 00:00:00'
+			-- and match_time > '2017-04-10 00:00:00'
+			-- and match_time < '2017-04-20 00:00:00'
+			and match_time > '2017-09-07 00:00:00'
 			-- and match_day_id is not null
 			)
       and m.match_time > '2015-10-01 00:00:00'
       and m.cal_phase = 2
-	  and abs(l1.goal_per_match - l.goal_per_match) <= 0.32 + abs(l1.goal_per_match - 2.68) * 0.65
+	  and abs(l1.goal_per_match - l.goal_per_match) <= 0.3 + abs(l1.goal_per_match - 2.68) * 0.65
       and l.state = 0
+      and l.continent = l1.continent
 	  -- pk
       and (abs(mpk1.main_pk-0.2) <= 0.75
-			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.3
+			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.35
 		or (abs(mpk1.main_pk-0.2) > 0.75
-			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.3))
+			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.35))
 	  and abs((mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.08
       and abs((mpk.current_pk-(mpk.current_h_win-mpk.current_a_win)/2) - (mpk1.current_pk-(mpk1.current_h_win-mpk1.current_a_win)/2)) <= 0.07
       and abs(mpk1.current_h_win - mpk.current_h_win) <= 0.7

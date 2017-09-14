@@ -131,7 +131,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			euMatrix.setOriginEuro(euroPls.get(0));
 			
 			for (int index = euroPls.size()-1; index >=0; index--) {
-				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3) {
+				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3f) {
 					euMatrix.setCurrentEuro(euroPls.get(index));
 					break;
 				} else {
@@ -256,7 +256,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			euMatrix.setOriginEuro(euroPls.get(0));
 			
 			for (int index = euroPls.size()-1; index >=0; index--) {
-				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3) {
+				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3f) {
 					euMatrix.setCurrentEuro(euroPls.get(index));
 					break;
 				} else {

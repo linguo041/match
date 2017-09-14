@@ -217,4 +217,60 @@ update league,
 set league.goal_per_match = tmp.goal_per_match, league.net_goal_per_match=tmp.net_goal_per_match
 where league.name = tmp.league;
 
+select m.ofn_match_id, m.league, m.match_time, m.host_name, m.guest_name, concat(mr.host_score, ' - ', mr.guest_score) res,
+        mp.predict_pk, cast(mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2 as decimal(5,3)) main,
+        mpk.current_pk, mpk.main_h_win, mpk.current_h_win, /*mpk.current_a_win,*/ mpk.home_win_change_rate,
+		mpk1.current_pk, mpk1.main_h_win, mpk1.current_h_win, /*mpk.current_a_win,*/ mpk1.home_win_change_rate,
+        mce.current_win_pl, mce.current_draw_pl, mce.current_lose_pl, mce.win_change_per_hour, mce.draw_change_per_hour, mce.lose_change_per_hour,
+		mls.hot_point, mls.host_att_to_guest, mls.guest_att_to_host,
+		mcs.host_level, mcs.guest_level, mcs.host_att_guest_def, mcs.guest_att_host_def,
+		m.cal_phase
+	from matches m
+		left join match_club_state mcs on m.ofn_match_id = mcs.ofn_match_id
+		left join match_latest_state mls on m.ofn_match_id = mls.ofn_match_id
+		left join match_pankou mpk on m.ofn_match_id = mpk.ofn_match_id and mpk.company = 'Aomen'
+		left join match_pankou mpk1 on m.ofn_match_id = mpk1.ofn_match_id and mpk1.company = 'YiShenBo'
+		left join match_company_euro mce on m.ofn_match_id = mce.ofn_match_id and mce.company = 'Aomen'
+		left join match_result mr on m.ofn_match_id = mr.ofn_match_id
+		left join match_predict mp on m.ofn_match_id = mp.ofn_match_id
+    where 1=1
+      and mpk.current_pk = 0.75 and mpk.current_h_win < 0.8
+      and mpk.home_win_change_rate < -0.05
+      -- and mpk.main_pk = 0.75 and mpk.main_h_win < 0.92
+      -- and mpk.current_h_win <= mpk. main_h_win
+	  and mpk1.current_pk = 1 and mpk1.current_h_win > 1
+      -- and abs(mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2 - mp.predict_pk) < 0.3
+	  and cal_phase = 2
+     order by m.match_time desc;
+
+
+select m.ofn_match_id, m.match_day_id, m.match_time, m.league, m.host_name, m.guest_name,
+        concat(mr.host_score, ' - ', mr.guest_score) res,
+		mce.win_change_per_hour as w_change,
+		mce.draw_change_per_hour as d_change,
+		mce.lose_change_per_hour as l_change,	
+		mls.hot_point,
+		mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2 as main, mp.predict_pk,
+        mpk.home_win_change_rate
+	from matches m
+        left join league l on m.league = l.name
+		left join match_club_state mcs on m.ofn_match_id = mcs.ofn_match_id
+		left join match_latest_state mls on m.ofn_match_id = mls.ofn_match_id
+		left join match_jiaoshou js on m.ofn_match_id=js.ofn_match_id
+		left join match_result mr on m.ofn_match_id = mr.ofn_match_id
+        left join match_company_euro mce on m.ofn_match_id = mce.ofn_match_id and mce.company = 'Aomen'
+        left join match_pankou mpk on m.ofn_match_id = mpk.ofn_match_id and mpk.company = 'Aomen'
+        left join match_predict mp on m.ofn_match_id = mp.ofn_match_id
+	where 1=1 and m.cal_phase =2
+        and mce.win_change_per_hour < -0.015 /* pl down*/
+        -- and mce.draw_change_per_hour > 0.015
+        and mls.hot_point > 3  /*hot*/
+        and mpk.main_pk > 0.2
+		-- and mpk.home_win_change_rate < 0.001
+        and mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2 - mp.predict_pk > 0.10
+		-- and m.ofn_match_id = 959978;
+		and mr.host_score = mr.guest_score
+		and m.match_time > '2016-01-15 0:00:00';
+
+
 

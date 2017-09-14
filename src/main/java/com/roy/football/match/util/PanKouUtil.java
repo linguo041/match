@@ -8,7 +8,11 @@ public class PanKouUtil {
 		float currentPk = getCalculatedPk(current);
 		float mainPk = getCalculatedPk(main);
 		
+		float pkDiff = current.getPanKou() - main.getPanKou();
+		currentPk = currentPk + pkDiff *0.5f;
+		
 		// aomen summed pk is 1.94
+		// 1.16 - 0.68
 		// 1.12 - 0.72
 		// 1.10 - 0.74
 		// 1.08 - 0.76
@@ -19,18 +23,42 @@ public class PanKouUtil {
 		// 0.94 - 0.90
 		// 0.92 - 0.92
 		
-		if (currentPk - mainPk >= -0.04f
-				&& (current.gethWin() <= 0.72f || main.gethWin() <= 0.72f) ) {
+		// 0.92 -> 0.68
+		if (currentPk - mainPk >= 0.24f
+				// 0.6 -> 0.68 or 0.68 -> 0.76
+				|| main.gethWin() <= 0.68f && currentPk - mainPk >= -0.08f
+				// 0.7 -> 0.74 or 0.72 -> 0.76
+				|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.04f
+				// 0.8 -> 0.72
+				|| main.gethWin() <= 0.8f && currentPk - mainPk >= 0.08f) {
 			return PKDirection.Uper;
-		} else if (currentPk - mainPk >= -0.04f
-				&& (current.gethWin() <= 0.82f || main.gethWin() <= 0.82f) ) {
+		} else if (currentPk - mainPk >= 0.18f
+				// 0.6 -> 0.72 or 0.72 -> 0.84
+				|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.12f
+				// 0.72 -> 0.8 or 0.76 -> 0.84
+				|| main.gethWin() <= 0.76f && currentPk - mainPk >= -0.08f
+				// 0.74 -> 0.78  or 0.8 -> 0.84
+				|| main.gethWin() <= 0.8f && currentPk - mainPk >= -0.04f
+				// 0.9 -> 0.82
+				|| main.gethWin() <= 0.9f && currentPk - mainPk >= 0.08f) {
 			return PKDirection.Up;
-		} else if (currentPk - mainPk <= 0.04f
-				&& (current.gethWin() >= 1.02f || main.gethWin() >= 1.02f) ) {
-			return PKDirection.Down;
-		} else if (currentPk - mainPk <= 0.04f
-				&& (current.gethWin() >= 1.12f || main.gethWin() >= 1.12f) ) {
+		} else if (currentPk - mainPk <= -0.24f
+				// 1.20 -> 1.1 or 1.16 -> 1.06
+				|| main.gethWin() >= 1.16f && currentPk - mainPk <= 0.1f
+				// 1.16 -> 1.12 or 1.1 -> 1.06
+				|| main.gethWin() >= 1.1f && currentPk - mainPk <= 0.04f
+				|| main.gethWin() >= 1.02f && currentPk - mainPk <= -0.06f) {
 			return PKDirection.Downer;
+		} else if (currentPk - mainPk <= -0.18f
+				// 1.20 -> 1.08 or 1.10 -> 0.98
+				|| main.gethWin() >= 1.10f && currentPk - mainPk <= 0.12f
+				// 1.10 -> 1.02 or 1.06 -> 0.98
+				|| main.gethWin() >= 1.06f && currentPk - mainPk <= 0.08f
+				// 1.06 -> 1.02 or 1.02 -> 0.98
+				|| main.gethWin() >= 1.02f && currentPk - mainPk <= 0.04f
+				// 0.92 -> 0.98
+				|| main.gethWin() >= 0.92f && currentPk - mainPk <= -0.08f) {
+			return PKDirection.Down;
 		} else {
 			return PKDirection.Middle;
 		}
@@ -101,9 +129,29 @@ public class PanKouUtil {
 	}
 	
 	public static void main (String args[]) {
-		AsiaPl main = new AsiaPl(1.0f, 0.84f, 0.5f);
-		AsiaPl current = new AsiaPl(0.96f, 0.88f, 0.5f);
+		// down
+		AsiaPl main1 = new AsiaPl(1.12f, 0.72f, 0.25f);
+		AsiaPl current1 = new AsiaPl(1.02f, 0.82f, 0.25f);
+		System.out.println(getPKDirection(current1, main1));
 		
-		System.out.println(getPKDirection(current, main));
+		// up
+		AsiaPl main2 = new AsiaPl(1.02f, 0.82f, 0.25f);
+		AsiaPl current2 = new AsiaPl(0.88f, 0.96f, 0.25f);
+		System.out.println(getPKDirection(current2, main2));
+		
+		// up
+		AsiaPl main3 = new AsiaPl(0.80f, 1.04f, 0.25f);
+		AsiaPl current3 = new AsiaPl(0.70f, 1.14f, 0.25f);
+		System.out.println(getPKDirection(current3, main3));
+		
+		// downer
+		AsiaPl main4 = new AsiaPl(1.1f, 0.74f, 0.25f);
+		AsiaPl current4 = new AsiaPl(0.7f, 1.14f, 0f);
+		System.out.println(getPKDirection(current4, main4));
+		
+		// upper
+		AsiaPl main7 = new AsiaPl(0.7f, 1.14f, 0f);
+		AsiaPl current7 = new AsiaPl(1.12f, 0.72f, 0.25f);
+		System.out.println(getPKDirection(current7, main7));
 	}
 }

@@ -29,6 +29,9 @@ import com.roy.football.match.util.MatchUtil;
 import com.roy.football.match.util.PanKouUtil;
 import com.roy.football.match.util.PanKouUtil.PKDirection;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class PankouKillPromoter {
 	private final static float LOW_PK_POINT = -0.02f;
 	
@@ -511,6 +514,7 @@ public class PankouKillPromoter {
 								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
 								&& (aaDrawRt + aomenDrawChange > -0.031)
 								&& (iaDrawRt + interDrawChange > -0.021)
+								&& waWinRt < -0.015
 								&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
@@ -519,6 +523,7 @@ public class PankouKillPromoter {
 								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
 								&& (aaLoseRt + aomenLoseChange > -0.041)
 								&& (iaLoseRt + interLoseChange > -0.021)
+								&& waWinRt < -0.015
 								&& waLoseRt > 0.021 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
@@ -578,10 +583,10 @@ public class PankouKillPromoter {
 							&& yaWinRt > 0.01 && aaWinRt > -0.01) {
 							killGps.add(ResultGroup.Three);
 						}
-						if ((aaDrawRt > 0.021 && aomenDrawChange > -0.001
+						if ((aaDrawRt > 0.025 && aomenDrawChange > -0.001
 //								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
-								|| jaDrawDiff > 0.041 && jcDrawChange > -0.012)
-							&& yaDrawRt > 0.01 && aaDrawRt > -0.015) {
+								|| jaDrawDiff > 0.051 && jcDrawChange > -0.012)
+							&& yaDrawRt > 0.01 && aaDrawRt > -0.015 && currAomenEu.getEDraw() >= 3.15f) {
 							killGps.add(ResultGroup.One);
 						}
 						if ((aaLoseRt > 0.021 && aomenLoseChange > -0.001
@@ -624,7 +629,7 @@ public class PankouKillPromoter {
 								&& willWinChange > 0.001) {
 							killGps.add(ResultGroup.Three);
 						}
-						if (aaDrawRt > 0.019 && aomenDrawChange > -0.001
+						if (aaDrawRt > 0.021 && aomenDrawChange > -0.001
 								&& jaDrawDiff + jcDrawChange > 0.001
 								&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
@@ -668,10 +673,10 @@ public class PankouKillPromoter {
 							&& yaWinRt > 0.01 && aaWinRt > -0.01) {
 							killGps.add(ResultGroup.Three);
 						}
-						if ((aaDrawRt > 0.021 && aomenDrawChange > -0.001
+						if ((aaDrawRt > 0.025 && aomenDrawChange > -0.001
 //								|| yaDrawRt > 0.041 && ysbDrawChange > -0.012
-								|| jaDrawDiff > 0.041 && jcDrawChange > -0.012)
-							&& yaDrawRt > 0.01 && aaDrawRt > -0.015) {
+								|| jaDrawDiff > 0.051 && jcDrawChange > -0.012)
+							&& yaDrawRt > 0.01 && aaDrawRt > -0.015 && currAomenEu.getEDraw() >= 3.15f) {
 							killGps.add(ResultGroup.One);
 						}
 						if ((aaLoseRt > 0.021 && aomenLoseChange > -0.001
@@ -760,6 +765,7 @@ public class PankouKillPromoter {
 							|| aaWinRt > 0.011 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
 							&& (aaWinRt + aomenWinChange > -0.041)
 							&& (iaWinRt + interWinChange > -0.031)
+							&& aaLoseRt < -0.015
 							&& waWinRt > 0.021 && willWinChange > -0.021) {
 						killGps.add(ResultGroup.Three);
 					}
@@ -768,6 +774,7 @@ public class PankouKillPromoter {
 							|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
 							&& (aaDrawRt + aomenDrawChange > -0.031)
 							&& (iaDrawRt + interDrawChange > -0.021)
+							&& aaLoseRt < -0.015
 							&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 						killGps.add(ResultGroup.One);
 					}
@@ -874,7 +881,7 @@ public class PankouKillPromoter {
 	}
 
 	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, ClubMatrices clubMatrices,
-			MatchState matchState, Float predictPk, Float mainPk, Float currentPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices) {
+			MatchState matchState, Float predictPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices) {
 		if (rgs == null
 				|| clubMatrices.getHostAllMatrix() != null
 					&& clubMatrices.getHostAllMatrix().getNum() < 5) {
@@ -889,11 +896,14 @@ public class PankouKillPromoter {
 		
 		boolean hasLatest = latestHostAttack != null && latestGuestAttack != null;
 		PKDirection pkDirection = PanKouUtil.getPKDirection(current, main);
+		float mainPk = MatchUtil.getCalculatedPk(main);
+		
+		log.info("d\t\t{}", pkDirection);
 
 		// host performed good lately
-		if (hotPoint >= 6 || hasLatest && latestHostAttack > 1.6 * latestGuestAttack) {
+		if (hotPoint >= 6f || hasLatest && latestHostAttack > 1.5 * latestGuestAttack) {
 			// check base (host must be good) again to strong the prediction
-			if (hostAttGuestDefComp > 1.5 * guestAttHostDefComp) {
+			if (hostAttGuestDefComp > 1.45 * guestAttHostDefComp) {
 				if (pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& PanKouUtil.isUpSupport(predictPk, mainPk, main.getPanKou())) {
 					rgs.add(ResultGroup.Three);
@@ -901,7 +911,7 @@ public class PankouKillPromoter {
 			}
 		}
 		// guest performed good lately
-		else if (hotPoint <= -6 || hasLatest && latestGuestAttack > 1.4 * latestHostAttack) {
+		else if (hotPoint <= -6f || hasLatest && latestGuestAttack > 1.4 * latestHostAttack) {
 			// check base (guest must be good) again to strong the prediction
 			if (guestAttHostDefComp >= 1.4 * hostAttGuestDefComp) {
 				if (pkDirection.ordinal() < PKDirection.Uper.ordinal()
@@ -912,9 +922,11 @@ public class PankouKillPromoter {
 		}
 		// host and guest performed nearly same
 		else {
+			float upCondition1 = current.getPanKou() >= 0.25f ? 1f : 0.86f;
+			
 			// host performed not bad, and host base is not bad
-			if (hotPoint >= -3 /*&& hotPoint < 6*/ && latestHostAttack >= 0.8 * latestGuestAttack
-					&& hostAttGuestDefComp > 0.8 * guestAttHostDefComp ) {
+			if (hotPoint >= -3f /*&& hotPoint < 6*/ && latestHostAttack >= upCondition1 * latestGuestAttack
+					&& hostAttGuestDefComp > upCondition1 * guestAttHostDefComp ) {
 				// host somewhere (latest or base) is good
 				if ((latestHostAttack >= 1.35 * latestGuestAttack || hostAttGuestDefComp >= 1.35 * guestAttHostDefComp)
 						&& pkDirection.ordinal() > PKDirection.Down.ordinal()
@@ -924,11 +936,13 @@ public class PankouKillPromoter {
 				}
 			}
 			
+			float downCondition1 = current.getPanKou() <= -0.25f ? 0.95f : 0.82f;
+			
 			// guest performed not bad, and guest base is not bad
-			if (hotPoint <= 3 /*&& hotPoint > -6*/ && latestGuestAttack >= 0.75 * latestHostAttack
-					&& guestAttHostDefComp > 0.75 * hostAttGuestDefComp) {
+			if (hotPoint <= 3f /*&& hotPoint > -6*/ && latestGuestAttack >= downCondition1 * latestHostAttack
+					&& guestAttHostDefComp > downCondition1 * hostAttGuestDefComp) {
 				// guest somewhere (latest or base) is good
-				if ((latestGuestAttack >= 1.05 * latestHostAttack || guestAttHostDefComp >= 1.05 * hostAttGuestDefComp)
+				if ((latestGuestAttack >= 1.18 * latestHostAttack || guestAttHostDefComp >= 1.18 * hostAttGuestDefComp)
 						&& pkDirection.ordinal() < PKDirection.Up.ordinal()
 						&& PanKouUtil.isDownSupport(predictPk, mainPk, main.getPanKou())) {
 					rgs.add(ResultGroup.One);
@@ -951,8 +965,7 @@ public class PankouKillPromoter {
 			float mainPk = MatchUtil.getCalculatedPk(main);
 			float currentPk = MatchUtil.getCalculatedPk(current);
 
-			promoteByBase(rgs, hotPoint, clubMatrices, matchState, predictPk,
-					mainPk, currentPk, main, current, euroMatrices);
+			promoteByBase(rgs, hotPoint, clubMatrices, matchState, predictPk, main, current, euroMatrices);
 			
 			LatestMatchMatrices host6Match = matchState.getHostState6();
 			LatestMatchMatrices guest6Match = matchState.getGuestState6();
@@ -972,7 +985,7 @@ public class PankouKillPromoter {
 
 			if (main.getPanKou() >= 1) {
 				// a1. host pay is low
-				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.92 && aomenEu.getWinChange() < 0.01) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.92f && aomenEu.getWinChange() < 0.015) {
 					// b1. company think high of the host
 					if (mainPk - predictPk > 0.29) {
 						// c1. host is good
@@ -985,7 +998,7 @@ public class PankouKillPromoter {
 						// ignore...
 					}
 					// b2. the predicted and real is near
-					else if (Math.abs(predictPk - mainPk) < 0.2) {
+					else if (Math.abs(predictPk - mainPk) <= 0.25) {
 						// c2. host perform good, guest perform bad
 						if ((host6Match.getWinPkRate() > 0.4 || host6Match.getWinDrawPkRate() > 0.5)
 								&& (guest6Match.getWinPkRate() < 0.4 || guest6Match.getWinDrawPkRate() < 0.5)) {
@@ -994,17 +1007,19 @@ public class PankouKillPromoter {
 					}
 				}
 				// a2. guest pay is low
-				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.9 && aomenEu.getLoseChange() < 0.01) {
+				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92 && aomenEu.getLoseChange() < -0.001) {
 					// b2. company think low,
-					if (currentPk <= mainPk && predictPk - mainPk > 0.3
-							&& (guest6Match.getWinPkRate() > 0.4 || guest6Match.getWinDrawPkRate() > 0.6)) {
+					if (currentPk <= mainPk && predictPk - mainPk > 0.25
+							&& (guest6Match.getWinPkRate() > 0.35 || guest6Match.getWinDrawPkRate() > 0.5)) {
 						rgs.add(ResultGroup.RangZero);
 					}
 				}
 			} else if (main.getPanKou() > 0.4) {
-				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.92 && aomenEu.getWinChange() < 0.01) {
+				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.92 && aomenEu.getWinChange() < 0.012) {
 					// company think high of the host
-					if (mainPk - predictPk > 0.25) {
+					if (mainPk - predictPk > 0.45) {
+						// predict is not correct
+					} else if (mainPk - predictPk > 0.25) {
 						// host is pretty good, or guest is pretty bad (this is not matter,
 						// if guest is too bad, then the predict pk should be high, not align with the assumption), or host is good guest is bad,
 						if ((host6Match.getWinRate() >= 0.6 && guest6Match.getWinRate() <= 0.5
@@ -1016,41 +1031,43 @@ public class PankouKillPromoter {
 					}
 					else if (mainPk - predictPk > -0.08) {
 						// host is good and stable, guest is not good
-						if (host6Match.getWinRate() >= 0.5 && host6Match.getWinDrawRate() >= 0.6
+						if (host6Match.getWinRate() >= 0.4f && host6Match.getWinDrawRate() >= 0.5f
 								&& host6Match.getMatchGoal() > host6Match.getMatchMiss()
 								&& isPkSupportHot(predictPk, mainPk, hotPoint)
-								&& guest6Match.getWinPkRate() <= 0.5 && guest6Match.getWinDrawPkRate() <= 0.7) {
+								&& guest6Match.getWinPkRate() <= 0.5f && guest6Match.getWinDrawPkRate() <= 0.6f) {
 							rgs.add(ResultGroup.Three);
 						}
 						// pk is support, and host is good or guest is bad
 						else if ((currentPk - mainPk >= 0.08 || current.gethWin() <= 0.9)
 								&& isPkSupportHot(predictPk, mainPk, hotPoint)
-								&& (host6Match.getWinRate() >= 0.5 || host6Match.getWinDrawRate() >= 0.6)
-									&& (guest6Match.getWinRate() <= 0.5 && guest6Match.getWinDrawRate() <= 0.7)) {
+								&& (host6Match.getWinRate() >= 0.5f || host6Match.getWinDrawRate() >= 0.6f)
+									&& (guest6Match.getWinRate() <= 0.5 && guest6Match.getWinDrawRate() <= 0.6)) {
 							rgs.add(ResultGroup.Three);
 						}
 					} else {
 						// think high of guest.. check below
 					}
 				}
-				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.9 && aomenEu.getLoseChange() < 0.01) {
+				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92 && aomenEu.getLoseChange() < 0.01) {
 					// company think high of the guest
-					if (predictPk - mainPk > 0.22) {
+					if (predictPk - mainPk > 0.45) {
+						// predict is not correct
+					} else if (predictPk - mainPk > 0.22) {
 						// guest is pretty good, or host is pretty bad, or guest is good guest is bad,
 						if (!MatchUtil.isHostHomeStrong(hostLabels)
 								&& (guest6Match.getWinPkRate() >= 0.6 && host6Match.getWinRate() <= 0.6
 									|| host6Match.getWinDrawRate() <= 0.5
 									|| (guest6Match.getWinPkRate() >= 0.5 && guest6Match.getWinDrawPkRate() >= 0.6)
-										&& (host6Match.getWinRate() <= 0.5 && host6Match.getWinDrawRate() <= 0.7))) {
+										&& (host6Match.getWinRate() <= 0.5 && host6Match.getWinDrawRate() <= 0.6))) {
 							rgs.add(ResultGroup.One);
 							rgs.add(ResultGroup.Zero);
 						}
 					}
 					else if (predictPk - mainPk > -0.12) {
 						if (!MatchUtil.isHostHomeStrong(hostLabels) && isPkSupportHot(predictPk, mainPk, hotPoint)
-								&& (mainPk - currentPk > 0.08 || current.getaWin() <= 0.88)
+								&& (mainPk - currentPk >= 0.08 || current.getaWin() <= 0.88)
 								&& ((guest6Match.getWinPkRate() >= 0.5 && guest6Match.getWinDrawPkRate() >= 0.6)
-									|| (host6Match.getWinRate() <= 0.5 && host6Match.getWinDrawRate() <= 0.7))) {
+									|| (host6Match.getWinRate() <= 0.5 && host6Match.getWinDrawRate() <= 0.6))) {
 							rgs.add(ResultGroup.One);
 							rgs.add(ResultGroup.Zero);
 						}
@@ -1058,8 +1075,11 @@ public class PankouKillPromoter {
 				}
 			} else if (main.getPanKou() > -0.4) {
 				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.9 && aomenEu.getWinChange() < 0.01) {
+					if (mainPk - predictPk > 0.45) {
+						// predict is not correct
+					}
 					// company think high of the host
-					if (mainPk - predictPk > 0.21) {
+					else if (mainPk - predictPk > 0.21) {
 						// host is pretty good (the teams are in same level, check win pk rate, instead of win rate),
 						//  or guest is pretty bad (still check the pk rate),
 						if (host6Match.getWinPkRate() >= 0.6 && guest6Match.getWinRate() <= 0.5
@@ -1071,7 +1091,7 @@ public class PankouKillPromoter {
 						}
 					} else if (mainPk - predictPk > -0.1) {
 						// host performs good or guest performs bad
-						if ((currentPk > mainPk || current.gethWin() <= 0.88)
+						if ((currentPk > mainPk || current.gethWin() <= 0.9)
 								&& isPkSupportHot(predictPk, mainPk, hotPoint)
 								&& ((host6Match.getWinPkRate() >= 0.5 && host6Match.getWinDrawPkRate() >= 0.6)
 										&& (guest6Match.getWinPkRate() <= 0.5 && guest6Match.getWinDrawPkRate() <= 0.7))) {
@@ -1082,8 +1102,11 @@ public class PankouKillPromoter {
 						// think high of guest.. check below
 					}
 				} else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92 && aomenEu.getLoseChange() < 0.01) {
+					if (predictPk - mainPk > 0.45) {
+						// predict is not correct
+					}
 					// company think high of the guest
-					if (predictPk - mainPk > 0.21) {
+					else if (predictPk - mainPk > 0.21) {
 						if (guest6Match.getWinRate() >= 0.6 && host6Match.getWinRate() <= 0.6
 								|| host6Match.getWinDrawPkRate() <= 0.5
 								|| (guest6Match.getWinPkRate() >= 0.5 || guest6Match.getWinDrawPkRate() >= 0.6)
@@ -1104,8 +1127,11 @@ public class PankouKillPromoter {
 				}
 			} else if (main.getPanKou() > -1) {
 				if (hWinChgRtFloat < LOW_PK_POINT && current.gethWin() <= 0.9 && aomenEu.getWinChange() < 0.01) {
+					if (mainPk - predictPk > 0.45) {
+						// predict is not correct
+					}
 					// company think high of the host
-					if (mainPk - predictPk > 0.25) {
+					else if (mainPk - predictPk > 0.25) {
 						// host is pretty good, or guest is pretty bad, or host is good guest is bad,
 						if (host6Match.getWinPkRate() >= 0.6 && guest6Match.getWinPkRate() <= 0.6
 								|| guest6Match.getWinDrawPkRate() <= 0.5
@@ -1128,8 +1154,11 @@ public class PankouKillPromoter {
 					}
 				}
 				else if (gWinChgRtFloat < LOW_PK_POINT && current.getaWin() <= 0.92 && aomenEu.getLoseChange() < 0.01) {
+					if (predictPk - mainPk > 0.45) {
+						// predict is not correct
+					}
 					// company think high of the guest
-					if (predictPk - mainPk > 0.25) {
+					else if (predictPk - mainPk > 0.25) {
 						// guest is pretty good, or host is pretty bad, or guest is good guest is bad,
 						if ((guest6Match.getWinRate() >= 0.8
 									|| host6Match.getWinDrawPkRate() <= 0.5
@@ -1182,7 +1211,7 @@ public class PankouKillPromoter {
 	}
 	
 	private void promoteByEuro (Set<ResultGroup> promoteGps, EuroMatrices euMatrices,
-			Float predictPkRt, PankouMatrices pkMatrices, League league, Float hotPoint) {
+			Float predictPk, PankouMatrices pkMatrices, League league, Float hotPoint) {
 
 		if (euMatrices != null) {
 			Map<Company, EuroMatrix> companyEus = euMatrices.getCompanyEus();
@@ -1198,6 +1227,10 @@ public class PankouKillPromoter {
 			float currPk = aomenCurrPk.getPanKou();
 			float mainPkRt = MatchUtil.getCalculatedPk(aomenMainPk);
 			float currentPkRt = MatchUtil.getCalculatedPk(aomenCurrPk);
+			
+			if (Math.abs(predictPk - mainPkRt) > 0.35) {
+				return;
+			}
 
 			boolean isAomenMajor = EuroUtil.isAomenTheMajor(league);
 
@@ -1259,6 +1292,7 @@ public class PankouKillPromoter {
 				float laLoseRt = MatchUtil.getEuDiff(currLabEu.getELose(), euroAvg.getELose(), false);
 				
 				PKDirection pkDirection = PanKouUtil.getPKDirection(aomenCurrPk, aomenMainPk);
+				log.info("d\t\t{}", pkDirection);
 
 				// the main company and lab is higher than the average, or aomen is higher than average and aomen is adjusted high
 				// Direction is upper, no need to think of down side, just check up side is rational for euro pl;
@@ -1278,6 +1312,7 @@ public class PankouKillPromoter {
 								&& aaDrawRt < -0.02 && aaDrawRt + aomenDrawChange < -0.015 && aomenDrawChange < 0.0
 								&& waDrawRt < -0.01
 								&& iaDrawRt < 0.01
+								&& (aaWinRt > 0.001 || aomenWinChange > 0.021 && aaWinRt > -0.021)
 								) {
 							promoteGps.add(ResultGroup.One);
 						}
@@ -1286,6 +1321,7 @@ public class PankouKillPromoter {
 								&& aaLoseRt < -0.03 && aaLoseRt + aomenLoseChange < -0.025 && aomenLoseChange < 0.0
 								&& laLoseRt < 0.035
 								&& iaLoseRt < 0.01
+								&& (aaWinRt > 0.001 || aomenWinChange > 0.021 && aaWinRt > -0.021)
 								) {
 							promoteGps.add(ResultGroup.Zero);
 						}
@@ -1303,7 +1339,8 @@ public class PankouKillPromoter {
 								&& maDrawRt < 0.02 && majorDrawChange < 0.02
 								&& waDrawRt < -0.01
 								&& iaDrawRt < -0.01
-								&& aaDrawRt < -0.051 && aomenDrawChange < 0.01) {
+								&& aaDrawRt < -0.051 && aomenDrawChange < 0.01
+								&& (aaWinRt > -0.015 || aomenWinChange > 0.02 && aaWinRt > -0.025)) {
 							promoteGps.add(ResultGroup.One);
 						}
 						if (pkDirection.ordinal() < PKDirection.Middle.ordinal()
@@ -1311,7 +1348,8 @@ public class PankouKillPromoter {
 								&& maLoseRt < 0.03 && maLoseRt < 0.02
 								&& laLoseRt < 0.035
 								&& iaLoseRt < -0.01
-								&& aaLoseRt < -0.065 && aomenLoseChange < 0.01) {
+								&& aaLoseRt < -0.065 && aomenLoseChange < 0.01
+								&& (aaWinRt > -0.015 || aomenWinChange > 0.02 && aaWinRt > -0.025)) {
 							promoteGps.add(ResultGroup.Zero);
 						}
 					}
@@ -1329,6 +1367,7 @@ public class PankouKillPromoter {
 								&& aaDrawRt < -0.02 && aaDrawRt + aomenDrawChange < -0.015
 								&& waDrawRt < 0.012
 								&& iaDrawRt < 0.012
+								&& (aaWinRt > 0.012 || aomenWinChange > 0.021 && aaWinRt > -0.011)
 								) {
 							promoteGps.add(ResultGroup.One);
 						}
@@ -1338,6 +1377,7 @@ public class PankouKillPromoter {
 								&& laLoseRt < 0.035
 								&& waLoseRt < 0.02
 								&& iaLoseRt < -0.01
+								&& (aaWinRt > 0.012 || aomenWinChange > 0.021 && aaWinRt > -0.011)
 								) {
 							promoteGps.add(ResultGroup.Zero);
 						}
@@ -1356,6 +1396,7 @@ public class PankouKillPromoter {
 								&& waDrawRt < 0.001
 								&& iaDrawRt < 0.001
 								&& aaDrawRt < -0.012 && aomenDrawChange < 0.012
+								&& (aaWinRt > -0.015 || aomenWinChange > 0.021 && aaWinRt > -0.025)
 								&& (waDrawRt < -0.025 && willDrawChange < 0.012
 										|| iaDrawRt < -0.025 && iaDrawChange < 0.012
 										|| aaDrawRt <= -0.045)) {
@@ -1367,6 +1408,7 @@ public class PankouKillPromoter {
 								&& laLoseRt < 0.045
 								&& iaLoseRt < 0.01
 								&& aaLoseRt < -0.02 && aomenLoseChange < 0.01
+								&& (aaWinRt > -0.015 || aomenWinChange > 0.021 && aaWinRt > -0.025)
 								&& (iaLoseRt < -0.03 && iaLoseChange < 0.01
 										|| aaLoseRt <= -0.051)) {
 							promoteGps.add(ResultGroup.Zero);
@@ -1513,6 +1555,7 @@ public class PankouKillPromoter {
 								&& aaWinRt < -0.03 && aaWinRt + aomenWinChange < -0.025 && aomenWinChange < 0.001
 								&& laWinRt < 0.03
 								&& iaWinRt < 0.01
+								&& (aaLoseRt > -0.001 || aomenLoseChange > 0.021 && aaLoseRt > -0.021)
 								) {
 							promoteGps.add(ResultGroup.Three);
 						}
@@ -1521,6 +1564,7 @@ public class PankouKillPromoter {
 								&& aaDrawRt < -0.021 && aaDrawRt + aomenDrawChange < -0.015 && aomenDrawChange < 0.001
 								&& waDrawRt < -0.01
 								&& iaDrawRt < 0.01
+								&& (aaLoseRt > -0.001 || aomenLoseChange > 0.021 && aaLoseRt > -0.021)
 								) {
 							promoteGps.add(ResultGroup.One);
 						}
@@ -1538,6 +1582,7 @@ public class PankouKillPromoter {
 								&& laWinRt < 0.04
 								&& iaWinRt < 0.01
 								&& aaWinRt < -0.02 && aomenWinChange < 0.01
+								&& (aaLoseRt > -0.015 || aomenLoseChange > 0.021 && aaLoseRt > -0.028)
 								&& (iaWinRt <= -0.03 && iaWinChange < 0.01
 									|| aaWinRt <= -0.065)) {
 							promoteGps.add(ResultGroup.Three);
@@ -1548,6 +1593,7 @@ public class PankouKillPromoter {
 								&& waDrawRt < 0.03
 								&& iaDrawRt < 0.01
 								&& aaDrawRt < -0.02 && aomenDrawChange < 0.01
+								&& (aaLoseRt > -0.015 || aomenLoseChange > 0.021 && aaLoseRt > -0.028)
 								&& (iaDrawRt < -0.025 && iaDrawChange < 0.01
 										|| aaDrawRt <= -0.045)) {
 							promoteGps.add(ResultGroup.One);
@@ -1568,6 +1614,7 @@ public class PankouKillPromoter {
 								&& aaWinRt < -0.03 && aaWinRt + aomenWinChange < -0.025 && aomenWinChange < 0.0
 								&& laWinRt < 0.035
 								&& iaWinRt < -0.01
+								&& (aaLoseRt > -0.001 || aomenLoseChange > 0.021 && aaLoseRt > -0.011)
 								) {
 							promoteGps.add(ResultGroup.Three);
 						}
@@ -1576,6 +1623,7 @@ public class PankouKillPromoter {
 								&& aaDrawRt < -0.02 && aaDrawRt + aomenDrawChange < -0.015 && aomenDrawChange < 0.0
 								&& waDrawRt < -0.01
 								&& iaDrawRt < 0.01
+								&& (aaLoseRt > -0.001 || aomenLoseChange > 0.021 && aaLoseRt > -0.011)
 								) {
 							promoteGps.add(ResultGroup.One);
 						}
@@ -1592,6 +1640,7 @@ public class PankouKillPromoter {
 								&& maWinRt < 0.03 && majorWinChange < 0.02
 								&& laWinRt < 0.035
 								&& iaWinRt < -0.01
+								&& (aaLoseRt > -0.015 || aomenLoseChange > 0.02 && aaLoseRt > -0.025)
 								&& aaWinRt < -0.06 && aomenWinChange < 0.01) {
 							promoteGps.add(ResultGroup.Three);
 						}
@@ -1600,6 +1649,7 @@ public class PankouKillPromoter {
 								&& maDrawRt < 0.03 && majorDrawChange < 0.02
 								&& waDrawRt < -0.01
 								&& iaDrawRt < -0.01
+								&& (aaLoseRt > -0.015 || aomenLoseChange > 0.02 && aaLoseRt > -0.025)
 								&& aaDrawRt < -0.045 && aomenDrawChange < 0.01) {
 							promoteGps.add(ResultGroup.One);
 						}
@@ -1617,6 +1667,7 @@ public class PankouKillPromoter {
 							&& maWinRt < 0.03 && majorWinChange < 0.02
 							&& laWinRt < 0.035
 							&& iaWinRt < -0.01
+							&& (aaLoseRt > -0.001 || aomenLoseChange > 0.02 && aaLoseRt > -0.02)
 							&& aaWinRt < -0.06 && aomenWinChange < 0.01) {
 						promoteGps.add(ResultGroup.Three);
 					}
@@ -1625,6 +1676,7 @@ public class PankouKillPromoter {
 							&& maDrawRt < 0.03 && majorDrawChange < 0.02
 							&& waDrawRt < -0.01
 							&& iaDrawRt < -0.01
+							&& (aaLoseRt > -0.001 || aomenLoseChange > 0.02 && aaLoseRt > -0.02)
 							&& aaDrawRt < -0.045 && aomenDrawChange < 0.01) {
 						promoteGps.add(ResultGroup.One);
 					}

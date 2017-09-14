@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PredictScoreFactorClusterService {
 	
-	private static final String LOG_FORMAT_HEADER = "ofn_match_id, res_host, res_guest, base_host, base_guest, latest_host, latest_guest, js_host, js_guest";
+	private static final String LOG_FORMAT_HEADER = "ofn_match_id, res_host, res_guest, base_host, base_guest, latest_host, latest_guest, js_host, js_guest, latest_h_variance, latest_g_variance";
 	private static final String LOG_FORMAT_CONTENT = "%-10d      %-5d    %-5d    %-5f    %-5f    %-5f    %-5f    %-5f    %-5f    %-5f    %-5f";
 	
 	@Autowired
@@ -64,10 +64,10 @@ public class PredictScoreFactorClusterService {
 			System.out.println(LOG_FORMAT_HEADER);
 			for (int ii = 0; ii < tuples.size(); ii++) {
 				Tuple tuple = tuples.get(ii);
-				double realScore = tuple.get(eMatchResult.hostScore) - tuple.get(eMatchResult.guestScore);
-				double baseScore = tuple.get(eMatchClubState.hostAttGuestDefInx) - tuple.get(eMatchClubState.guestAttHostDefInx);
-				double latestScore = tuple.get(eLatestMatchState.hostAttackToGuest) - tuple.get(eLatestMatchState.guestAttackToHost);
-				double jsScore = tuple.get(eJiaoShou.hgoalPerMatch) - tuple.get(eJiaoShou.ggoalPerMatch);
+				double realScore = tuple.get(eMatchResult.hostScore) + tuple.get(eMatchResult.guestScore);
+				double baseScore = tuple.get(eMatchClubState.hostAttGuestDefInx) + tuple.get(eMatchClubState.guestAttHostDefInx);
+				double latestScore = tuple.get(eLatestMatchState.hostAttackToGuest) + tuple.get(eLatestMatchState.guestAttackToHost);
+				double jsScore = tuple.get(eJiaoShou.hgoalPerMatch) + tuple.get(eJiaoShou.ggoalPerMatch);
 				double [] each = {baseScore, latestScore, jsScore};
 				input[ii] = each;
 				expected[ii] = realScore;

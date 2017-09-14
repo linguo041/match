@@ -55,12 +55,13 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 			AsiaPl latestPl = pks.get(pks.size() - 1);
 			
 			for (int index = pks.size()-1; index >=0; index--) {
-				if (MatchUtil.getDiffHours(matchDt, pks.get(index).getPkDate()) >= 0.2) {
+				if (MatchUtil.getDiffHours(matchDt, pks.get(index).getPkDate()) >= 0.3f) {
 					latestPl = pks.get(index);
 					break;
 				} else {
 					// remove the pl which is too close the started time, and not quite useful
-					pks.remove(index);
+					if (index > 0) 
+						pks.remove(index);
 				}
 			}
 			

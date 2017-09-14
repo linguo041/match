@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 
@@ -394,6 +395,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 	}
 	
 	public static void main (String args []) {
+		DescriptiveStatistics stats = new DescriptiveStatistics();
+		
 		double a[] = new double[10];
 		double b[] = new double[10];
 		
@@ -403,10 +406,18 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		a[3] = 5;
 		a[4] = 1;
 		
-		System.out.println(StatUtils.mean(a, 0, 5));
-		System.out.println(StatUtils.variance(a, 0, 5));
-		System.out.println(FastMath.sqrt(StatUtils.variance(a, 0, 5)));
-		System.out.println(StatUtils.populationVariance(a, 0, 5));
-		System.out.println(FastMath.sqrt(StatUtils.populationVariance(a, 0, 5)));
+		for (int ii=0; ii<5; ii++) {
+			stats.addValue(a[ii]);
+		}
+		
+		System.out.println("mean: " + StatUtils.mean(a, 0, 5));
+		System.out.println("sample variance: " + StatUtils.variance(a, 0, 5));
+		System.out.println("sample deviation: " + FastMath.sqrt(StatUtils.variance(a, 0, 5)));
+		System.out.println("variance: " + StatUtils.populationVariance(a, 0, 5));
+		System.out.println("deviation: " + FastMath.sqrt(StatUtils.populationVariance(a, 0, 5)));
+		System.out.println("mean: " + stats.getMean());
+		System.out.println("sample variance: " + stats.getVariance());
+		System.out.println("sample deviation: " + stats.getStandardDeviation());
+		System.out.println("variance: " + stats.getPopulationVariance());
 	}
 }

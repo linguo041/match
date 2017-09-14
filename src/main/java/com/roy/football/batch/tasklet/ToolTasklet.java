@@ -30,6 +30,7 @@ import com.roy.football.match.jpa.repositories.MatchRepository;
 import com.roy.football.match.jpa.service.MatchComplexQueryService;
 import com.roy.football.match.service.HistoryMatchCalculationService;
 import com.roy.football.match.service.MatchEuroRecalculateService;
+import com.roy.football.match.service.MatchPkService;
 import com.roy.football.match.service.MatchResultRefetchService;
 import com.roy.football.match.service.PredictScoreFactorClusterService;
 import com.roy.football.match.service.TeamService;
@@ -66,6 +67,9 @@ public class ToolTasklet implements Tasklet{
 	@Autowired
 	private MatchComplexQueryService matchComplexQueryService;
 	
+	@Autowired
+	private MatchPkService matchPkService;
+	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -76,10 +80,15 @@ public class ToolTasklet implements Tasklet{
 		processOneMatch();
 //		processMatches();
 //		recrawResult();
+//		checkPkDirection();
 //		predictFactor();
 //		adjustVariance();
 		
 		return null;
+	}
+	
+	private void checkPkDirection () {
+		matchPkService.checkPKDirection("2017-09-11 19:00:00", "2017-09-14 11:00:00");;
 	}
 	
 	private void recrawResult () {
@@ -87,7 +96,7 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		ofnMatchService.processMatch(1076510L, 170826030L, League.YingGuang);
+		ofnMatchService.processMatch(1076525L, 170909037L, League.YingGuang);
 	}
 	
 	private void processMatches () {

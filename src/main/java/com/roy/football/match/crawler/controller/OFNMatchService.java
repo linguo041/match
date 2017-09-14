@@ -120,7 +120,7 @@ public class OFNMatchService {
 		jcMatch.setOddsmid(oddsmid);
 		jcMatch.setXid(matchDayId);
 		jcMatch.setLid(league.getLeagueId());
-		
+
 		OFNExcelData data = parseAndCalculate(jcMatch);
 		writeExcel(Lists.newArrayList(data));
 	}
