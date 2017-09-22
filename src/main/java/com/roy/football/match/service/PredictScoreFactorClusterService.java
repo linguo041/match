@@ -12,6 +12,8 @@ import java.util.List;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.DecompositionSolver;
+import org.apache.commons.math3.linear.EigenDecomposition;
+import org.apache.commons.math3.linear.QRDecomposition;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
@@ -39,7 +41,8 @@ public class PredictScoreFactorClusterService {
 			Pair<double[], double[][]> input = getInput();
 			
 			RealMatrix coefficients = new Array2DRowRealMatrix(input.getSecond(), false);
-			DecompositionSolver solver = new SingularValueDecomposition(coefficients).getSolver();
+//			DecompositionSolver solver = new SingularValueDecomposition(coefficients).getSolver();
+			DecompositionSolver solver = new QRDecomposition(coefficients).getSolver();
 				
 			RealVector constants = new ArrayRealVector(input.getFirst(), false);
 			RealVector solution = solver.solve(constants);

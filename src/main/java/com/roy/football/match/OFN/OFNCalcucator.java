@@ -75,6 +75,7 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		}
 
 		calResult.setLeague(matchData.getLeague());
+		calResult.setSameCityOrNeutral(matchData.isSameCityOrNeutral());
 
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
 		calResult.setJiaoShou(jsMatrices);

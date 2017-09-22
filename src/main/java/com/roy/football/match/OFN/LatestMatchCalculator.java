@@ -11,6 +11,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 
+import com.mysema.commons.lang.Pair;
 import com.roy.football.match.OFN.response.ClubDatas;
 import com.roy.football.match.OFN.response.ClubDatas.ClubData;
 import com.roy.football.match.OFN.response.FinishedMatch;
@@ -20,6 +21,7 @@ import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrice
 import com.roy.football.match.base.League;
 import com.roy.football.match.process.Calculator;
 import com.roy.football.match.service.HistoryMatchCalculationService;
+import com.roy.football.match.util.MatchStateUtil;
 import com.roy.football.match.util.MatchUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -81,14 +83,12 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matchState.setHotPoint(pointDiff);
 	}
 	
-	private boolean calMatchStateIndex (MatchState matchState, boolean isSameCityOrNeutral, int levelDiff, League le) {
-		LatestMatchMatrices hostMatches = matchState.getHostHome5();
-		LatestMatchMatrices guestMatches = matchState.getGuestAway5();
+	private boolean calMatchStateIndex (MatchState matchState, boolean isSameCityOrNeutral, int levelDiff, League le) {		
+		Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
+				isSameCityOrNeutral, le);
 		
-		if (isSameCityOrNeutral || le.isState() || hostMatches == null || guestMatches == null) {
-			hostMatches = matchState.getHostState6();
-			guestMatches = matchState.getGuestState6();
-		}
+		LatestMatchMatrices hostMatches = pair.getFirst();
+		LatestMatchMatrices guestMatches = pair.getSecond();
 		
 		if (hostMatches == null || guestMatches == null) {
 			return false;
