@@ -3,7 +3,9 @@ package com.roy.football.match.OFN.response;
 import java.util.Date;
 import java.util.List;
 
+import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.base.MatchData;
+import com.roy.football.match.jpa.entities.calculation.EMatch;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +46,14 @@ public class JinCaiSummary {
 		private Float oh;           // win pay
 		private Float od;           // draw pay
 		private Float oa;           // lose pay
+		
+		public static JinCaiMatch fromDBMatch (EMatch match) {
+			JinCaiMatch jcMatch = new JinCaiMatch();
+			jcMatch.setOddsmid(match.getOfnMatchId());
+			jcMatch.setXid(match.getMatchDayId());
+			jcMatch.setLid(match.getLeague().getLeagueId());
+			return jcMatch;
+		}
 
 		@Override
 		public int compareTo(JinCaiMatch o) {

@@ -34,7 +34,7 @@ public class OFNExcelData {
 	@Header(order=135, title="Main_Avg Main_chg")
 	private String plMatrix;
 	@Header(order=138, title="in_avg in_chg")
-	private String inter;
+	private String will;
 	@Header(order=140, title="am_avg am_chg")
 	private String aomen;
 	@Header(order=142, title="avg jc chg")
@@ -43,7 +43,7 @@ public class OFNExcelData {
 	private String bifa;
 	@Header(order=148, title="exg jc_gain")
 	private String jincaiJY;
-	@Header(order=150, title="Kill[~pk !pl @plpk ~ex]")
+	@Header(order=150, title="Kill[~pk !pl @plpk *pu]")
 	private String kill;
 	@Header(order=160, title="Promote")
 	private String promote;

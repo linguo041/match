@@ -9,7 +9,7 @@ public class PanKouUtil {
 		float mainPk = getCalculatedPk(main);
 		
 		float pkDiff = current.getPanKou() - main.getPanKou();
-		currentPk = currentPk + pkDiff *0.5f;
+		currentPk = currentPk + pkDiff *0.25f;
 		
 		// aomen summed pk is 1.94
 		// 1.16 - 0.68

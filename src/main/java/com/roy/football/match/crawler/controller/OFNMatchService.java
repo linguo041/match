@@ -115,16 +115,6 @@ public class OFNMatchService {
 		}
 	}
 	
-	public void processMatch (Long oddsmid, Long matchDayId, League league) {
-		JinCaiMatch jcMatch = new JinCaiMatch();
-		jcMatch.setOddsmid(oddsmid);
-		jcMatch.setXid(matchDayId);
-		jcMatch.setLid(league.getLeagueId());
-
-		OFNExcelData data = parseAndCalculate(jcMatch);
-		writeExcel(Lists.newArrayList(data));
-	}
-	
 	private OFNExcelData parseAndCalculate (JinCaiMatch jcMatch) {
 		Long oddsmid = jcMatch.getOddsmid();
 		Long matchDayId = jcMatch.getXid();

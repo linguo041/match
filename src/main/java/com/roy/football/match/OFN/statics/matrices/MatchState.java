@@ -22,6 +22,8 @@ public class MatchState implements CalculateResult, MatchData {
 	private Float guestAttackVariationToHost;
 	private Float calculatePk;
 	private Float hotPoint;
+	private Float hostLoad;
+	private Float guestLoad;
 	
 	@Data
 	@ToString

@@ -44,6 +44,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 	from matches m
         left join league l on m.league = l.name
 		left join match_club_state mcs on m.ofn_match_id = mcs.ofn_match_id
+		left join match_club_detail mcd on m.ofn_match_id=mcd.ofn_match_id and mcd.type='All'and mcd.team_id = mcs.host_id
 		left join match_latest_state mls on m.ofn_match_id = mls.ofn_match_id
 		left join match_pankou mpk on m.ofn_match_id = mpk.ofn_match_id and mpk.company = 'Aomen'
 		left join match_company_euro mce on m.ofn_match_id = mce.ofn_match_id and mce.company = 'Aomen'
@@ -67,7 +68,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
             -- and cal_phase = 1
 			-- and match_time > '2017-04-10 00:00:00'
 			-- and match_time < '2017-04-20 00:00:00'
-			and match_time > '2017-09-07 00:00:00'
+			and match_time > '2017-10-05 00:00:00'
 			-- and match_day_id is not null
 			)
       and m.match_time > '2015-10-01 00:00:00'
@@ -85,7 +86,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
       and abs(mpk1.current_h_win - mpk.current_h_win) <= 0.7
 	  and abs(mpk.home_win_change_rate - mpk1.home_win_change_rate) <= 0.08
 	  -- state
-	  and abs(mls.hot_point - mls1.hot_point) <= 4
+	  and abs(mls.hot_point - mls1.hot_point) <= 3
       and abs((mls.host_att_to_guest - mls.guest_att_to_host) - (mls1.host_att_to_guest - mls1.guest_att_to_host)) < 0.45
       -- and abs((mls.host_att_variation_to_guest - mls.guest_att_variation_to_host) - (mls1.host_att_variation_to_guest - mls1.guest_att_variation_to_host)) < 0.75
       -- base
@@ -93,6 +94,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 		or abs(mpk1.main_pk-0.2) > 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.5)
       and abs(mcs.host_level - mcs1.host_level) <= 1
 	  and abs(mcs.guest_level - mcs1.guest_level) <= 1
+      and mcd.num > 6
 	  -- js
       -- and (abs(mj.win_draw_pk_rate - mj1.win_draw_pk_rate) <= 0.4 or abs(mj.win_draw_rate - mj1.win_draw_rate) <= 0.4)
 	  -- pl

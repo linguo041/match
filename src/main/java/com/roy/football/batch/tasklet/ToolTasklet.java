@@ -12,6 +12,7 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.mysema.query.jpa.impl.JPAQueryFactory;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.base.LatestMatchMatrixType;
@@ -70,6 +71,9 @@ public class ToolTasklet implements Tasklet{
 	@Autowired
 	private MatchPkService matchPkService;
 	
+	@Autowired
+	private MatchRepository matchRepository;
+	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 
@@ -77,18 +81,18 @@ public class ToolTasklet implements Tasklet{
 //		fetchTeamRanking();
 //		fetchTeamName();
 //		saveLeagues();
-//		processOneMatch();
+		processOneMatch();
 //		processMatches();
 //		recrawResult();
 //		checkPkDirection();
-		predictFactor();
+//		predictFactor();
 //		adjustVariance();
 		
 		return null;
 	}
 	
 	private void checkPkDirection () {
-		matchPkService.checkPKDirection("2017-09-11 19:00:00", "2017-09-14 11:00:00");;
+		matchPkService.checkPKDirection("2017-09-11 19:00:00", "2017-09-14 11:00:00");
 	}
 	
 	private void recrawResult () {
@@ -96,11 +100,13 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		ofnMatchService.processMatch(1076525L, 170909037L, League.YingGuang);
+		EMatch  match = matchRepository.findOne(1114549L);
+		
+		ofnMatchService.processMatches(Lists.newArrayList(JinCaiMatch.fromDBMatch(match)));
 	}
 	
 	private void processMatches () {
-		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-09-09 19:00:00", "2017-09-11 11:00:00");
+		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-09-30 12:00:00", "2017-10-01 11:00:00");
 		
 		if (matches != null && !matches.isEmpty()) {
 			List<JinCaiMatch> jcMatches = matches.stream().map(match -> {
@@ -146,7 +152,8 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void predictFactor () {
-		predictScoreFactorClusterService.cluster();
+//		predictScoreFactorClusterService.evaluateBaseFactor();
+		predictScoreFactorClusterService.evaluateAllFactors();
 	}
 	
 	private void adjustVariance () {

@@ -59,6 +59,10 @@ public class MatchStateUtil {
 		return Pair.of(hostMatches, guestMatches);
 	}
 	
+	public static boolean divideHostGuest () {
+		return true;
+	}
+	
 	public static enum TeamDataLevel {
 		Stronger, Strong, Normal, Weak, Weaker
 	}

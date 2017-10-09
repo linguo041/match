@@ -24,7 +24,7 @@ public class MatchComplexQueryService {
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
 	
-	public List<Tuple> findGoalsPredictedMatches (String fromDate, String endDate) throws ParseException {
+	public List<Tuple> findGoalsPredictedMatches (String fromDate, String endDate, League le) throws ParseException {
 		return jpaQueryFactory
 			.from(eMatch)
 				.join(eMatchClubState).on(eMatch.ofnMatchId.eq(eMatchClubState.ofnMatchId))
@@ -32,7 +32,7 @@ public class MatchComplexQueryService {
 				.join(eJiaoShou).on(eMatch.ofnMatchId.eq(eJiaoShou.ofnMatchId))
 				.join(eMatchResult).on(eMatch.ofnMatchId.eq(eMatchResult.ofnMatchId))
 			.where(eMatch.matchTime.between(DateUtil.parseSimpleDateWithDash(fromDate), DateUtil.parseSimpleDateWithDash(endDate))
-					.and(eMatch.league.eq(League.YingChao))
+					.and(eMatch.league.eq(le))
 					.and(eMatchClubState.hostAttGuestDefInx.isNotNull())
 					.and(eLatestMatchState.hostAttackToGuest.isNotNull())
 					.and(eJiaoShou.hgoalPerMatch.isNotNull()))

@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EuroCalculator extends AbstractBaseDataCalculator implements Calculator<EuroMatrices, OFNMatchData>{
 	
-	private final static int PL_CHECKED_HOURS = 32;
+	private final static int PL_CHECKED_HOURS = 28;
 
 	@Override
 	public EuroMatrices calucate(OFNMatchData matchData) {
@@ -156,17 +156,20 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 					float tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
 					float lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
 					float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
+					float weight = 0.5f * tempHours * (getTimeWeight(thisTimeToMatch) + getTimeWeight(lastTimeToMatch));
 
 					if (lastTemp == null) {
 						lastTemp = temp;
 					}
 					
 					// the latest(in 24h) long hours's pankou
+					// y=1-x/56
 					if (lastTimeToMatch > PL_CHECKED_HOURS) {
 						hours = PL_CHECKED_HOURS - thisTimeToMatch;
+						weight = 0.5f * hours * (getTimeWeight(thisTimeToMatch) + getTimeWeight(PL_CHECKED_HOURS));
 
 						if (hours >= 0) {
-							pls.put(temp, hours);
+							pls.put(temp, weight);
 							
 							if (hours > 0.17) {
 								winChange += (temp.getEWin() - lastTemp.getEWin()) * hours / lastTemp.getEWin();
@@ -175,9 +178,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 							}
 						}
 					} else {
-						Float totalHours = pls.get(temp);
-						totalHours = (totalHours == null ? 0 : totalHours) + tempHours;
-						pls.put(temp, totalHours);
+						Float totalWeights = pls.get(temp);
+						totalWeights = (totalWeights == null ? 0 : totalWeights) + weight;
+						pls.put(temp, totalWeights);
 						
 						if (tempHours > 0.17) {
 							winChange += (temp.getEWin() - lastTemp.getEWin()) * tempHours / lastTemp.getEWin();
@@ -200,10 +203,10 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				temp = eu;
 			}
 
-			Date currentDate = new Date();
 			Float totalHours = pls.get(temp);
-			float lastToNow = MatchUtil.getDiffHours(currentDate.before(matchDt) ? currentDate : matchDt, temp.getEDate());
-			totalHours = (totalHours == null ? 0 : totalHours) + lastToNow;
+			float lastToStart = MatchUtil.getDiffHours(matchDt, temp.getEDate());
+			float weight = 0.5f * lastToStart * (getTimeWeight(lastToStart) + getTimeWeight(0f));
+			totalHours = (totalHours == null ? 0 : totalHours) + weight;
 			pls.put(temp, totalHours);
 
 
@@ -220,9 +223,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				lastTemp = temp;
 			}
 			
-			winChange += (temp.getEWin() - lastTemp.getEWin()) * (lastToNow > PL_CHECKED_HOURS ? 0 : lastToNow) / lastTemp.getEWin();
-			drawChange += (temp.getEDraw() - lastTemp.getEDraw()) * (lastToNow > PL_CHECKED_HOURS ? 0 : lastToNow) / lastTemp.getEDraw();
-			loseChange += (temp.getELose() - lastTemp.getELose()) * (lastToNow > PL_CHECKED_HOURS ? 0 : lastToNow) / lastTemp.getELose();
+			winChange += (temp.getEWin() - lastTemp.getEWin()) * (lastToStart > PL_CHECKED_HOURS ? 0 : lastToStart) / lastTemp.getEWin();
+			drawChange += (temp.getEDraw() - lastTemp.getEDraw()) * (lastToStart > PL_CHECKED_HOURS ? 0 : lastToStart) / lastTemp.getEDraw();
+			loseChange += (temp.getELose() - lastTemp.getELose()) * (lastToStart > PL_CHECKED_HOURS ? 0 : lastToStart) / lastTemp.getELose();
 			
 			if (shortPl.size() > 0) {
 				int maxCnt = 0;
@@ -266,6 +269,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 			}
 
 			EuroPl main = null;
+			float weight = 0;
 			float hours = 0;
 			EuroPl temp = null;
 			EuroPl lastTemp = null;
@@ -282,6 +286,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 					float tempHours = MatchUtil.getDiffHours(thisDt, lastDt);
 					float lastTimeToMatch = MatchUtil.getDiffHours(matchDt, lastDt);
 					float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
+					float tempWeight = 0.5f * tempHours * (getTimeWeight(thisTimeToMatch) + getTimeWeight(lastTimeToMatch));
 
 					if (lastTemp == null) {
 						lastTemp = temp;
@@ -290,6 +295,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 					// the latest(in 24h) long hours's pankou
 					if (lastTimeToMatch > PL_CHECKED_HOURS) {
 						hours = PL_CHECKED_HOURS - thisTimeToMatch;
+						tempWeight = 0.5f * tempHours * (getTimeWeight(thisTimeToMatch) + getTimeWeight(PL_CHECKED_HOURS));
 
 						if (hours > 0.17) {
 							winChange += (temp.getEWin() - lastTemp.getEWin()) * hours / lastTemp.getEWin();
@@ -298,6 +304,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 						}
 
 						main = temp;
+						weight = tempWeight;
 					} else {
 						if (tempHours > 0.17) {
 							winChange += (temp.getEWin() - lastTemp.getEWin()) * tempHours / lastTemp.getEWin();
@@ -312,8 +319,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 						}
 						
 
-						if (tempHours >= hours) {
+						if (tempWeight >= weight) {
 							hours = tempHours;
+							weight = tempWeight;
 							main = temp;
 						}
 					}
@@ -324,8 +332,9 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				temp = eu;
 			}
 			
-			float latestHour = MatchUtil.getDiffHours(new Date(), temp.getEDate());
-			if (latestHour >= hours) {
+			float latestHour = MatchUtil.getDiffHours(matchDt, temp.getEDate());
+			float tempWeight = 0.5f * latestHour * (getTimeWeight(latestHour) + getTimeWeight(0));
+			if (tempWeight >= weight) {
 				main = temp;
 			}
 			
@@ -358,6 +367,10 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		}
 
 		return euMatrix;
+	}
+	
+	private float getTimeWeight (float hoursToBegin) {
+		return 1 - 0.5f * hoursToBegin / PL_CHECKED_HOURS;
 	}
 
 }

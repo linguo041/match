@@ -114,7 +114,7 @@ public class OFNOutputFormater {
 				League league = ofnMatch.getLeague();
 				EuroMatrix majorComp = EuroUtil.getMainEuro(euroMatrics, league);
 
-				if (majorComp != null) {
+				if (majorComp != null && (league.getMajorCompany() != Company.Aomen || league.getMajorCompany() != Company.William)) {
 					excelData.setPlMatrix((String.format("%s\n%.2f   %.2f   %.2f\n"
 							+ "%.2f   %.2f   %.2f",
 							league.getMajorCompany(),
@@ -146,7 +146,8 @@ public class OFNOutputFormater {
 				Map<Company, EuroMatrix> companyEus = euroMatrics.getCompanyEus();
 				EuroMatrix jincai = companyEus.get(Company.Jincai);
 				EuroMatrix aomen = companyEus.get(Company.Aomen);
-				EuroMatrix inter = companyEus.get(Company.Interwetten);
+				EuroMatrix william = companyEus.get(Company.William);
+				
 				if (euAvg != null) {
 					euAvgWin = euAvg.getEWin();
 					euAvgDraw = euAvg.getEDraw();
@@ -168,19 +169,19 @@ public class OFNOutputFormater {
 						euJcWin, euJcDraw, euJcLose,
 						euJcWinChg, euJcDrawChg, euJcLoseChg));
 				
-				if (inter != null && inter.getCurrentEuro() != null) {
-					float iaWinDiff = MatchUtil.getEuDiff(inter.getCurrentEuro().getEWin(), euAvgWin, false);
-					float iaDrawDiff = MatchUtil.getEuDiff(inter.getCurrentEuro().getEDraw(), euAvgDraw, false);
-					float iaLoseDiff = MatchUtil.getEuDiff(inter.getCurrentEuro().getELose(), euAvgLose, false);
-					float euInterWinChg = inter.getWinChange();
-					float euInterDrawChg = inter.getDrawChange();
-					float euInterLoseChg = inter.getLoseChange();
+				if (william != null && william.getCurrentEuro() != null) {
+					float waWinDiff = MatchUtil.getEuDiff(william.getCurrentEuro().getEWin(), euAvgWin, false);
+					float waDrawDiff = MatchUtil.getEuDiff(william.getCurrentEuro().getEDraw(), euAvgDraw, false);
+					float waLoseDiff = MatchUtil.getEuDiff(william.getCurrentEuro().getELose(), euAvgLose, false);
+					float euWillWinChg = william.getWinChange();
+					float euWillDrawChg = william.getDrawChange();
+					float euWillLoseChg = william.getLoseChange();
 					
-					excelData.setInter(String.format("%s\n%.2f   %.2f   %.2f\n"
+					excelData.setWill(String.format("%s\n%.2f   %.2f   %.2f\n"
 							+ "%.2f   %.2f   %.2f",
-						Company.Interwetten,
-						iaWinDiff, iaDrawDiff, iaLoseDiff,
-						euInterWinChg, euInterDrawChg, euInterLoseChg));
+						Company.William,
+						waWinDiff, waDrawDiff, waLoseDiff,
+						euWillWinChg, euWillDrawChg, euWillLoseChg));
 				}
 				
 				if (aomen != null && aomen.getCurrentEuro() != null) {
@@ -233,7 +234,7 @@ public class OFNOutputFormater {
 				Set<ResultGroup> killByPk = predictRes.getKpResult().getKillByPk();
 				Set<ResultGroup> killByPl = predictRes.getKpResult().getKillByPl();
 				Set<ResultGroup> killByPlPkUnmatch = predictRes.getKpResult().getKillByPlPkUnmatch();
-				Set<ResultGroup> killByEx = predictRes.getKpResult().getKillByExchange();
+				Set<ResultGroup> killByPull = predictRes.getKpResult().getKillByPull();
 				String kill = "";
 				if (killByPk != null && killByPk.size() > 0) {
 					kill = " ~" + getSetVals(killByPk);
@@ -247,15 +248,16 @@ public class OFNOutputFormater {
 					kill = kill + " @"+ getSetVals(killByPlPkUnmatch);
 				}
 				
-				if (killByEx != null && killByEx.size() > 0) {
-					kill = kill + " ~"+ getSetVals(killByEx);
+				if (killByPull != null && killByPull.size() > 0) {
+					kill = kill + " *"+ getSetVals(killByPull);
 				}
 				excelData.setKill(kill);
-				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByPk();
+				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByBase();
 				excelData.setPromote(getSetVals(promote));
 				
 				excelData.setPredictScore(String.format("%.1f : %.1f",
 						predictRes.getHostScore(), predictRes.getGuestScore()));
+				excelData.setPredictScore(predictRes.getKpResult().getRank().toString());
 			}
 
 //			excelData

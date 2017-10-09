@@ -398,7 +398,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		DescriptiveStatistics stats = new DescriptiveStatistics();
 		
 		double a[] = new double[10];
-		double b[] = new double[10];
+		
 		
 		a[0] = 0;
 		a[1] = 0;
@@ -419,5 +419,10 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		System.out.println("sample variance: " + stats.getVariance());
 		System.out.println("sample deviation: " + stats.getStandardDeviation());
 		System.out.println("variance: " + stats.getPopulationVariance());
+		
+		double b[] = new double[]{1.25, 1.42};
+		System.out.println("pv: " + FastMath.sqrt(StatUtils.populationVariance(b)));
+		System.out.println("pv: " + StatUtils.mean(b));
+		System.out.println("pv: " + StatUtils.geometricMean(b));
 	}
 }
