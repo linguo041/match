@@ -33,6 +33,7 @@ public class PanKouUtil {
 				|| main.gethWin() <= 0.8f && currentPk - mainPk >= 0.08f) {
 			return PKDirection.Uper;
 		} else if (currentPk - mainPk >= 0.18f
+				|| main.gethWin() <= 0.66f && currentPk - mainPk >= -0.16f
 				// 0.6 -> 0.72 or 0.72 -> 0.84
 				|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.12f
 				// 0.72 -> 0.8 or 0.76 -> 0.84
@@ -43,6 +44,7 @@ public class PanKouUtil {
 				|| main.gethWin() <= 0.9f && currentPk - mainPk >= 0.08f) {
 			return PKDirection.Up;
 		} else if (currentPk - mainPk <= -0.24f
+				|| main.gethWin() >= 1.20f && currentPk - mainPk <= 0.14f
 				// 1.20 -> 1.1 or 1.16 -> 1.06
 				|| main.gethWin() >= 1.16f && currentPk - mainPk <= 0.1f
 				// 1.16 -> 1.12 or 1.1 -> 1.06

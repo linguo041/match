@@ -42,6 +42,7 @@ import com.roy.football.match.eightwin.EWJincaiParser;
 import com.roy.football.match.jpa.service.MatchPersistService;
 import com.roy.football.match.okooo.OkoooMatchCrawler;
 import com.roy.football.match.util.DateUtil;
+import com.roy.football.match.util.MatchUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -161,7 +162,7 @@ public class OFNMatchService {
 			
 			// TODO - split
 			if (matchPersistService != null) {
-				matchPersistService.save(ofnMatch, calculateResult);
+				matchPersistService.save(ofnMatch, calculateResult, MatchUtil.isMatchFinished(jcMatch.getMtime()));
 				
 				matchPersistService.saveHistoryMatch(ofnMatch.getHostMatches());
 				matchPersistService.saveHistoryMatch(ofnMatch.getGuestMatches());

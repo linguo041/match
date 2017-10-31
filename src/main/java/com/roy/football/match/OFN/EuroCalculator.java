@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import com.coremedia.iso.boxes.CompositionTimeToSample.Entry;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
@@ -123,23 +125,17 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 	}
 	
 	private EuroMatrix getAbsoluteEuroMatrix (List<EuroPl> euroPls, Date matchDt) {
-		EuroMatrix euMatrix = null;
+		if (CollectionUtils.isEmpty(euroPls)) {
+			return null;
+		}
+		
+		EuroMatrix euMatrix = new EuroMatrix();
+		
+		euroPls = filterPls(euroPls, euMatrix, matchDt);
+		
 		Map <EuroPl, Float> pls = new HashMap<EuroPl, Float>();
 
-		if (euroPls != null && euroPls.size() > 0) {
-			euMatrix = new EuroMatrix();
-			euMatrix.setOriginEuro(euroPls.get(0));
-			
-			for (int index = euroPls.size()-1; index >=0; index--) {
-				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3f) {
-					euMatrix.setCurrentEuro(euroPls.get(index));
-					break;
-				} else {
-					// remove the pl which is too close the started time, and not quite useful
-					euroPls.remove(index);
-				}
-			}
-
+		if (!CollectionUtils.isEmpty(euroPls)) {
 			float hours = 0;
 			EuroPl temp = null;
 			EuroPl lastTemp = null;
@@ -252,22 +248,15 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 	}
 	
 	private EuroMatrix getRelativeEuroMatrix (List<EuroPl> euroPls, Date matchDt) {
-		EuroMatrix euMatrix = null;
+		if (CollectionUtils.isEmpty(euroPls)) {
+			return null;
+		}
+		
+		EuroMatrix euMatrix = new EuroMatrix();
+		
+		euroPls = filterPls(euroPls, euMatrix, matchDt);
 
-		if (euroPls != null && euroPls.size() > 0) {
-			euMatrix = new EuroMatrix();
-			euMatrix.setOriginEuro(euroPls.get(0));
-			
-			for (int index = euroPls.size()-1; index >=0; index--) {
-				if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3f) {
-					euMatrix.setCurrentEuro(euroPls.get(index));
-					break;
-				} else {
-					// remove the pl which is too close the started time, and not quite useful
-					euroPls.remove(index);
-				}
-			}
-
+		if (!CollectionUtils.isEmpty(euroPls)) {
 			EuroPl main = null;
 			float weight = 0;
 			float hours = 0;
@@ -367,6 +356,26 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		}
 
 		return euMatrix;
+	}
+	
+	private List<EuroPl> filterPls (List<EuroPl> euroPls, EuroMatrix euMatrix, Date matchDt) {
+		if (euroPls == null || euroPls.size() <= 0) {
+			return Lists.newArrayList();
+		}
+		
+		euMatrix.setOriginEuro(euroPls.get(0));
+		
+		for (int index = euroPls.size()-1; index >=0; index--) {
+			if (MatchUtil.getDiffHours(matchDt, euroPls.get(index).getEDate()) >= 0.3f) {
+				euMatrix.setCurrentEuro(euroPls.get(index));
+				break;
+			} else {
+				// remove the pl which is too close the started time, and not quite useful
+				euroPls.remove(index);
+			}
+		}
+		
+		return euroPls;
 	}
 	
 	private float getTimeWeight (float hoursToBegin) {

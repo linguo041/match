@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class EWJincaiParser {
-	private final static String JINCAI_ODD_HISTORY_URL = "http://www.8win.com/buy/add/odd/history";
+	private final static String JINCAI_ODD_HISTORY_URL = "https://www.8win.com/buy/add/odd/history";
 	
 	public List<EuroPl> getJincaiEuro (Long oddsmid) {
 		String ewMatchId = getEightWinMatchIdString(oddsmid);

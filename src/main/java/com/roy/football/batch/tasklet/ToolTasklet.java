@@ -100,13 +100,13 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		EMatch  match = matchRepository.findOne(1114549L);
+		EMatch  match = matchRepository.findOne(1082580L);
 		
 		ofnMatchService.processMatches(Lists.newArrayList(JinCaiMatch.fromDBMatch(match)));
 	}
 	
 	private void processMatches () {
-		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-09-30 12:00:00", "2017-10-01 11:00:00");
+		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-10-21 12:00:00", "2017-10-22 11:00:00");
 		
 		if (matches != null && !matches.isEmpty()) {
 			List<JinCaiMatch> jcMatches = matches.stream().map(match -> {

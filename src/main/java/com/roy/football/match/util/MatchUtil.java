@@ -117,7 +117,7 @@ public class MatchUtil {
 
 	public static boolean isMatchTooOld (Date matchDate, Date currentDate, boolean isState, int indicator) {
 		long span = 86400000L * (isState 
-						? (indicator * 10 + STATE_LATEST_MIN_MATCH_DAY)
+						? (indicator * 20 + STATE_LATEST_MIN_MATCH_DAY)
 						: (indicator * 7 + CLUB_LATEST_MIN_MATCH_DAY));
 		if (currentDate.getTime() - matchDate.getTime() > span) {
 			return true;

@@ -103,7 +103,9 @@ public class HistoryMatchCalculationService {
 		Long oddsmid = match.getOfnMatchId();
 		log.debug("start to parse and calculate match {}", match);
 		
-		if (!MatchUtil.isMatchFinished(match.getMatchTime())) {
+		boolean finished = MatchUtil.isMatchFinished(match.getMatchTime());
+		
+		if (!finished) {
 			return;
 		}
 		
@@ -142,7 +144,7 @@ public class HistoryMatchCalculationService {
 			// calculate
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);
 			
-			matchPersistService.save(ofnMatch, calculateResult);
+			matchPersistService.save(ofnMatch, calculateResult, finished);
 			
 			matchResultCalculator.calculateAndPersist(match, ofnMatch.getHostScore(), ofnMatch.getGuestScore());
 		} catch (Exception e) {

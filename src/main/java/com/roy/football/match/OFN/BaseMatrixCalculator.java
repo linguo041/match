@@ -50,11 +50,11 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 		ClubMatrix hostClub = matrices.getHostHomeMatrix();
 		ClubMatrix guestClub = matrices.getGuestAwayMatrix();
 
-		if (hostClub != null && hostClub.getNum() <= 5) {
+		if (hostClub != null && hostClub.getNum() < 5) {
 			hostClub = matrices.getHostAllMatrix();
 		}
 		
-		if (guestClub != null && guestClub.getNum() <= 5) {
+		if (guestClub != null && guestClub.getNum() < 5) {
 			guestClub = matrices.getGuestAllMatrix();
 		}
 
