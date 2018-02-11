@@ -71,10 +71,14 @@ public class OFNMatchService {
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
 		
 		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatches();
-		
-		Collections.sort(jinCaiMatches);
 
 		if (jinCaiMatches != null && jinCaiMatches.size() > 0) {
+			jinCaiMatches = jinCaiMatches.stream().filter(jcMatch -> {
+				return jcMatch.getLid() != null && jcMatch.getHtid() != null && jcMatch.getGtid() != null;
+			}).collect(Collectors.toList());
+			
+			Collections.sort(jinCaiMatches);
+			
 			Date now = new Date();
 			List<Future <OFNExcelData>> futures = new ArrayList<Future <OFNExcelData>>();
 			
@@ -84,7 +88,7 @@ public class OFNMatchService {
 					Future <OFNExcelData> f = calculateExecutorService.submit(new Callable<OFNExcelData>(){
 						@Override
 						public OFNExcelData call() throws Exception {
-							return parseAndCalculate(jcMatch);
+							return parseAndCalculate(jcMatch, false);
 						}
 					});
 					
@@ -109,14 +113,14 @@ public class OFNMatchService {
 	public void processMatches (List<JinCaiMatch> matches) {
 		if (matches != null && !matches.isEmpty()) {
 			List<OFNExcelData> datas = matches.stream()
-					.map(jcMatch -> parseAndCalculate(jcMatch))
+					.map(jcMatch -> parseAndCalculate(jcMatch, true))
 					.collect(Collectors.toList());
 			
 			writeExcel(datas);
 		}
 	}
 	
-	private OFNExcelData parseAndCalculate (JinCaiMatch jcMatch) {
+	private OFNExcelData parseAndCalculate (JinCaiMatch jcMatch, boolean simulate) {
 		Long oddsmid = jcMatch.getOddsmid();
 		Long matchDayId = jcMatch.getXid();
 		League league = League.getLeagueById(jcMatch.getLid());
@@ -161,7 +165,7 @@ public class OFNMatchService {
 			OFNCalculateResult calculateResult = calculator.calucate(ofnMatch);
 			
 			// TODO - split
-			if (matchPersistService != null) {
+			if (matchPersistService != null && !simulate) {
 				matchPersistService.save(ofnMatch, calculateResult, MatchUtil.isMatchFinished(jcMatch.getMtime()));
 				
 				matchPersistService.saveHistoryMatch(ofnMatch.getHostMatches());

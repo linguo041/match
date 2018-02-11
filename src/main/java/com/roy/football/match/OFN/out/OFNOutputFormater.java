@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
-import com.roy.football.match.OFN.response.AsiaPl;
+import com.roy.football.match.OFN.MatchPromoter.MatchRank;
 import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.OFN.response.OFNMatchData;
@@ -20,7 +20,7 @@ import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
 import com.roy.football.match.OFN.statics.matrices.PredictResult;
-import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
+import com.roy.football.match.OFN.statics.matrices.PromoteMatrics;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.base.League;
@@ -78,6 +78,7 @@ public class OFNOutputFormater {
 			Float predictPk = calculateResult.getPredictPanKou();
 			Float latestPk = null;
 			JiaoShouMatrices jiaoshouMatrices = calculateResult.getJiaoShou();
+			float pkBalance = 0f;
 
 			if (jiaoshouMatrices != null) {
 				latestPk = jiaoshouMatrices.getLatestPankou();
@@ -94,17 +95,20 @@ public class OFNOutputFormater {
 				excelData.setHostGuestComp(String.format(hostGuestCompFormat.toString(), hostGuestCompArgs.toArray()));
 			}
 			
-			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
+//			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
 
 			PankouMatrices pkmatrices = calculateResult.getPkMatrices();
 			
 			if (pkmatrices != null) {
 				Float mainPk = pkmatrices.getMainPk().getPanKou();
 				Float currPk = pkmatrices.getCurrentPk().getPanKou();
+				float calculatedCurrPk = MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk());
+				pkBalance = (currPk - calculatedCurrPk);
 				
-				excelData.setOriginPanKou(String.format("%.2f [%.2f]\r\n%.2f [%.2f]",
+				excelData.setOriginPanKou(String.format("%.2f [%.2f]\r\n%.2f [%.2f]\r\n%.2f [%.2f]",
+						predictPk, latestPk,
 						MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), mainPk,
-						MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk()), currPk));
+						calculatedCurrPk, currPk));
 
 				excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
 			}
@@ -135,12 +139,7 @@ public class OFNOutputFormater {
 				float euJcWinChg = 0;
 				float euJcDrawChg = 0;
 				float euJcLoseChg = 0;
-				float aaWinDiff = 0;
-				float aaDrawDiff = 0;
-				float aaLoseDiff = 0;
-				float euAomenWinChg = 0;
-				float euAomenDrawChg = 0;
-				float euAomenLoseChg = 0;
+			
 
 				EuroPl euAvg = euroMatrics.getCurrEuroAvg();
 				Map<Company, EuroMatrix> companyEus = euroMatrics.getCompanyEus();
@@ -184,20 +183,48 @@ public class OFNOutputFormater {
 						euWillWinChg, euWillDrawChg, euWillLoseChg));
 				}
 				
+				float aaWinDiff = 0;
+				float aaDrawDiff = 0;
+				float aaLoseDiff = 0;
+				float aleWinDiff = 0;
+				float aleDrawDiff = 0;
+				float aleLoseDiff = 0;
+				float euAomenWinChg = 0;
+				float euAomenDrawChg = 0;
+				float euAomenLoseChg = 0;
+				String aomenEuroData = "";
+				
 				if (aomen != null && aomen.getCurrentEuro() != null) {
 					aaWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEWin(), euAvgWin, false);
 					aaDrawDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEDraw(), euAvgDraw, false);
 					aaLoseDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getELose(), euAvgLose, false);
+					
 					euAomenWinChg = aomen.getWinChange();
 					euAomenDrawChg = aomen.getDrawChange();
 					euAomenLoseChg = aomen.getLoseChange();
+					
+					EuroPl aLePl = aomen.getLeAvgEuro();
+					if (aLePl != null) {
+						pkBalance = pkBalance * 0.8f;
+						aleWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEWin(), aLePl.getEWin() + pkBalance, false);
+						aleDrawDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEDraw(), aLePl.getEDraw(), false);
+						aleLoseDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getELose(), aLePl.getELose() - pkBalance, false);
+						aomenEuroData = String.format("%.2f   %.2f   %.2f\n"
+								+ "%.2f   %.2f   %.2f\n"
+								+ "%.2f   %.2f   %.2f",
+								aleWinDiff, aleDrawDiff, aleLoseDiff,
+								aaWinDiff, aaDrawDiff, aaLoseDiff,
+								euAomenWinChg, euAomenDrawChg, euAomenLoseChg);
+						
+					} else {
+						aomenEuroData = String.format("%.2f   %.2f   %.2f\n"
+								+ "%.2f   %.2f   %.2f",
+								aaWinDiff, aaDrawDiff, aaLoseDiff,
+								euAomenWinChg, euAomenDrawChg, euAomenLoseChg);
+					}
 				}
 
-				excelData.setAomen(String.format("%s\n%.2f   %.2f   %.2f\n"
-												+ "%.2f   %.2f   %.2f",
-						Company.Aomen,
-						aaWinDiff, aaDrawDiff, aaLoseDiff,
-						euAomenWinChg, euAomenDrawChg, euAomenLoseChg));
+				excelData.setAomen(aomenEuroData);
 			}
 			
 			MatchExchangeData exgData = calculateResult.getExchanges();
@@ -255,9 +282,14 @@ public class OFNOutputFormater {
 				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByBase();
 				excelData.setPromote(getSetVals(promote));
 				
-				excelData.setPredictScore(String.format("%.1f : %.1f",
+//				excelData.setPredictScore(String.format("%.1f : %.1f",
+//						predictRes.getHostScore(), predictRes.getGuestScore()));
+				MatchRank rank = predictRes.getKpResult().getRank();
+				excelData.setPredictScore(String.format("%d  -  %d  -  %d\n%.2f : %.2f",
+						rank.getWRank(), rank.getDRank(), rank.getLRank(),
 						predictRes.getHostScore(), predictRes.getGuestScore()));
-				excelData.setPredictScore(predictRes.getKpResult().getRank().toString());
+				PromoteMatrics promoteMatrics = predictRes.getKpResult().getPromoteMatrics();
+				excelData.setPromoteRatio(promoteMatrics.toString());
 			}
 
 //			excelData

@@ -23,4 +23,5 @@ public class OFNKillPromoteResult implements KillResult, PromoteResult{
 	private Set<ResultGroup> promoteByPull = new TreeSet<ResultGroup> ();
 	private MatchRank rank = new MatchRank();
 	private MatchPull pull = new MatchPull();
+	private PromoteMatrics promoteMatrics = new  PromoteMatrics();
 }

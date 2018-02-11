@@ -7,6 +7,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.commons.math3.util.FastMath;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.roy.football.match.OFN.MatchPromoter.MatchPull;
@@ -20,6 +21,8 @@ import com.roy.football.match.OFN.statics.matrices.MatchState;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.OFNKillPromoteResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
+import com.roy.football.match.OFN.statics.matrices.PromoteMatrics;
+import com.roy.football.match.OFN.statics.matrices.PromoteMatrics.PromoteRatio;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
@@ -31,6 +34,7 @@ import com.roy.football.match.util.EuroUtil;
 import com.roy.football.match.util.MatchStateUtil;
 import com.roy.football.match.util.MatchUtil;
 import com.roy.football.match.util.PanKouUtil;
+import com.roy.football.match.util.PromotionUtil;
 import com.roy.football.match.util.PanKouUtil.PKDirection;
 
 import lombok.Data;
@@ -41,6 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 public class MatchPromoter {
 	private static float FACTOR_H = 1.0f;
 	private static float FACTOR_G = 1.0f;
+	
+	@Autowired
+	private EuroAnalyzer euroAnalyzer;
 
 	public OFNKillPromoteResult promote (OFNCalculateResult calResult) {
 		OFNKillPromoteResult kpRes = new OFNKillPromoteResult();
@@ -81,22 +88,34 @@ public class MatchPromoter {
 		int wDegree = 0;
 		int dDegree = 0;
 		int lDegree = 0;
-		int restDegree = 16;
+		int restDegree = 32;
 		int adjustDegree = 0;
 		
 		// adjust by home win rate for host and way win rate for guest
 		float diff = calculateWinDegree(hostMatrix, guestMatrix, hostAttGuestDefComp, guestAttHostDefComp);
-		adjustDegree += Math.abs(Math.round(8 * diff));
+		
+		// if diff is small, but little more than 3.125, then the adjust degree is 3, which adds too many, so need adjust.
+//		if (diff >= 0.4375 && diff <= 0.46275) {
+//			diff -= 0.03125f;
+//		} else if (diff >= 0.3125 && diff <= 0.34375) {
+//			diff -= 0.03125f;
+//		} else if (diff <= -0.4375 && diff >= -0.46275) {
+//			diff += 0.03125f;
+//		} else if (diff <= -0.3125 && diff >= -0.34375) {
+//			diff += 0.03125f;
+//		}
+		
+		adjustDegree += Math.abs(Math.round(16 * diff));
 		
 		if (diff >= 0 ) {
-			wDegree += 5 + adjustDegree;
+			wDegree += 10 + adjustDegree;
 			restDegree -= wDegree;
-			dDegree = adjustDrawDegreeReferToDrawRate(rawDiff,  restDegree, hostMatrix, guestMatrix);
+			dDegree = adjustDrawDegreeReferToDrawRate(rawDiff,  restDegree, hostMatrix, guestMatrix, hostAttGuestDefComp, guestAttHostDefComp);
 			lDegree = restDegree - dDegree;
 		} else {
-			lDegree += 5 + adjustDegree;
+			lDegree += 10 + adjustDegree;
 			restDegree -= lDegree;
-			dDegree = adjustDrawDegreeReferToDrawRate(rawDiff,  restDegree, hostMatrix, guestMatrix);
+			dDegree = adjustDrawDegreeReferToDrawRate(rawDiff,  restDegree, hostMatrix, guestMatrix, hostAttGuestDefComp, guestAttHostDefComp);
 			wDegree = restDegree - dDegree;
 		}
 		
@@ -116,12 +135,12 @@ public class MatchPromoter {
 
 		LatestMatchMatrices hostMatches = matchState.getHostState6();
 		LatestMatchMatrices guestMatches = matchState.getGuestState6();
-		boolean divideHostGuest = MatchStateUtil.divideHostGuest();
-		
-		if (divideHostGuest) {
-			hostMatches = matchState.getHostHome5();
-			guestMatches = matchState.getGuestAway5();
-		}
+//		boolean divideHostGuest = MatchStateUtil.divideHostGuest();
+//		
+//		if (divideHostGuest) {
+//			hostMatches = matchState.getHostHome5();
+//			guestMatches = matchState.getGuestAway5();
+//		}
 		
 		// adjust base degree based on latest status
 		int wDegree = rank.getWRank();
@@ -130,48 +149,79 @@ public class MatchPromoter {
 		
 		// by goal
 		float diff = FACTOR_H * latestHostAttack - FACTOR_G * latestGuestAttack;
-		int degree = Math.round(8 * diff);
-		if (degree >= 8) {
+		int degree = Math.round(16 * diff);
+		if (degree >= 16) {
 			// latest is better than base
-			if (wDegree < 8) {
+			if (wDegree <= 10) {
+				wDegree += 2;
+				lDegree -= 2;
+			} else if (wDegree <= 14) {
 				wDegree ++;
 				lDegree --;
 			}
-		} else if (degree >= 4) {
+		} else if (degree >= 8) {
 			// latest is worse than base
-			if (wDegree > 10) {
+			if (wDegree >= 20) {
+				wDegree -= 2;
+				dDegree ++;
+				lDegree ++;
+			} else if (wDegree >= 16) {
 				wDegree --;
 				dDegree ++;
-			} else if (wDegree > 6) {
+			} else if (wDegree >= 12) {
 				
-			} else {
+			} else if (wDegree >= 8) {
 				wDegree ++;
 				lDegree --;
+			} else {
+				wDegree += 2;
+				dDegree --;
+				lDegree --;
 			}
-		} else if (degree >= -4) {
+		} else if (degree >= -8) {
 			// latest is worse than base
-			if (wDegree > 10) {
+			if (wDegree > 17) {
+				wDegree -= 2;
+				dDegree ++;
+				lDegree ++;
+			} else if (wDegree > 13 && degree <= 4) {
 				wDegree --;
 				lDegree ++;
-			} 
+			}
 			// latest is good than base
-			if (lDegree > 10) {
+			if (lDegree > 17) {
+				lDegree -=2;
+				dDegree ++;
+				wDegree ++;	
+			} else if (lDegree > 13 && degree >= -4) {
 				lDegree --;
 				wDegree ++;
 			}
-		} else if (degree >= -8){
+		} else if (degree >= -16){
 			// latest is worse than base
-			if (lDegree > 10) {
+			if (lDegree >= 20) {
+				lDegree -= 2;
+				dDegree ++;
+				wDegree ++;
+			} else if (lDegree >= 16) {
 				lDegree --;
 				dDegree ++;
-			} else if (lDegree > 6) {
+			} else if (lDegree >= 12) {
 				
-			} else {
+			} else if (lDegree >= 8) {
 				lDegree ++;
+				wDegree --;
+			} else {
+				lDegree +=2;
+				dDegree --;
 				wDegree --;
 			}
 		} else {
-			if (lDegree <= 8) {
+			if (lDegree <= 10) {
+				lDegree +=2;
+				dDegree --;
+				wDegree --;
+			} else if (lDegree <= 14) {
 				lDegree ++;
 				wDegree --;
 			}
@@ -180,51 +230,59 @@ public class MatchPromoter {
 		// by hotpoint
 		if (hotPoint >= 6) {
 			// latest is better than base
-			if (wDegree < 4) {
-				wDegree ++;
+			if (wDegree <= 7) {
+				wDegree += 2;
+				dDegree --;
 				lDegree --;
-			} else if (wDegree <= 7 && hotPoint > 7) {
+			} else if (wDegree <= 10 && hotPoint >= 7) {
 				wDegree ++;
 				lDegree --;
 			}
 		} else if (hotPoint >= 3) {
 			// latest is worse than base
-			if (wDegree >= 10) {
-				wDegree --;
+			if (wDegree >= 18) {
+				wDegree -= 2;
 				dDegree ++;
-			} else if (wDegree >= 5) {
+				lDegree ++;
+			} else if (wDegree >= 10) {
 				
 			} else {
-				wDegree ++;
+				wDegree += 2;
+				dDegree --;
 				lDegree --;
 			}
 		} else if (hotPoint > -3) {
 			// latest is worse than base
-			if (wDegree >= 10) {
-				wDegree --;
+			if (wDegree >= 18) {
+				wDegree -= 2;
+				dDegree ++;
 				lDegree ++;
 			} 
 			// latest is good than base
-			if (lDegree >= 10) {
-				lDegree --;
+			if (lDegree >= 18) {
+				lDegree -= 2;
+				dDegree ++;
 				wDegree ++;
 			}
 		} else if (hotPoint >= -6){
 			// latest is worse than base
-			if (lDegree >= 10) {
-				lDegree --;
+			if (lDegree >= 18) {
+				lDegree -= 2;
 				dDegree ++;
-			} else if (lDegree >= 5) {
+				wDegree ++;
+			} else if (lDegree >= 10) {
 				
 			} else {
-				wDegree --;
+				wDegree -= 2;
+				dDegree ++;
 				lDegree ++;
 			}
 		} else {
-			if (lDegree < 4) {
-				lDegree ++;
+			if (lDegree <= 7) {
+				lDegree += 2;
+				dDegree --;
 				wDegree --;
-			} else if (lDegree <= 7 && hotPoint < -7) {
+			} else if (lDegree <= 10 && hotPoint <= -7) {
 				lDegree ++;
 				wDegree --;
 			}
@@ -265,6 +323,7 @@ public class MatchPromoter {
 		
 		MatchRank rank = killPromoteResult.getRank();
 		MatchPull pull = killPromoteResult.getPull();
+		PromoteMatrics promoteMatrics = killPromoteResult.getPromoteMatrics();
 		Set<ResultGroup> promote = killPromoteResult.getPromoteByBase();
 
 		// Euro pl
@@ -294,6 +353,7 @@ public class MatchPromoter {
 		float waLoseDiff = MatchUtil.getEuDiff(will.getCurrentEuro().getELose(), euroAvg.getELose(), false);
 		
 		// pk
+		AsiaPl origin = pkMatrices.getOriginPk();
 		AsiaPl main = pkMatrices.getMainPk();
 		AsiaPl current = pkMatrices.getCurrentPk();
 		
@@ -304,6 +364,7 @@ public class MatchPromoter {
 			return;
 		}
 		
+		float originPk = MatchUtil.getCalculatedPk(origin);
 		float mainPk = MatchUtil.getCalculatedPk(main);
 		float currentPk = MatchUtil.getCalculatedPk(current);
 		float pmPkDiff = predictPk - mainPk;
@@ -318,549 +379,750 @@ public class MatchPromoter {
 		killByPull(predictPk, current.getPanKou(), currentPk, mainPk, pull, killPromoteResult.getKillByPull());
 		killByPk(killPromoteResult.getKillByPk(), rank, pull, pkMatrices, predictPk);
 		
+		EuroPl leAvg = euroAnalyzer.getLeagueAvgPl(current.getPanKou(), Company.Aomen, le);
+		EuroPl leOriginAvg = euroAnalyzer.getLeagueAvgPl(origin.getPanKou(), Company.Aomen, le);
+		float aleWinDiff = 0f;
+		float aleDrawDiff = 0f;
+		float aleLoseDiff = 0f;
+		// the original pl is hard to compare, so don't use it 
+		float aleOriginWinDiff = 0f;
+		float aleOriginDrawDiff = 0f;
+		float aleOriginLoseDiff = 0f;
+		if (leAvg != null) {
+			float pkBalance = current.getPanKou() - currentPk; // 0.75 - 0.9 = -0.15; -0.75 - (-0.9) = 0.15
+			float pkOriginBalance = origin.getPanKou() - originPk;
+			float balanceWinWeight = current.getPanKou() >= 0.25f ? 0.8f : 1f;
+			float balanceDrawWeight = Math.abs(current.getPanKou()) <= 0.5f ? 0.8f : 1f;
+			float balanceLoseWeight = current.getPanKou() <= -0.25f ? 0.8f : 1f;
+
+			aleWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEWin(),
+					leAvg.getEWin() + pkBalance * balanceWinWeight, false); // 1.4, 1.46 + (-0.15)
+			aleDrawDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEDraw(),
+					leAvg.getEDraw() - (current.getPanKou() > 0 ? pkBalance : pkBalance * -1) * balanceDrawWeight, false); // 3.8, 3.6 - (-0.15)
+			aleLoseDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getELose(),
+					leAvg.getELose() - pkBalance * balanceLoseWeight, false);
+			
+			aleOriginWinDiff = MatchUtil.getEuDiff(aomen.getOriginEuro().getEWin(),
+					leOriginAvg.getEWin() + pkOriginBalance * balanceWinWeight, false);
+			aleOriginDrawDiff = MatchUtil.getEuDiff(aomen.getOriginEuro().getEDraw(),
+					leOriginAvg.getEDraw() - (current.getPanKou() > 0 ? pkOriginBalance : pkOriginBalance * -1) * balanceDrawWeight, false);
+			aleOriginLoseDiff = MatchUtil.getEuDiff(aomen.getOriginEuro().getELose(),
+					leOriginAvg.getELose() - pkOriginBalance * balanceLoseWeight, false);
+			
+			aomen.setLeAvgEuro(leAvg);
+		}
+		
 		float winAdjByPull = adjustEuroDiffReferPull(pull);
+		
+		PromoteRatio winRatio = new PromoteRatio();
+		winRatio.setRBaseDegree( (rank.getWRank() - PromotionUtil.getAvgWinDegreeByPk(current.getPanKou())) * 0.15f );
+//		winRatio.setRPullNPredict( PromotionUtil.getHotDiffRateByPredictAndPull(current.getPanKou(), predictPk, currentPk, mainPk, pull));
+		winRatio.setRAomen(PromotionUtil.getWinLoseRateFromAomenEuro(current.getPanKou(),
+				aleWinDiff, aleOriginWinDiff, aaWinDiff, aomenWinChange, true));
+		winRatio.setRJincai( jaWinDiff * (-3.5f) + jcWinChange * (-15));
+		winRatio.setRWilliam( waWinDiff * (-5));
+		
+		PromoteRatio drawRatio = new PromoteRatio();
+		drawRatio.setRBaseDegree( (rank.getDRank() - PromotionUtil.getAvgDrawDegreeByPk(current.getPanKou())) * 0.175f);
+//		drawRatio.setRPullNPredict(PromotionUtil.getDrawHotDiffRateByPredictAndPull(current.getPanKou(), predictPk, currentPk, mainPk, pull));
+		drawRatio.setRAomen( PromotionUtil.getDrawRateFromAomenEuro(current.getPanKou(), leAvg!=null, 
+				aomen.getCurrentEuro().getEDraw(), aomen.getOriginEuro().getEDraw(), aleDrawDiff, aleOriginDrawDiff, aaDrawDiff, aomenDrawChange));
+		drawRatio.setRJincai( jaDrawDiff * (-5) + jcDrawChange * (-15));
+		drawRatio.setRWilliam( waDrawDiff * (-6));
+		
+		PromoteRatio loseRatio = new PromoteRatio();
+		loseRatio.setRBaseDegree( (rank.getLRank() - PromotionUtil.getAvgLoseDegreeByPk(current.getPanKou())) * 0.15f );
+//		loseRatio.setRPullNPredict( -1f * PromotionUtil.getHotDiffRateByPredictAndPull(current.getPanKou(), predictPk, currentPk, mainPk, pull) );
+		loseRatio.setRAomen(PromotionUtil.getWinLoseRateFromAomenEuro(current.getPanKou(),
+				aaLoseDiff, aleOriginLoseDiff, aaLoseDiff, aomenLoseChange, false));
+		loseRatio.setRJincai( jaLoseDiff * (-3.5f) + jcLoseChange * (-15) );
+		loseRatio.setRWilliam( waLoseDiff * (-5));
+		
+		promoteMatrics.setWinRatio(winRatio);
+		promoteMatrics.setDrawRatio(drawRatio);
+		promoteMatrics.setLoseRatio(loseRatio);
 		
 		if (current.getPanKou() >= 1) {
 			if (isAomenMajor) {
-				if (rank.getWRank() >= 7
-						&& (pmPkDiff <= 0.35f || pcPkDiff <= 0.35f)
+				if (rank.getWRank() >= 14
+						&& (pmPkDiff <= 0.35f && pcPkDiff <= 0.35f)
 						&& (pkDirection.ordinal() > PKDirection.Downer.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.021f && aomenWinChange < 0.019f
 						&& waWinDiff <= 0.03f
-						&& jaWinDiff <= -0.015f) {
+						&& jaWinDiff <= -0.015f
+						&& aleWinDiff <= 0.025f) {
 					if (aaWinDiff < -0.015f || jaWinDiff <= -0.025f) {
 						firstOption = ResultGroup.Three;
 					}
 				}
-				if ((rank.getWRank() >= 7 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
+				if (rank.getDRank() >= 8
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
 						&& aaDrawDiff <= 0.005f && aomenDrawChange < 0.011f
 						&& jaDrawDiff <= 0.035f && jcDrawChange < 0.005f // jc draw diff is always high 
+						&& aleDrawDiff <= 0.03f
 						) {
 					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.30f
 							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null) {
-							firstOption = ResultGroup.One;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (jaDrawDiff <= -0.001f
+								&& pkDirection.ordinal() < PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getWRank() >= 7 ? rank.getLRank() >= 4 : rank.getLRank() >= 5)
+				if (rank.getLRank() >= 8
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
 						&& aaLoseDiff < 0.001f && aomenLoseChange < 0.011f
 						&& jaLoseDiff < 0.03f && jcLoseChange < 0.001f
+						&& aleLoseDiff <= 0.01f
 						) {
 					if (aaLoseDiff < -0.025f || jaLoseDiff < -0.025f) {
-						if (firstOption == null) {
-							firstOption = ResultGroup.Zero;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Zero;
+						} else if (jaWinDiff > -0.05f
+								&& pkDirection.ordinal() < PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.Zero;
 						}
 					}
 				}
 			} else {
-				if (rank.getWRank() >= 7
-						&& (pmPkDiff <= 0.35f || pcPkDiff <= 0.35f)
+				if (rank.getWRank() >= 14
+						&& (pmPkDiff <= 0.35f && pcPkDiff <= 0.35f)
 						&& (pkDirection.ordinal() > PKDirection.Downer.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.021f && aomenWinChange < 0.011f
-						&& waWinDiff < 0.035f
-						&& jaWinDiff <= -0.03f) {
+						&& waWinDiff < 0.04f
+						&& jaWinDiff <= -0.04f
+						&& aleWinDiff <= 0.025f) {
 					if (aaWinDiff < -0.025f || jaWinDiff <= -0.05f) {
 						firstOption = ResultGroup.Three;
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
+				if (rank.getDRank() >= 8
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
 						&& aaDrawDiff <= -0.011f && aomenDrawChange < 0.011f
 						&& jaDrawDiff <= 0.035f && jcDrawChange < 0.001f
+						&& aleDrawDiff <= 0.03f
 						) {
 					if (aaDrawDiff <= -0.035f || aomen.getOriginEuro().getEDraw() <= 3.30f
 							|| jaDrawDiff <= -0.035f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null) {
-							firstOption = ResultGroup.One;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (jaDrawDiff <= -0.001f
+								&& pkDirection.ordinal() < PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getLRank() >= 4 : rank.getLRank() >= 5)
+				if (rank.getLRank() >= 8
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
 						&& aaLoseDiff < -0.03f && aomenLoseChange < 0.011f
-						&& jaLoseDiff < 0.03f && jcLoseChange < 0.005f
+//						&& jaLoseDiff < 0.03f
+						&& jcLoseChange < 0.005f
+						&& aleLoseDiff <= 0.01f
 						) {
-					if (aaLoseDiff < -0.045f || jaLoseDiff < -0.045f) {
-						if (firstOption == null) {
-							firstOption = ResultGroup.Zero;
-						} else {
+					if (aaLoseDiff < -0.05f || jaLoseDiff < -0.05f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Zero;
+						} else if (jaWinDiff > -0.05f
+								&& pkDirection.ordinal() < PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.Zero;
 						}
 					}
 				}
 			}
 		} else if (current.getPanKou() >= 0.4) {
 			if (isAomenMajor) {
-				if (rank.getWRank() >= 6
-						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
+				if (rank.getWRank() >= 10
+						&& upChange <= 0.065f
+						&& (pmPkDiff <= 0.33f && pcPkDiff <= 0.33f)
 						&& (pkDirection.ordinal() > PKDirection.Down.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.021f && aomenWinChange < 0.011f
 						&& waWinDiff <= 0.03f
-						&& jaWinDiff <= -0.02f) {
-					if (aaWinDiff < -0.015f || jaWinDiff <= -0.035f || rank.getWRank() >= 8) {
+						&& jaWinDiff <= -0.02f
+						&& aleWinDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
+					if (aaWinDiff < -0.015f || jaWinDiff <= -0.035f || rank.getWRank() >= 14) {
 						firstOption = ResultGroup.Three;
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
+				if (rank.getDRank() >= 8
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
-						&& (aaDrawDiff <= 0.011f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.20f)
+						&& (aaDrawDiff <= 0.011f && aomenDrawChange < 0.019f
+								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.31f)
 						&& jaDrawDiff < 0.035f && jcDrawChange < 0.011f
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.021f || aomen.getOriginEuro().getEDraw() <= 3.20f
-							|| jaDrawDiff <= -0.021f || jincai.getCurrentEuro().getEDraw() <= 3.20f) {
-						if (firstOption == null && (aaWinDiff > -0.009f || jaWinDiff > -0.025f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.021f || jincai.getCurrentEuro().getEDraw() <= 3.20f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (rank.getDRank() >= 10
+								&& aomen.getOriginEuro().getEDraw() <= (current.getPanKou() >= 0.75 ? 3.60f : 3.40f)
+								&& (aaWinDiff > -0.015f || jaWinDiff > -0.045f || jcWinChange >= 0.015f)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getLRank() >= 4 : rank.getLRank() >= 5)
+				if (rank.getLRank() >= 8
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
 						&& aaLoseDiff < -0.011f && aomenLoseChange < 0.011f
-						&& jaLoseDiff < 0.03f && jcLoseChange < 0.005f
+						&& jaLoseDiff < 0.03f
+						&& jcLoseChange < 0.005f
+						&& aleLoseDiff <= 0.015f
 						) {
-					if (aaLoseDiff < -0.03f || jaLoseDiff < -0.03f) {
-						if (firstOption == null && (aaWinDiff > -0.009f || jaWinDiff > -0.025f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.Zero;
-						} else {
+					if (aaLoseDiff < -0.03f || jaLoseDiff < -0.05f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Zero;
+						} else if (pkDirection.ordinal() < PKDirection.Middle.ordinal()
+								&& rank.getLRank() >= 10
+								&& (aaWinDiff > -0.015f || jaWinDiff > -0.045f || jcWinChange >= 0.015f)) {
+							firstOption = ResultGroup.Zero;
 						}
 					}
 				}
 			} else {
-				if (rank.getWRank() >= 6
-						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
+				if (rank.getWRank() >= 10
+						&& upChange <= 0.065f
+						&& (pmPkDiff < 0.35f && pcPkDiff < 0.35f)
 						&& (pkDirection.ordinal() > PKDirection.Down.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.015f && aomenWinChange < 0.015f
-						&& waWinDiff < 0.035f
-						&& jaWinDiff <= -0.03f) {
+						&& waWinDiff < 0.04f
+						&& jaWinDiff <= -0.04f
+						&& aleWinDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
 					if (aaWinDiff < -0.02f || jaWinDiff <= -0.035f + winAdjByPull
-							|| rank.getWRank() >= 8) {
+							|| rank.getWRank() >= 14) {
 						firstOption = ResultGroup.Three;
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
+				if (rank.getDRank() >= 8
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
-						&& (aaDrawDiff <= 0.011f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.20f)
+						&& (aaDrawDiff <= 0.011f && aomenDrawChange < 0.019f
+							|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.31f)
 						&& jaDrawDiff <= 0.015f - 2 * winAdjByPull && jcDrawChange < 0.011f
 						&& waDrawDiff <= 0.05f
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.035f || aomen.getOriginEuro().getEDraw() <= 3.30f
-							|| jaDrawDiff <= -0.03f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null && (aaWinDiff > -0.019f || jaWinDiff > -0.03f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.03f || jincai.getCurrentEuro().getEDraw() <= 3.30f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (rank.getDRank() >= 10
+								&& aomen.getOriginEuro().getEDraw() <= (current.getPanKou() >= 0.75 ? 3.60f : 3.40f)
+								&& (aaWinDiff > -0.019f || jaWinDiff > -0.045f || jcWinChange >= 0.015f)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getLRank() >= 4 : rank.getLRank() >= 5)
+				if (rank.getLRank() >= 8
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
 						&& pkDirection.ordinal() < PKDirection.Uper.ordinal()
 						&& aaLoseDiff < -0.021f && aomenLoseChange < 0.011f
-						&& jaLoseDiff < 0.015f - 2 * winAdjByPull && jcLoseChange < 0.005f
+//						&& jaLoseDiff < 0.015f - 2 * winAdjByPull 
+						&& jcLoseChange < 0.005f
+						&& aleLoseDiff <= 0.01f
 						) {
-					if (aaLoseDiff < -0.035f || jaLoseDiff < -0.035f) {
-						if (firstOption == null && (aaWinDiff > -0.019f || jaWinDiff > -0.03f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.Zero;
-						} else {
+					if (aaLoseDiff < -0.045f || jaLoseDiff < -0.05f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Zero;
+						} else if (pkDirection.ordinal() < PKDirection.Middle.ordinal()
+								&& rank.getLRank() >= 10
+								&& (aaWinDiff > -0.019f || jaWinDiff > -0.045f || jcWinChange >= 0.015f)) {
+							firstOption = ResultGroup.Zero;
 						}
 					}
 				}
 			}
 		} else if (current.getPanKou() >= 0.25) {
 			if (isAomenMajor) {
-				if (rank.getWRank() >= 5
+				if (rank.getWRank() >= 10
+						&& upChange <= 0.065f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
 						&& (pkDirection.ordinal() > PKDirection.Middle.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.021f && aomenWinChange < 0.011f
 						&& waWinDiff <= 0.03f
-						&& jaWinDiff <= -0.02f) {
+						&& jaWinDiff <= -0.02f
+						&& aleWinDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
 					if (aaWinDiff < -0.015f || jaWinDiff <= -0.02f + winAdjByPull
-							|| rank.getWRank() >= 7) {
+							|| rank.getWRank() >= 14) {
 						firstOption = ResultGroup.Three;
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& (aaDrawDiff < 0.011f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.21f)
+				if (rank.getDRank() >= 8
+						&& (aaDrawDiff < 0.011f && aomenDrawChange < 0.019f
+								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.21f)
 						&& jaDrawDiff <= 0.025f && jcDrawChange < 0.005f
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
-							|| jaDrawDiff <= -0.021f || jincai.getCurrentEuro().getEDraw() <= 3.20f) {
-						if (firstOption == null && (aaWinDiff > -0.009f || jaWinDiff > -0.025f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.021f || jincai.getCurrentEuro().getEDraw() <= 3.20f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (rank.getDRank() >= 10
+								&& aomen.getOriginEuro().getEDraw() <= 3.30f
+								&& (aaDrawDiff <= -0.001 && jaDrawDiff <= -0.01)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getLRank() >= 4 : rank.getLRank() >= 5)
+				if (rank.getLRank() >= 8
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
-						&& (pkDirection.ordinal() < PKDirection.Middle.ordinal()
-								|| rank.getLRank() >= 6 && pkDirection.ordinal() < PKDirection.Up.ordinal())
+						&& pkDirection.ordinal() <= PKDirection.Middle.ordinal()
 						&& aaLoseDiff < 0.005f && aomenLoseChange < 0.011f
 						&& jaLoseDiff < 0.025f && jcLoseChange < 0.005f
+						&& aleLoseDiff <= 0.03f
+						&& rank.getDRank() <= 11
 						) {
-					if (aaLoseDiff < -0.031f || jaLoseDiff < -0.035f) {
-						if (firstOption == null && (aaWinDiff > -0.009f || jaWinDiff > -0.025f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.Zero;
-						} else {
+					if (aaLoseDiff < -0.03f || jaLoseDiff < -0.035f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Zero;
+						} else if (rank.getLRank() >= 10
+								&& (aaWinDiff > -0.015f || jaWinDiff > -0.03f || jcWinChange >= 0.01f)) {
+							firstOption = ResultGroup.Zero;
 						}
 					}
 				}
 			} else {
-				if (rank.getWRank() >= 5
+				if (rank.getWRank() >= 10
+						&& upChange <= 0.065f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
 						&& (pkDirection.ordinal() > PKDirection.Down.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.011f && aomenWinChange < 0.011f
-						&& waWinDiff <= 0.03f
-						&& jaWinDiff <= -0.03f) {
+						&& waWinDiff <= 0.035f
+						&& jaWinDiff <= -0.03f
+						&& aleWinDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
 					if (aaWinDiff < -0.025f || jaWinDiff <= -0.045f + winAdjByPull
-							|| rank.getWRank() >= 8
+							|| rank.getWRank() >= 14
 							|| pkDirection.ordinal() > PKDirection.Middle.ordinal()) {
 						firstOption = ResultGroup.Three;
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-							&& (aaDrawDiff <= -0.011f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.21f)
+				if (rank.getDRank() >= 8
+							&& (aaDrawDiff <= -0.001f && aomenDrawChange < 0.019f
+								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.21f)
 							&& jaDrawDiff <= 0.01f - 2 * winAdjByPull && jcDrawChange < 0.005f
 							&& waDrawDiff <= 0.05f
+							&& aleDrawDiff <= 0.03f
+							&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.03f || aomen.getOriginEuro().getEDraw() <= 3.20f
-							|| jaDrawDiff <= -0.03f || jincai.getCurrentEuro().getEDraw() <= 3.20f) {
-						if (firstOption == null && (aaWinDiff > -0.019f || jaWinDiff > -0.029f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.03f || jincai.getCurrentEuro().getEDraw() <= 3.20f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (aomen.getOriginEuro().getEDraw() <= 3.30f
+								&& rank.getDRank() >= 10
+								&& (aaDrawDiff <= -0.005 && jaDrawDiff <= -0.015)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getWRank() >= 9 ? rank.getLRank() >= 4 : rank.getLRank() >= 5)
+				if (rank.getLRank() >= 8
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
-						&& (pkDirection.ordinal() < PKDirection.Middle.ordinal()
-								|| rank.getLRank() >= 6 && pkDirection.ordinal() < PKDirection.Up.ordinal())
+						&& pkDirection.ordinal() <= PKDirection.Middle.ordinal()
 						&& aaLoseDiff < -0.011f && aomenLoseChange < 0.011f
-						&& jaLoseDiff < 0.005f -2 * winAdjByPull && jcLoseChange < 0.005f
+//						&& jaLoseDiff < 0.005f -2 * winAdjByPull
+						&& jcLoseChange < 0.005f
+						&& aleLoseDiff <= 0.035f
+						&& rank.getDRank() <= 11
 						) {
-					if ((aaLoseDiff < -0.035f || jaLoseDiff < -0.035f)) {
-						if (firstOption == null && (aaWinDiff > -0.019f || jaWinDiff > -0.029f || jcWinChange >= 0.015f)) {
-							firstOption = ResultGroup.Zero;
-						} else {
+					if ((aaLoseDiff < -0.03f || jaLoseDiff < -0.035f)) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Zero;
+						} else if (rank.getLRank() >= 10
+								&& (aaWinDiff > -0.015f || jaWinDiff > -0.03f || jcWinChange >= 0.01f)) {
+							firstOption = ResultGroup.Zero;
 						}
 					}
 				}
 			}
 		} else if (current.getPanKou() >= 0) {
-			if (rank.getWRank() >= 5
+			if (rank.getWRank() >= 10
 					&& (Math.abs(pmPkDiff) <= 0.3f && Math.abs(pcPkDiff) <= 0.3f)
 					&& (pkDirection.ordinal() != PKDirection.Downer.ordinal()
 							|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 					&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
-					&& jaWinDiff < -0.001f + winAdjByPull && jcWinChange < 0.001f
-					&& waWinDiff <= 0.03f) {
-				if ((aaWinDiff < -0.025f || jaWinDiff < -0.035f)) {
+					&& jaWinDiff < -0.03f + winAdjByPull && jcWinChange < 0.001f
+					&& waWinDiff <= 0.04f
+					&& aleWinDiff <= 0.035f
+					&& rank.getDRank() <= 10
+					) {
+				if (aaWinDiff < -0.025f || jaWinDiff < -0.035f || rank.getWRank() >= 13) {
 					firstOption = ResultGroup.Three;
 				}
 			}
-			if (rank.getDRank() >= 6
-					&& aaDrawDiff <= -0.001f && aomenDrawChange < 0.011f
-					&& jaDrawDiff <= -0.001f && jcDrawChange < 0.005f
-					&& waDrawDiff <= 0.05f
+			if (rank.getLRank() >= 10
+					&& (Math.abs(pmPkDiff) <= 0.3f && Math.abs(pcPkDiff) <= 0.3f)
+					&& (pkDirection.ordinal() != PKDirection.Uper.ordinal()
+							|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
+					&& aaLoseDiff < -0.001f && aomenLoseChange < 0.011f
+					&& jaLoseDiff < -0.03f - winAdjByPull && jcLoseChange < 0.005f
+					&& waLoseDiff <= 0.04f
+					&& aleLoseDiff <= 0.035f
+					&& rank.getDRank() <= 10
 					) {
-				if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
-						|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f) {
-					if (firstOption == null) {
-						firstOption = ResultGroup.One;
+				if (aaLoseDiff < -0.025f || jaLoseDiff < -0.035f || rank.getLRank() >= 13) {
+					if (firstOption != null) {
+						secondOption = ResultGroup.Zero;
 					} else {
-						secondOption = ResultGroup.One;
+						firstOption = ResultGroup.Zero;
 					}
 				}
 			}
-			if (rank.getLRank() >= 5
-					&& (Math.abs(pmPkDiff) <= 0.3f && Math.abs(pcPkDiff) <= 0.3f)
-					&& (pkDirection.ordinal() != PKDirection.Uper.ordinal()
-							|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && upChange <= 0.04f)
-					&& aaLoseDiff < -0.001f && aomenLoseChange < 0.011f
-					&& jaLoseDiff < -0.001f - winAdjByPull && jcLoseChange < 0.005f
-					&& waLoseDiff <= 0.03f
+			if (rank.getDRank() >= 10
+					&& aaDrawDiff <= 0.035f && aomenDrawChange < 0.011f
+					&& jaDrawDiff <= -0.001f && jcDrawChange < 0.005f
+					&& waDrawDiff <= 0.035f
+					&& aleDrawDiff <= 0.05f
 					) {
-				if ((aaLoseDiff < -0.025f || jaLoseDiff < -0.035f)) {
-					if (firstOption == null) {
-						firstOption = ResultGroup.Zero;
-					} else {
-						secondOption = ResultGroup.Zero;
+				if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
+						|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f
+						|| rank.getDRank() >= 12) {
+					if (firstOption != null) {
+						secondOption = ResultGroup.One;
+					} else if (aomen.getOriginEuro().getEDraw() < 3.22f) {
+						firstOption = ResultGroup.One;
 					}
 				}
 			}
 		} else if (current.getPanKou() >= -0.25) {
 			if (isAomenMajor) {
-				if (rank.getLRank() >= 5
+				if (rank.getLRank() >= 10
+						&& downChange <= 0.065f
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
 						&& (pkDirection.ordinal() < PKDirection.Middle.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& aaLoseDiff < 0.021f && aomenLoseChange < 0.011f
 						&& waLoseDiff <= 0.03f
-						&& jaLoseDiff <= -0.02f) {
+						&& jaLoseDiff <= -0.02f
+						&& aleLoseDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
 					if (aaLoseDiff < -0.015f || jaLoseDiff <= -0.03f
-							|| rank.getLRank() >= 7) {
+							|| rank.getLRank() >= 14) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& (aaDrawDiff < 0.011f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.21f)
+				if (rank.getDRank() >= 8
+						&& (aaDrawDiff < 0.011f && aomenDrawChange < 0.019f 
+								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.21f)
 						&& jaDrawDiff <= 0.025f && jcDrawChange < 0.005f 
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
-							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f) {
-						if (firstOption == null && (aaLoseDiff > -0.009f || jaLoseDiff > -0.025f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (aomen.getOriginEuro().getEDraw() <= 3.30f
+								&& rank.getDRank() >= 10
+								&& (aaDrawDiff <= -0.001 && jaDrawDiff <= -0.01)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getWRank() >= 4 : rank.getWRank() >= 5)
+				if (rank.getWRank() >= 8
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
-						&& (pkDirection.ordinal() > PKDirection.Middle.ordinal()
-								|| rank.getWRank() >= 7 && pkDirection.ordinal() > PKDirection.Down.ordinal())
+						&& pkDirection.ordinal() >= PKDirection.Middle.ordinal()
 						&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
 						&& jaWinDiff < 0.025f && jcWinChange < 0.005f
+						&& aleWinDiff <= 0.03f
+						&& rank.getDRank() <= 11
 						) {
-					if (aaWinDiff < -0.025f || jaWinDiff < -0.025f) {
-						if (firstOption == null && (aaLoseDiff > -0.009f || jaLoseDiff > -0.025f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.Three;
-						} else {
+					if (aaWinDiff < -0.03f || jaWinDiff < -0.03f) {
+						if (firstOption != null){
 							secondOption = ResultGroup.Three;
+						} else if (rank.getWRank() >= 10
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.03f || jcLoseChange >= 0.01f)) {
+							firstOption = ResultGroup.Three;
 						}
 					}
 				}
 			} else {
-				if (rank.getLRank() >= 5
+				if (rank.getLRank() >= 10
+						&& downChange <= 0.065f
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
 						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& aaLoseDiff < 0.011f && aomenLoseChange < 0.011f
-						&& waLoseDiff <= 0.03f
-						&& jaLoseDiff <= -0.03f) {
-					if (aaLoseDiff < -0.02f || jaLoseDiff <= -0.045f - winAdjByPull
-							|| rank.getLRank() >= 7
+						&& waLoseDiff <= 0.035f
+						&& jaLoseDiff <= -0.03f
+						&& aleLoseDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
+					if (aaLoseDiff < -0.025f || jaLoseDiff <= -0.045f - winAdjByPull
+							|| rank.getLRank() >= 14
 							|| pkDirection.ordinal() < PKDirection.Middle.ordinal()) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& (aaDrawDiff <= -0.001f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.21f)
+				if (rank.getDRank() >= 8
+						&& (aaDrawDiff <= -0.001f && aomenDrawChange < 0.019f
+							|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.21f)
 						&& jaDrawDiff < 0.005f + 2 * winAdjByPull && jcDrawChange < 0.005f
 						&& waDrawDiff <= 0.05f
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
-							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f) {
-						if (firstOption == null && (aaLoseDiff > -0.019f || jaLoseDiff > -0.029f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (aomen.getOriginEuro().getEDraw() <= 3.30f
+								&& rank.getDRank() >= 10
+								&& (aaDrawDiff <= -0.005 && jaDrawDiff <= -0.015)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getWRank() >= 4 : rank.getWRank() >= 5)
+				if (rank.getWRank() >= 8
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
-						&& (pkDirection.ordinal() > PKDirection.Middle.ordinal()
-								|| rank.getWRank() >= 5 && pkDirection.ordinal() > PKDirection.Down.ordinal())
+						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
 						&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
-						&& jaWinDiff < 0.005f + 2 * winAdjByPull && jcWinChange < 0.009f
+//						&& jaWinDiff < 0.005f + 2 * winAdjByPull
+						&& jcWinChange < 0.009f
+						&& aleWinDiff <= 0.03f
+						&& rank.getDRank() <= 11
 						) {
-					if (aaWinDiff < -0.045f || jaWinDiff < -0.045f) {
-						if (firstOption == null && (aaLoseDiff > -0.019f || jaLoseDiff > -0.029f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.Three;
-						} else {
+					if (aaWinDiff < -0.035f || jaWinDiff < -0.04f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Three;
+						} else if (rank.getWRank() >= 10
+								&& (aaLoseDiff > -0.019f || jaLoseDiff > -0.03f || jcLoseChange >= 0.01f)
+								) {
+							firstOption = ResultGroup.Three;
 						}
 					}
 				}
 			}
 		} else if (current.getPanKou() >= -0.8) {
 			if (isAomenMajor) {
-				if (rank.getLRank() >= 6
-						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
+				if (rank.getLRank() >= 10
+						&& downChange <= 0.065f
+						&& (pmPkDiff > -0.35f && pcPkDiff > -0.35f)
 						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& aaLoseDiff < 0.021f && aomenLoseChange < 0.011f
 						&& waLoseDiff <= 0.03f
-						&& jaLoseDiff <= -0.015f) {
+						&& jaLoseDiff <= -0.015f
+						&& aleLoseDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
 					if (aaLoseDiff < -0.015f || jaLoseDiff <= -0.025f - winAdjByPull
-							|| rank.getLRank() >= 8) {
+							|| rank.getLRank() >= 14) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
-						&& (aaDrawDiff < 0.011f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.20f)
+				if (rank.getDRank() >= 8
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
+						&& (aaDrawDiff < 0.011f && aomenDrawChange < 0.019f 
+								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.31f)
 						&& jaDrawDiff <= 0.035f && jcDrawChange < 0.005f
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.30f
-							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null && (aaLoseDiff > -0.009f || jaLoseDiff > -0.025f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.30f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (rank.getDRank() >= 10
+								&& aomen.getOriginEuro().getEDraw() <= (current.getPanKou() >= -0.5 ? 3.40f : 3.60f)
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.045f || jcLoseChange >= 0.010f)
+								&& pkDirection.ordinal() > PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getWRank() >= 4 : rank.getWRank() >= 5)
+				if (rank.getWRank() >= 8
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
 						&& aaWinDiff < 0.035f && jcWinChange < 0.005f
+						&& aleWinDiff <= 0.01f
 						) {
 					if (aaWinDiff < -0.035f || jaWinDiff < -0.045f) {
-						if (firstOption == null && (aaLoseDiff > -0.009f || jaLoseDiff > -0.025f)) {
-							firstOption = ResultGroup.Three;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Three;
+						} else if (pkDirection.ordinal() > PKDirection.Middle.ordinal()
+								&& rank.getWRank() >= 10
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.045f)) {
+							firstOption = ResultGroup.Three;
 						}
 					}
 				}
 			} else {
-				if (rank.getLRank() >= 6
-						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
+				if (rank.getLRank() >= 10
+						&& downChange <= 0.065f
+						&& (pmPkDiff > -0.35f && pcPkDiff > -0.35f)
 						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& aaLoseDiff < 0.021f && aomenLoseChange < 0.011f
 						&& waLoseDiff < 0.035f
-						&& jaLoseDiff <= -0.03f) {
+						&& jaLoseDiff <= -0.03f
+						&& aleLoseDiff <= 0.025f
+						&& rank.getDRank() <= 11
+						) {
 					if (aaLoseDiff < -0.02f || jaLoseDiff <= -0.04f - winAdjByPull
-							|| rank.getLRank() >= 8) {
+							|| rank.getLRank() >= 16) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
-						&& (aaDrawDiff <= 0.001f && aomenDrawChange < 0.019f || aomen.getOriginEuro().getEDraw() <= 3.20f)
+				if (rank.getDRank() >= 8
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
+						&& (aaDrawDiff <= 0.001f && aomenDrawChange < 0.019f
+							|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.31f)
 						&& jaDrawDiff <= 0.015f + 2 * winAdjByPull && jcDrawChange < 0.005f
 						&& waDrawDiff <= 0.05f
+						&& aleDrawDiff <= 0.03f
+						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
 						) {
 					if (aaDrawDiff <= -0.035f || aomen.getOriginEuro().getEDraw() <= 3.30f
-							|| jaDrawDiff <= -0.035f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null && (aaLoseDiff > -0.019f || jaLoseDiff > -0.029f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.One;
-						} else {
+							|| jaDrawDiff <= -0.035f || jincai.getCurrentEuro().getEDraw() <= 3.30f
+							|| rank.getDRank() >= 12) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (rank.getDRank() >= 10
+								&& aomen.getOriginEuro().getEDraw() <= (current.getPanKou() >= -0.5 ? 3.40f : 3.60f)
+								&& (aaLoseDiff > -0.019f || jaLoseDiff > -0.045f || jcLoseChange >= 0.015f)
+								&& pkDirection.ordinal() > PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getWRank() >= 4 : rank.getWRank() >= 5)
+				if (rank.getWRank() >= 8
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
-						&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
-						&& jaWinDiff < 0.01f + 2 * winAdjByPull && jcWinChange < 0.005f
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
+						&& aaWinDiff < -0.021f && aomenWinChange < 0.011f
+//						&& jaWinDiff < 0.01f + 2 * winAdjByPull 
+						&& jcWinChange < 0.005f
+						&& aleWinDiff <= 0.01f
 						) {
-					if (aaWinDiff < -0.035f || jaWinDiff < -0.045f) {
-						if (firstOption == null && (aaLoseDiff > -0.019f || jaLoseDiff > -0.029f || jcLoseChange >= 0.015f)) {
-							firstOption = ResultGroup.Three;
-						} else {
+					if (aaWinDiff <= -0.04f || jaWinDiff < -0.055f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Three;
+						} else if (rank.getWRank() >= 10
+								&& (aaLoseDiff > -0.019f || jaLoseDiff > -0.045f || jcLoseChange >= 0.015f)
+								&& pkDirection.ordinal() > PKDirection.Middle.ordinal()) {
+							firstOption = ResultGroup.Three;
 						}
 					}
 				}
 			}
 		} else {
 			if (isAomenMajor) {
-				if (rank.getLRank() >= 7
-						&& (pmPkDiff >= -0.35f || pcPkDiff >= -0.35f)
+				if (rank.getLRank() >= 14
+						&& (pmPkDiff >= -0.38f && pcPkDiff >= -0.38f)
 						&& (pkDirection.ordinal() < PKDirection.Uper.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& (aaLoseDiff < 0.021f && aomenLoseChange < 0.011f || aaLoseDiff < -0.021f)
 						&& waLoseDiff <= 0.03f
-						&& jaLoseDiff <= -0.02f) {
+						&& jaLoseDiff <= -0.02f
+						&& aleLoseDiff <= 0.025f
+						) {
 					if (aaLoseDiff < -0.02f || jaLoseDiff <= -0.02f - winAdjByPull
-							|| rank.getLRank() >= 8) {
+							|| rank.getLRank() >= 16) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
+				if (rank.getDRank() >= 8
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& aaDrawDiff <= -0.001f && aomenDrawChange < 0.011f
 						&& jaDrawDiff <= 0.035f && jcDrawChange < 0.005f 
+						&& aleDrawDiff <= 0.03f
 						) {
 					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.30f
 							|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null && (aaLoseDiff > -0.009f || jaLoseDiff > -0.025f)) {
-							firstOption = ResultGroup.One;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (pkDirection.ordinal() > PKDirection.Middle.ordinal()
+//								&& rank.getDRank() >= 5
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.045f)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getWRank() >= 4 : rank.getWRank() >= 5)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
+				if (rank.getWRank() >= 8
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
 						&& jaWinDiff < 0.03f && jcWinChange < 0.005f
+						&& aleWinDiff <= 0.01f
 						) {
 					if (aaWinDiff < -0.035f || jaWinDiff < -0.035f) {
-						if (firstOption == null && (aaLoseDiff > -0.009f || jaLoseDiff > -0.025f)) {
-							firstOption = ResultGroup.Three;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Three;
+						} else if (pkDirection.ordinal() > PKDirection.Middle.ordinal()
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.045f)) {
+							firstOption = ResultGroup.Three;
 						}
 					}
 				}
 			} else {
-				if (rank.getLRank() >= 7
-						&& (pmPkDiff >= -0.35f || pcPkDiff >= -0.35f)
+				if (rank.getLRank() >= 14
+						&& (pmPkDiff >= -0.38f && pcPkDiff >= -0.38f)
 						&& (pkDirection.ordinal() < PKDirection.Uper.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& (aaLoseDiff < 0.021f && aomenLoseChange < 0.011f || aaLoseDiff < -0.021f)
 						&& waLoseDiff < 0.035f
-						&& jaLoseDiff <= -0.03f) {
+						&& jaLoseDiff <= -0.03f
+						&& aleLoseDiff <= 0.025f
+						) {
 					if (aaLoseDiff < -0.02f || jaLoseDiff <= -0.04f - winAdjByPull
-							|| rank.getLRank() >= 9) {
+							|| rank.getLRank() >= 18) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getDRank() >= 4 : rank.getDRank() >= 5)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
+				if (rank.getDRank() >= 8
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& aaDrawDiff <= -0.001f && aomenDrawChange < 0.011f
 						&& aaDrawDiff <= 0.035f && jcDrawChange < 0.005f 
+						&& aleDrawDiff <= 0.03f
 						) {
 					if (aaDrawDiff <= -0.035f || aomen.getOriginEuro().getEDraw() <= 3.30f
 							|| jaDrawDiff <= -0.035f || jincai.getCurrentEuro().getEDraw() <= 3.30f) {
-						if (firstOption == null && (aaLoseDiff > -0.015f || jaLoseDiff > -0.029f)) {
-							firstOption = ResultGroup.One;
-						} else {
+						if (firstOption != null) {
 							secondOption = ResultGroup.One;
+						} else if (pkDirection.ordinal() > PKDirection.Middle.ordinal()
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.045f)) {
+							firstOption = ResultGroup.One;
 						}
 					}
 				}
-				if ((rank.getLRank() >= 9 ? rank.getWRank() >= 4 : rank.getWRank() >= 5)
-						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
-						&& aaWinDiff < -0.021f && aomenWinChange < 0.011f
-						&& jaWinDiff < 0.03f && jcWinChange < 0.005f
+				if (rank.getWRank() >= 8
+						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
+						&& aaWinDiff < -0.025f && aomenWinChange < 0.011f
+//						&& jaWinDiff < 0.03f
+						&& jcWinChange < 0.005f
+						&& aleWinDiff <= 0.03f
 						) {
-					if (aaWinDiff < -0.045f || jaWinDiff < -0.05f) {
-						if (firstOption == null && (aaLoseDiff > -0.015f || jaLoseDiff > -0.029f)) {
-							firstOption = ResultGroup.Three;
-						} else {
+					if (aaWinDiff < -0.07f || jaWinDiff < -0.07f) {
+						if (firstOption != null) {
 							secondOption = ResultGroup.Three;
+						} else if (pkDirection.ordinal() > PKDirection.Middle.ordinal()
+								&& (aaLoseDiff > -0.015f || jaLoseDiff > -0.045f)) {
+							firstOption = ResultGroup.Three;
 						}
 					}
 				}
@@ -875,8 +1137,7 @@ public class MatchPromoter {
 		}
 	}
 	
-	private void analyzeEuroDirection (boolean isAomenMajor,
-			float aaWinDiff, float aaDrawDiff, float aaLoseDiff,
+	private void analyzeEuroDirection (float aaWinDiff, float aaDrawDiff, float aaLoseDiff,
 			float jaWinDiff, float jaDrawDiff, float jaLoseDiff,
 			float waWinDiff, float waDrawDiff, float waLoseDiff) {
 		
@@ -902,6 +1163,8 @@ public class MatchPromoter {
 			AsiaPl aomenCurrPk = pkMatrices.getCurrentPk();
 			AsiaPl aomenMainPk = pkMatrices.getMainPk();
 			float aomenPk = aomenCurrPk.getPanKou();
+			float aomenMainCalPK = MatchUtil.getCalculatedPk(aomenMainPk);
+			float aomenCurrentCalPK = MatchUtil.getCalculatedPk(aomenCurrPk);
 			
 			boolean isAomenMajor = EuroUtil.isAomenTheMajor(league);
 
@@ -971,9 +1234,36 @@ public class MatchPromoter {
 					jaDrawDiff = MatchUtil.getEuDiff(jincai.getCurrentEuro().getEDraw(), euroAvg.getEDraw(), false);
 					jaLoseDiff = MatchUtil.getEuDiff(jincai.getCurrentEuro().getELose(), euroAvg.getELose(), false);
 				}
+				
+				float pkChange = aomenCurrentCalPK - aomenMainCalPK;
+				float jcPkWinDiff = pkChange - (euroAvg.getEWin() - jincai.getCurrentEuro().getEWin());
+				float jcPkLoseDiff = pkChange + (euroAvg.getELose() - jincai.getCurrentEuro().getELose());
+				
+				if (aomenPk >= 1.25f) {
+					// ignore
+				} else if (aomenPk > 0) {
+					if (jcPkWinDiff >= 0.18f) {
+						killGps.add(ResultGroup.Three);
+					}
+				} else if (aomenPk <= -1.25f) {
+					// ignore
+				} else if (aomenPk < 0) {
+					if (jcPkLoseDiff <= -0.18f) {
+						killGps.add(ResultGroup.Zero);
+					}
+				} else {
+					if (jcPkWinDiff >= 0.2f) {
+						killGps.add(ResultGroup.Three);
+					}
+					if (jcPkLoseDiff <= -0.2f) {
+						killGps.add(ResultGroup.Zero);
+					}
+				}
 
 				// the main company and lab is higher than the average, or aomen is higher than average and aomen is adjusted high
-				if (aomenPk >= 1) {
+				if (aomenPk >= 1.25f) {
+					// ignore
+				} else if (aomenPk >= 1) {
 					if (isAomenMajor) {
 						if (aaWinRt + aomenWinChange > 0.001
 								&& jaWinDiff + jcWinChange > -0.05
@@ -1228,6 +1518,7 @@ public class MatchPromoter {
 						}
 					}
 				} else {
+					/*
 					if ((maWinRt > 0.06 && majorWinChange > -0.021 && majorLoseChange < 0.021
 							|| iaWinRt > 0.051 && interWinChange > 0.011 && interLoseChange < 0.021
 							|| aaWinRt > 0.011 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
@@ -1252,6 +1543,7 @@ public class MatchPromoter {
 							&& waLoseRt > 0.011 && willLoseChange > -0.011) {
 						killGps.add(ResultGroup.Zero);
 					}
+					*/
 				}
 			}
 		}
@@ -1261,18 +1553,18 @@ public class MatchPromoter {
 		float l1Diff = Math.abs(pankou) >= 0.75 ? 0.13f : 0.07f;
 		float l2Diff = Math.abs(pankou) >= 0.75 ? 0.2f : 0.15f;
 		
-		if (predictPk - mainPk >= l1Diff && predictPk - currentPk >= l1Diff && pull.getHPull() >= 5) {
+		if (predictPk - mainPk >= l1Diff && predictPk - currentPk >= l1Diff && pull.getHPull() >= 5 && currentPk - mainPk <= 0.08) {
 			if ((pull.getHPull() >= 8
 						|| predictPk - mainPk >= l1Diff + 0.03f && predictPk - currentPk >= l1Diff + 0.03f
 						|| predictPk - currentPk >= l2Diff)
-					&& pankou >= -0.25) {
+					&& pankou >= -0.5) {
 				killByPull.add(ResultGroup.Three);
 			}
-		} else if (mainPk - predictPk >= l1Diff && currentPk - predictPk >= l1Diff && pull.getGPull() >= 5) {
+		} else if (mainPk - predictPk >= l1Diff && currentPk - predictPk >= l1Diff && pull.getGPull() >= 5 && currentPk - mainPk >= -0.08) {
 			if ((pull.getGPull() >= 8
 						|| mainPk - predictPk >= l1Diff + 0.03f && currentPk - predictPk >= l1Diff + 0.03f
 						|| currentPk - predictPk >= l2Diff)
-					&& pankou <= 0.25) {
+					&& pankou <= 0.5) {
 				killByPull.add(ResultGroup.Zero);
 			}
 		}
@@ -1346,8 +1638,9 @@ public class MatchPromoter {
 				case America: avg = 1.490f; break;
 				default: avg = 1.48f; break;
 			}
+			float euPkDiff = (currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk);
 			// 1.48-0.12 < pl < 1.48+0.12; 0.8 < pk < 1.2
-			if ((currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk) >= 0.08) {
+			if ( euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Three);
 			}
 		} else if (aomenPk.getPanKou() == 0.75f) {
@@ -1358,9 +1651,9 @@ public class MatchPromoter {
 				case America: avg = 1.638f; break;
 				default: avg = 1.65f; break;
 			}
-			
+			float euPkDiff = (currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk);
 			// 1.65-0.15 < pl < 1.65+0.15; 0.6 < pk < 0.9
-			if ((currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Three);
 			}			
 		} else if (aomenPk.getPanKou() == 0.50f) {
@@ -1371,9 +1664,9 @@ public class MatchPromoter {
 				case America: avg = 1.868f; break;
 				default: avg = 1.88f; break;
 			}
-			
+			float euPkDiff = (currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk);
 			// 1.88-0.18 < pl < 1.88+0.18; 0.35 < pk < 0.65
-			if ((currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Three);
 			}			
 		} else if (aomenPk.getPanKou() == 0.25f) {
@@ -1384,9 +1677,9 @@ public class MatchPromoter {
 				case America: avg = 2.147f; break;
 				default: avg = 2.15f; break;
 			}
-			
+			float euPkDiff = (currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk);
 			// 2.15-0.2 < pl < 2.15+0.2; 0.1 < pk < 0.4
-			if ((currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Three);
 			}			
 		} else if (aomenPk.getPanKou() == -0.25f) {
@@ -1397,9 +1690,9 @@ public class MatchPromoter {
 				case America: avg = 2.202f; break;
 				default: avg = 2.18f; break;
 			}
-			
+			float euPkDiff = (currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou());
 			// 2.18-0.2 < pl < 2.18+0.2; -0.1 > pk > -0.4
-			if ((currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou()) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Zero);
 			}			
 		} else if (aomenPk.getPanKou() == -0.50f) {
@@ -1411,8 +1704,9 @@ public class MatchPromoter {
 				default: avg = 1.90f; break;
 			}
 			
+			float euPkDiff = (currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou());
 			// 1.90-0.18 < pl < 1.90+0.18; -0.35 > pk > -0.65
-			if ((currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou()) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Zero);
 			}			
 		} else if (aomenPk.getPanKou() == -0.75f) {
@@ -1423,9 +1717,9 @@ public class MatchPromoter {
 				case America: avg = 1.670f; break;
 				default: avg = 1.65f; break;
 			}
-			
+			float euPkDiff = (currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou());
 			// 1.65-0.18 < pl < 1.65+0.18; -0.6 > pk > -0.9
-			if ((currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou()) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Zero);
 			}			
 		} else if (aomenPk.getPanKou() == -1.0f) {
@@ -1436,9 +1730,9 @@ public class MatchPromoter {
 				case America: avg = 1.450f; break;
 				default: avg = 1.47f; break;
 			}
-			
+			float euPkDiff = (currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou());
 			// 1.47-0.18 < pl < 1.47+0.18; -0.85 > pk > -1.15
-			if ((currAomenEu.getELose() - avg) - (calculatedPk - aomenPk.getPanKou()) >= 0.08) {
+			if (euPkDiff >= 0.08 || euPkDiff <= -0.1) {
 				killGps.add(ResultGroup.Zero);
 			}			
 		}
@@ -1447,97 +1741,24 @@ public class MatchPromoter {
 	private float calculateWinDegree (ClubMatrix hostMatrix, ClubMatrix guestMatrix,
 			float hostAttGuestDefComp, float guestAttHostDefComp) {
 		float rawDiff = FACTOR_H * hostAttGuestDefComp - FACTOR_G * guestAttHostDefComp;
-		float winRt = hostMatrix.getWinRt() * 0.6f + (1 - guestMatrix.getWinDrawRt()) * 0.4f;
+		float winRt = hostMatrix.getWinRt() * 0.7f + (1 - guestMatrix.getWinDrawRt()) * 0.3f;
 		float loseRt = guestMatrix.getWinRt() * 0.6f + (1 - hostMatrix.getWinDrawRt()) * 0.4f;
 		float diff = rawDiff;
-
-		if (rawDiff > 0.45) {
-			// but host wins little and guest lose little
-			if (winRt < 0.4f) {
-				diff -= 0.15f;
-			}
-			// or host wins lot and guest lose lot
-			else if (winRt > 0.55f) {
-				diff += 0.15f;
-			}
-		}
-		// guest attack is good
-		else if (rawDiff < -0.35) {
-			// but guest win little and host lose little
-			if (loseRt < 0.42f) {
-				diff += 0.15f;
-			}
-			// or guest wins lot and host lose lot
-			else if (loseRt >= 0.5f) {
-				diff -= 0.15f;
-			}
-		} else {
-			// host wins more or guest lose more
-			if (winRt > 0.4f) {
-				diff += 0.15f;
-			}
-			// or guest wins more or host lose more
-			if (loseRt > 0.35f) {
-				diff -= 0.15f;
-			}
-		}
 		
-		if (rawDiff > 1.5f) {
-			diff -= (guestAttHostDefComp - 0.35)/0.8f;
-		} else if (rawDiff > 1.3f) {
-			diff -= (guestAttHostDefComp - 0.35)/1f;
-		} else if (rawDiff > 0.95f) {
-			diff -= (guestAttHostDefComp - 0.45)/1f;
-		} else if (rawDiff > 0.69f) { // 11 ~ 12
-			diff += (hostAttGuestDefComp - 1.95)/1.5f;
-		} else if (rawDiff > 0.44f) {// 9 ~ 10
-			diff += (hostAttGuestDefComp - 1.78)/1.5f;
-		}  else if (rawDiff > 0.2f) {// 7 ~ 8
-			if (hostAttGuestDefComp > 1.65) {
-				diff += (hostAttGuestDefComp - 1.48)/1.5f;
-			} else if (hostAttGuestDefComp < 1) {
-				diff += (hostAttGuestDefComp - 1.25)/1.5f;
-			} else {
-				diff += (hostAttGuestDefComp - 1.35)/1.5f;
-			}
-		} else if (rawDiff > 0f) {// 5 ~ 6
-			if (hostAttGuestDefComp > 1.62) {
-				diff += (hostAttGuestDefComp - 1.42)/1.8f;
-			} else if (hostAttGuestDefComp < 1) {
-				diff += (hostAttGuestDefComp - 1.22)/1.8f;
-			} else {
-				diff += (hostAttGuestDefComp - 1.28)/1.8f;
-			}
-		}  else if (rawDiff > -0.2f) {
-			if (guestAttHostDefComp > 1.6) {
-				diff -= (guestAttHostDefComp - 1.4)/1.8f;
-			} else if (guestAttHostDefComp < 1) {
-				diff -= (guestAttHostDefComp - 1.2)/1.8f;
-			} else {
-				diff -= (guestAttHostDefComp - 1.25)/1.8f;
-			}
-		} else if (rawDiff > -0.44f) {
-			if (guestAttHostDefComp > 1.65) {
-				diff -= (guestAttHostDefComp - 1.45)/1.5f;
-			} else if (hostAttGuestDefComp < 1) {
-				diff -= (guestAttHostDefComp - 1.25)/1.5f;
-			} else {
-				diff -= (guestAttHostDefComp - 1.35)/1.4f;
-			}
-		} else if (rawDiff > -0.56f) {
-			diff -= (guestAttHostDefComp - 1.72)/1.5f;
-		} else if (rawDiff > -0.82f) {
-			diff -= (guestAttHostDefComp - 1.88)/1.5f;
-		} else if (rawDiff > -1.15f){
-			diff += (hostAttGuestDefComp - 0.5)/1f;
+		float diffFromWinRt = (winRt * 32 - 10)/16;
+		float diffFromLoseRt = (loseRt * 32 - 10)/16;
+		
+		if (rawDiff > 0) {
+			diff = (rawDiff + diffFromWinRt) / 2;
 		} else {
-			diff += (hostAttGuestDefComp - 0.45)/1f;
+			diff = (rawDiff - diffFromLoseRt) / 2;
 		}
 		
 		return diff;
 	}
 	
-	private int adjustDrawDegreeReferToDrawRate (float diff, int totalDegree, ClubMatrix hostMatrix, ClubMatrix guestMatrix) {
+	private int adjustDrawDegreeReferToDrawRate (float diff, int totalDegree, ClubMatrix hostMatrix, ClubMatrix guestMatrix, 
+			float hostAttGuestDefComp, float guestAttHostDefComp) {
 		int drawDegree = (totalDegree + 1) / 2;
 		int restDegree = totalDegree - drawDegree;
 		
@@ -1546,45 +1767,50 @@ public class MatchPromoter {
 		float hMissPerMatch = (float)hostMatrix.getMisses() / hostMatrix.getNum();
 		float gMissPerMatch = (float)guestMatrix.getMisses() / guestMatrix.getNum();
 
-		// Win - 
+		// diff is big, just consider of draw, if small, then check the opposite
 		if (diff >= 0) {
 			// host and guest are both good, and the goal diff is not high
-			if (hostMatrix.getWinDrawRt() >= 0.7 && guestMatrix.getWinDrawRt() >= 0.7 && diff < 0.5) {
+			if (hostMatrix.getWinDrawRt() >= 0.7 && guestMatrix.getWinDrawRt() >= 0.5) {
 				drawDegree ++;
 				restDegree --;
 			}
 			// host is good because of goal too much but match lost rate is high, and guest win rate is high
-			else if (hostMatrix.getWinDrawRt() <= 0.7 && guestMatrix.getWinRt() >= 0.4) {
+			else if (hostMatrix.getWinDrawRt() <= 0.7 && guestMatrix.getWinRt() >= 0.4 && diff < 0.5) {
 				drawDegree --;
 				restDegree ++;
 			}
 			
 			// guest goals more -> guest win more possible
-			if (gGoalPerMatch > 1.45f) {
+			if (gGoalPerMatch > 1.4f) {
 				// host loses much
-				if (hostMatrix.getWinDrawRt() <= 0.7) {
+				if (hostMatrix.getWinDrawRt() <= 0.7 && diff < 0.5) {
 					drawDegree --;
 					restDegree ++;
+					
+					if (guestAttHostDefComp >= 1.5) {
+						drawDegree --;
+						restDegree ++;
+					}
 				}
-			} else if (hGoalPerMatch < 1.4) {
-				if (guestMatrix.getWinDrawRt() >= 0.5) {
+			} else if (hGoalPerMatch < 1.55) {
+				if (gMissPerMatch < 1.45f && guestMatrix.getWinDrawRt() >= 0.55) {
 					drawDegree ++;
 					restDegree --;
-				}
-				
-				if (gMissPerMatch < 1.0f && guestMatrix.getWinDrawRt() >= 0.6) {
-					drawDegree ++;
-					restDegree --;
+					
+					if (hostAttGuestDefComp <= 1.55) {
+						drawDegree ++;
+						restDegree --;
+					}
 				}
 			}
 		} else {
 			// host and guest are both good, and the goal diff is not high
-			if (guestMatrix.getWinDrawRt() >= 0.7 && hostMatrix.getWinDrawRt() >= 0.7 && diff > -0.5) {
+			if (guestMatrix.getWinDrawRt() >= 0.7 && hostMatrix.getWinDrawRt() >= 0.57) {
 				drawDegree ++;
 				restDegree --;
 			}
 			// host is good because of goal too much and match lose rate is high, guest win rate is high
-			else if (guestMatrix.getWinDrawRt() <= 0.7 && hostMatrix.getWinRt() >= 0.5) {
+			else if (guestMatrix.getWinDrawRt() <= 0.7 && hostMatrix.getWinRt() >= 0.5 && diff > -0.5) {
 				drawDegree --;
 				restDegree ++;
 			}
@@ -1592,19 +1818,24 @@ public class MatchPromoter {
 			// host goals more -> host win more possible
 			if (hGoalPerMatch > 1.45f) {
 				// host loses much
-				if (guestMatrix.getWinDrawRt() <= 0.6) {
+				if (guestMatrix.getWinDrawRt() <= 0.65 && diff > -0.5) {
 					drawDegree --;
 					restDegree ++;
+					
+					if (hostAttGuestDefComp > 1.55) {
+						drawDegree --;
+						restDegree ++;
+					}
 				}
-			} else if (gGoalPerMatch < 1.35) {
-				if (hostMatrix.getWinDrawRt() >= 0.6) {
+			} else if (gGoalPerMatch < 1.45) {
+				if (hMissPerMatch < 1.45f && hostMatrix.getWinDrawRt() >= 0.57f) {
 					drawDegree ++;
 					restDegree --;
-				}
-				
-				if (gMissPerMatch < 1.0f && hostMatrix.getWinDrawRt() >= 0.7) {
-					drawDegree ++;
-					restDegree --;
+					
+					if (guestAttHostDefComp < 1.45) {
+						drawDegree ++;
+						restDegree --;
+					}
 				}
 			}
 		}
@@ -1642,7 +1873,7 @@ public class MatchPromoter {
 		private float hPull;
 		private float gPull;
 	}
-	
+
 	public static void main (String args[]) {
 		predictDraw(3.5833f, 0.2236f);
 		predictDraw(2.5833f, 0.9236f);

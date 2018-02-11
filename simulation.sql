@@ -272,5 +272,19 @@ select m.ofn_match_id, m.match_day_id, m.match_time, m.league, m.host_name, m.gu
 		and mr.host_score = mr.guest_score
 		and m.match_time > '2016-01-15 0:00:00';
 
-
+insert into league_euro_audit (league_id, name, company, pk, pk_type, euro_avg_win, euro_avg_draw, euro_avg_lose)
+select t.league_id, t.name, t.company, t.current_pk, 'Current', t.avg_win, t.avg_draw, t.avg_lose from (
+	select l.league_id, l.name, mpk.company, mpk.current_pk,
+		   sum(mce.current_win_pl)/count(mce.current_win_pl) avg_win,
+		   sum(mce.current_draw_pl)/count(mce.current_draw_pl) avg_draw,
+		   sum(mce.current_lose_pl)/count(mce.current_lose_pl) avg_lose,
+           count(m.ofn_match_id) cnt
+	  from matches m, match_company_euro mce, match_pankou mpk, league l
+	 where mce.company='Aomen'
+	   and mpk.company='Aomen'
+	   and mpk.ofn_match_id = mce.ofn_match_id
+	   and m.ofn_match_id = mce.ofn_match_id
+       and m.league = l.name
+	  group by l.league_id, l.name, mpk.current_pk) t
+ where t.cnt > 20;
 

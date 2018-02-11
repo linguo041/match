@@ -372,7 +372,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				
 //				log.info(match.toString());
 
-				if (index_H >= 5 && index_A >= 5 || index_H + index_A >= 20) {
+				if (index_H >= 6 && index_A >= 6 || index_H + index_A >= 20) {
 					break;
 				}
 			}

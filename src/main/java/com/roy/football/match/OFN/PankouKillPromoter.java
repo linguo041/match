@@ -5,6 +5,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.mysema.commons.lang.Pair;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
@@ -34,8 +37,12 @@ import com.roy.football.match.util.PanKouUtil.PKDirection;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Component
 public class PankouKillPromoter {
 	private final static float LOW_PK_POINT = -0.02f;
+	
+	@Autowired
+	private MatchPromoter matchPromoter;
 	
 	public PredictResult calculate (OFNCalculateResult calResult) {
 		PredictResult predictRes = new PredictResult();
@@ -44,8 +51,7 @@ public class PankouKillPromoter {
 //		kill(killPromoteResult, calResult);
 //		promote(killPromoteResult, calResult);
 		
-		MatchPromoter pp = new MatchPromoter();
-		predictRes.setKpResult(pp.promote(calResult));
+		predictRes.setKpResult(matchPromoter.promote(calResult));
 
 		return predictRes;
 	}

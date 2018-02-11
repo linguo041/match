@@ -19,23 +19,21 @@ public class OFNExcelData {
 	private String matchInfor;
 	@Header(order=60, title="Level [winRt, winGoal]")
 	private String level;
-//	@Header(order=70, title="Guest Level [winRt, winGoal]")
-//	private String guestLevel;
 	@Header(order=80, title="H:G Base State JS")
 	private String hostGuestComp;
-	@Header(order=90, title="Hot | goal_chg{H:G} ")
+	@Header(order=90, title="Hot | variance{H:G} ")
 	private String stateVariation;
-	@Header(order=100, title="Main, curr")
+	@Header(order=100, title="Predict,Main,curr")
 	private String originPanKou;
-	@Header(order=110, title="Predict PK [Latest]")
+//	@Header(order=110, title="Predict PK [Latest]")
 	private String predictPanKou;
 	@Header(order=130, title="K_PK[Up, Down]")
 	private String pkKillRate;
-	@Header(order=135, title="Main_Avg Main_chg")
+//	@Header(order=135, title="Main_Avg Main_chg")
 	private String plMatrix;
-	@Header(order=138, title="in_avg in_chg")
+	@Header(order=138, title="will_avg will_chg")
 	private String will;
-	@Header(order=140, title="am_avg am_chg")
+	@Header(order=140, title="aomen_audit am_avg")
 	private String aomen;
 	@Header(order=142, title="avg jc chg")
 	private String jincai;
@@ -51,4 +49,6 @@ public class OFNExcelData {
 	private String predictScore;
 	@Header(order=180, title="Result")
 	private String result;
+	@Header(order=190, title="promote_ratio")
+	private String promoteRatio;
 }

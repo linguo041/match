@@ -222,7 +222,7 @@ create table match_predict (
 ) ENGINE=InnoDB;
 
 create table league (
-	league_id bigint not null,
+	league_id bigint(20) not null,
 	name varchar(20),
 	main_company varchar(20),
 	continent varchar(20),
@@ -249,3 +249,16 @@ create table football.teams (
 ) ENGINE=InnoDB;
 
 create index league_name ON football.league (name);
+
+CREATE TABLE league_euro_audit (
+     audit_id bigint(20) not null AUTO_INCREMENT,
+     league_id bigint(20) not null,
+     name varchar(40) not null,
+	 company varchar(40) not null,
+     pk decimal(5,3) not null,
+	 pk_type varchar(20) not null,
+     euro_avg_win decimal(5,3),
+	 euro_avg_draw decimal(5,3),
+	 euro_avg_lose decimal(5,3),
+	 primary key (audit_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

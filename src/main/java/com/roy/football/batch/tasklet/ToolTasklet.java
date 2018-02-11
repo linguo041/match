@@ -100,13 +100,13 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		EMatch  match = matchRepository.findOne(1082580L);
+		EMatch  match = matchRepository.findOne(1082659L);
 		
 		ofnMatchService.processMatches(Lists.newArrayList(JinCaiMatch.fromDBMatch(match)));
 	}
 	
 	private void processMatches () {
-		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-10-21 12:00:00", "2017-10-22 11:00:00");
+		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-12-29 12:00:00", "2017-12-31 11:00:00");
 		
 		if (matches != null && !matches.isEmpty()) {
 			List<JinCaiMatch> jcMatches = matches.stream().map(match -> {
@@ -114,6 +114,7 @@ public class ToolTasklet implements Tasklet{
 				jcMatch.setOddsmid(match.getOfnMatchId());
 				jcMatch.setXid(match.getMatchDayId());
 				jcMatch.setLid(match.getLeague().getLeagueId());
+				jcMatch.setMtime(match.getMatchTime());
 				return jcMatch;
 			}).collect(Collectors.toList());
 			
@@ -153,7 +154,8 @@ public class ToolTasklet implements Tasklet{
 	
 	private void predictFactor () {
 //		predictScoreFactorClusterService.evaluateBaseFactor();
-		predictScoreFactorClusterService.evaluateAllFactors();
+//		predictScoreFactorClusterService.evaluateAllFactors();
+		predictScoreFactorClusterService.evaluatePkByBase();
 	}
 	
 	private void adjustVariance () {

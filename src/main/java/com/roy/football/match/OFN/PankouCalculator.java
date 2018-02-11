@@ -71,7 +71,7 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 			float medianPk = 0.5f * (latestPl.gethWin() + latestPl.getaWin());
 			
 			AsiaPl main = pks.get(0);
-			float maxHours = 0;
+			float maxWeight = 0;
 			AsiaPl temp = null;
 			float winWeight = 0;
 			float loseWeight = 0;
@@ -88,17 +88,17 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 					float thisTimeToMatch = MatchUtil.getDiffHours(matchDt, thisDt);
 					float pkWeightByHours = getPkWeightByHours(lastTimeToMatch, thisTimeToMatch);
 
-					// the latest(in 24h) long hours's pankou
-					if (lastTimeToMatch > 24) {
-						tempHours = 24 - thisTimeToMatch;
+					// the latest(in 20h) long hours's pankou
+					if (lastTimeToMatch > 20) {
+						tempHours = 20 - thisTimeToMatch;
 						winWeight += (temp.gethWin() - medianPk - changePk) * pkWeightByHours;
 						loseWeight += (temp.getaWin() - medianPk + changePk) * pkWeightByHours;
-						maxHours = tempHours;
+						maxWeight = pkWeightByHours;
 						totalHours += (tempHours > 0 ? tempHours : 0);
 						main = temp;
 					} else if (lastTimeToMatch > 0.5) {
-						if (tempHours >= maxHours) {
-							maxHours = tempHours;
+						if (pkWeightByHours >= maxWeight) {
+							maxWeight = pkWeightByHours;
 							main = temp;
 						}
 
@@ -131,7 +131,7 @@ public class PankouCalculator extends AbstractBaseDataCalculator implements Calc
 				totalHours += currentHours;
 			}
 
-			if (currentHours >= maxHours && temp != null) {
+			if (currentHours >= maxWeight && temp != null) {
 				main = temp;
 			}
 

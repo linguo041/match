@@ -17,6 +17,7 @@ import java.util.List;
 import static com.roy.football.match.jpa.entities.calculation.QEMatch.eMatch;
 import static com.roy.football.match.jpa.entities.calculation.QEMatchClubState.eMatchClubState;
 import static com.roy.football.match.jpa.entities.calculation.QELatestMatchState.eLatestMatchState;
+import static com.roy.football.match.jpa.entities.calculation.QEAsiaPk.eAsiaPk;
 import static com.roy.football.match.jpa.entities.calculation.QEJiaoShou.eJiaoShou;
 import static com.roy.football.match.jpa.entities.calculation.QEEuroPlCompany.eEuroPlCompany;
 import static com.roy.football.match.jpa.entities.calculation.QEMatchResult.eMatchResult;
@@ -43,6 +44,23 @@ public class MatchComplexQueryService {
 					eLatestMatchState.hostAttackToGuest, eLatestMatchState.guestAttackToHost,
 					eLatestMatchState.hostAttackVariationToGuest, eLatestMatchState.guestAttackVariationToHost,
 					eJiaoShou.hgoalPerMatch, eJiaoShou.ggoalPerMatch);
+	}
+	
+	public List<Tuple> findBaseAndPkMatches (String fromDate, String endDate, League le) throws ParseException {
+		return jpaQueryFactory
+			.from(eMatch)
+				.join(eMatchClubState).on(eMatch.ofnMatchId.eq(eMatchClubState.ofnMatchId))
+				.join(eLatestMatchState).on(eMatch.ofnMatchId.eq(eLatestMatchState.ofnMatchId))
+				.join(eAsiaPk).on(eMatch.ofnMatchId.eq(eAsiaPk.ofnMatchId).and(eAsiaPk.company.eq(Company.Aomen)))
+			.where(eMatch.matchTime.between(DateUtil.parseSimpleDateWithDash(fromDate), DateUtil.parseSimpleDateWithDash(endDate))
+					.and(eMatch.league.eq(le))
+					.and(eMatchClubState.hostAttGuestDefInx.isNotNull())
+					.and(eLatestMatchState.hostAttackToGuest.isNotNull()))
+			.list(eMatch.ofnMatchId,
+					eAsiaPk.originPk,
+					eMatchClubState.hostAttGuestDefInx, eMatchClubState.guestAttHostDefInx,
+					eLatestMatchState.hostAttackToGuest, eLatestMatchState.guestAttackToHost,
+					eLatestMatchState.hostAttackVariationToGuest, eLatestMatchState.guestAttackVariationToHost);
 	}
 	
 	public List<Tuple> findMatchesWithJCLatestPl (String fromDate, String endDate, League le) throws ParseException {

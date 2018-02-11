@@ -48,8 +48,8 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	@Autowired
 	private OkoooMatchCrawler okoooMatchCrawler;
 	
-	
-	private final static PankouKillPromoter pankouKiller = new PankouKillPromoter();
+	@Autowired
+	private PankouKillPromoter pankouKiller;
 	
 	// more....
 
