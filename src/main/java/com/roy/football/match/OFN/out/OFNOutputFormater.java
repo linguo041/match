@@ -79,6 +79,7 @@ public class OFNOutputFormater {
 			Float latestPk = null;
 			JiaoShouMatrices jiaoshouMatrices = calculateResult.getJiaoShou();
 			float pkBalance = 0f;
+			float currentPk = 0f;
 
 			if (jiaoshouMatrices != null) {
 				latestPk = jiaoshouMatrices.getLatestPankou();
@@ -104,6 +105,7 @@ public class OFNOutputFormater {
 				Float currPk = pkmatrices.getCurrentPk().getPanKou();
 				float calculatedCurrPk = MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk());
 				pkBalance = (currPk - calculatedCurrPk);
+				currentPk = currPk;
 				
 				excelData.setOriginPanKou(String.format("%.2f [%.2f]\r\n%.2f [%.2f]\r\n%.2f [%.2f]",
 						predictPk, latestPk,
@@ -205,10 +207,11 @@ public class OFNOutputFormater {
 					
 					EuroPl aLePl = aomen.getLeAvgEuro();
 					if (aLePl != null) {
-						pkBalance = pkBalance * 0.8f;
-						aleWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEWin(), aLePl.getEWin() + pkBalance, false);
+						float winPkBalance = currentPk >= 0 ? pkBalance * 0.85f : pkBalance * 1.5f;
+						float losePkBalance = currentPk <= 0 ? pkBalance * 0.85f : pkBalance * 1.5f;
+						aleWinDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEWin(), aLePl.getEWin() + winPkBalance, false);
 						aleDrawDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getEDraw(), aLePl.getEDraw(), false);
-						aleLoseDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getELose(), aLePl.getELose() - pkBalance, false);
+						aleLoseDiff = MatchUtil.getEuDiff(aomen.getCurrentEuro().getELose(), aLePl.getELose() - losePkBalance, false);
 						aomenEuroData = String.format("%.2f   %.2f   %.2f\n"
 								+ "%.2f   %.2f   %.2f\n"
 								+ "%.2f   %.2f   %.2f",

@@ -266,7 +266,6 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 
 					goals_H[index_H] = match.getHscore();
 					misses_H[index_H] = match.getAscore();
-					index_H++;
 					
 					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 						winPkNum_H ++;
@@ -274,8 +273,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 							point += 0.5;
 						}
 						
-						goals_H[index_H] *= 1.2;
-						misses_H[index_H] *= 0.8;
+						goals_H[index_H] *= 1.1;
+						misses_H[index_H] *= 0.9;
 					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
 						drawPkNum_H ++;
 					} else {
@@ -284,10 +283,11 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 							point -= 0.5;
 						}
 						
-						goals_H[index_H] *= 0.8;
-						misses_H[index_H] *= 1.2;
+						goals_H[index_H] *= 0.9;
+						misses_H[index_H] *= 1.1;
 					}
 					
+					index_H++;
 					points_H += point;
 				} else { // away match
 					float point = 0;
@@ -304,7 +304,6 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 
 					goals_A[index_A] = match.getAscore();
 					misses_A[index_A] = match.getHscore();
-					index_A++;
 					
 					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 						winPkNum_A ++;
@@ -312,8 +311,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 							point += 0.5;
 						}
 						
-						goals_A[index_A] *= 1.2;
-						misses_A[index_A] *= 0.8;
+						goals_A[index_A] *= 1.1;
+						misses_A[index_A] *= 0.9;
 					} else if (MatchUtil.UNICODE_DRAW.equals(match.getAsiaPanLu())) {
 						drawPkNum_A ++;
 					} else {
@@ -322,10 +321,11 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 							point -= 0.5;
 						}
 						
-						goals_A[index_A] *= 0.8;
-						misses_A[index_A] *= 1.2;
+						goals_A[index_A] *= 0.9;
+						misses_A[index_A] *= 1.1;
 					}
 					
+					index_A++;
 					points_A += point;
 				}
 
