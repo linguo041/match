@@ -41,7 +41,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class OFNParser {
-	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
+//	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
+	private final static String JIN_CAI_URL = "http://m.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.159cai.com/match/analysis/";
 	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/match/detial";
 

@@ -775,31 +775,21 @@ public class MatchPromoter {
 				}
 			}
 		} else if (current.getPanKou() >= 0) {
-			if (rank.getWRank() >= 10
-					&& (Math.abs(pmPkDiff) <= 0.3f && Math.abs(pcPkDiff) <= 0.3f)
-					&& (pkDirection.ordinal() != PKDirection.Downer.ordinal()
-							|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
-					&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
-					&& jaWinDiff < -0.03f + winAdjByPull && jcWinChange < 0.001f
-					&& waWinDiff <= 0.04f
-					&& aleWinDiff <= 0.035f
-					&& rank.getDRank() <= 10
+			if (aaWinDiff < -0.03f && aomenWinChange < 0.011f
+					&& jaWinDiff < -0.035f + winAdjByPull && jcWinChange < 0.011f
+					&& waWinDiff <= 0.035f
+					&& rank.getWRank() > 8
 					) {
-				if (aaWinDiff < -0.025f || jaWinDiff < -0.035f || rank.getWRank() >= 13) {
+				if (rank.getWRank() < 14) {
 					firstOption = ResultGroup.Three;
 				}
 			}
-			if (rank.getLRank() >= 10
-					&& (Math.abs(pmPkDiff) <= 0.3f && Math.abs(pcPkDiff) <= 0.3f)
-					&& (pkDirection.ordinal() != PKDirection.Uper.ordinal()
-							|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
-					&& aaLoseDiff < -0.001f && aomenLoseChange < 0.011f
-					&& jaLoseDiff < -0.03f - winAdjByPull && jcLoseChange < 0.005f
-					&& waLoseDiff <= 0.04f
-					&& aleLoseDiff <= 0.035f
-					&& rank.getDRank() <= 10
+			if (aaLoseDiff < -0.03f && aomenLoseChange < 0.011f
+					&& jaLoseDiff < -0.035f - winAdjByPull && jcLoseChange < 0.011f
+					&& waLoseDiff <= 0.035f
+					&& rank.getLRank() > 7
 					) {
-				if (aaLoseDiff < -0.025f || jaLoseDiff < -0.035f || rank.getLRank() >= 13) {
+				if (rank.getLRank() < 14) {
 					if (firstOption != null) {
 						secondOption = ResultGroup.Zero;
 					} else {
@@ -812,6 +802,8 @@ public class MatchPromoter {
 					&& jaDrawDiff <= -0.001f && jcDrawChange < 0.005f
 					&& waDrawDiff <= 0.035f
 					&& aleDrawDiff <= 0.05f
+					&& Math.abs(aaLoseDiff - aaWinDiff) < 0.022
+					&& (aaLoseDiff > -0.04 || aaWinDiff > -0.04)
 					) {
 				if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
 						|| jaDrawDiff <= -0.025f || jincai.getCurrentEuro().getEDraw() <= 3.20f

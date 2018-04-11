@@ -39,6 +39,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		MatchState matchState = new MatchState();
 
 		League le = matchData.getLeague();
+		
+		Float originalPk = matchData.getOriginalPk();
+		Float mainPk = matchData.getMainPk();
 
 //		ClubDatas clubData = matchData.getBaseData();
 //		if (clubData != null) {
@@ -46,9 +49,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 //			ClubData guestClubData = clubData.getGuestData();
 //		}
 
-		calculateMatchMatrices(matchState, matchData.getHostMatches(),
+		calculateMatchMatrices(matchState, originalPk, mainPk, matchData.getHostMatches(),
 				matchData.getHostId(), matchData.getMatchTime(), true, le);
-		calculateMatchMatrices(matchState, matchData.getGuestMatches(),
+		calculateMatchMatrices(matchState, originalPk, mainPk, matchData.getGuestMatches(),
 				matchData.getGuestId(), matchData.getMatchTime(), false, le);
 		matchState.setCalculatePk(getPankouByFinishedMatches(matchData, le));
 
@@ -142,10 +145,10 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			Float gPk = null;
 			
 			FinishedMatch hMatch = hMatches.get(i);
+			hPk = hMatch.getAsiaPanKou() == null ? hMatch.getLastApk() : hMatch.getAsiaPanKou();
 			
-			try {
-				hPk = Float.parseFloat(hMatch.getAsiaPanKou());
-			} catch (Exception e) {
+			if (hPk == null) {
+//				log.warn(String.format("No pk data for match %d. [%s]",hMatch.getMatchId(), hMatch.toString()));
 				continue;
 			}
 
@@ -167,10 +170,10 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			
 			for (int j = 0; j < gMatches.size() && j < comparedMatches; j++) {
 				FinishedMatch gMatch = gMatches.get(j);
+				gPk = gMatch.getAsiaPanKou() == null ? gMatch.getLastApk() : gMatch.getAsiaPanKou();
 				
-				try {
-					gPk = Float.parseFloat(gMatch.getAsiaPanKou());
-				} catch (Exception e) {
+				if (gPk == null) {
+//					log.warn(String.format("No pk data for match %d. [%s]",gMatch.getMatchId(), gMatch.toString()));
 					continue;
 				}
 
@@ -215,7 +218,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		return null;
 	}
 	
-	private void calculateMatchMatrices (MatchState matchState,
+	private void calculateMatchMatrices (MatchState matchState, Float originalPk, Float mainPk,
 			List<FinishedMatch> matches, Long teamId, Date matchDate, boolean isHost, League league) {
 		if (matchState != null && matches != null && matches.size() > 0) {
 			int index_H = 0;
@@ -231,6 +234,17 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			double[] misses_H = new double[20];
 			float points_H = 0;
 			
+			int samePkWinNum_H = 0;
+			int samePkDrawNum_H = 0;
+			int samePkLoseNum_H = 0;
+			int samePkWinPkNum_H = 0;
+			int samePkDrawPkNum_H = 0;
+			int samePkLosePkNum_H = 0;
+			double[] samePkGoals_H = new double[20];
+			double[] samePkMisses_H = new double[20];
+			float samePkPoints_H = 0;
+			int samePkIndex_H = 0;
+			
 			int winNum_A = 0;
 			int drawNum_A = 0;
 			int loseNum_A = 0;
@@ -241,13 +255,34 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			double[] misses_A = new double[20];
 			float points_A = 0;
 			
+			int samePkWinNum_A = 0;
+			int samePkDrawNum_A = 0;
+			int samePkLoseNum_A = 0;
+			int samePkWinPkNum_A = 0;
+			int samePkDrawPkNum_A = 0;
+			int samePkLosePkNum_A = 0;
+			double[] samePkGoals_A = new double[20];
+			double[] samePkMisses_A = new double[20];
+			float samePkPoints_A = 0;
+			int samePkIndex_A = 0;
+			
 			for (int i = 0; i < matches.size(); i++) {
 				FinishedMatch match = matches.get(i);
 				
 				if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, league.isState(), i)
 						|| matchDate.getTime() <= match.getMatchTime().getTime()
-						|| match.getAsiaPanKou().trim().isEmpty()) {
+						|| match.getAsiaPanKou() == null) {
 					continue;
+				}
+				
+				boolean samePkMatch = false;
+				Float matchPk = match.getAsiaPanKou() == null
+						? (match.getLastApk() == null ? null : match.getLastApk())
+						: (match.getLastApk() == null ? match.getAsiaPanKou()
+								: 0.5f * (match.getAsiaPanKou() + match.getLastApk()));
+				
+				if (Math.abs(matchPk - 0.5f * (originalPk + mainPk)) <= 0.2f) {
+					samePkMatch = true;
 				}
 				
 				// home match
@@ -257,15 +292,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 					if (match.getHscore() > match.getAscore()) {
 						winNum_H ++;
 						point = 3;
+						samePkWinNum_H = samePkMatch ? samePkWinNum_H + 1 : samePkWinNum_H;
 					} else if (match.getHscore() == match.getAscore()) {
 						drawNum_H ++;
 						point = 1;
+						samePkDrawNum_H = samePkMatch ? samePkDrawNum_H + 1 : samePkDrawNum_H;
 					} else {
 						loseNum_H ++;
+						samePkLoseNum_H = samePkMatch ? samePkLoseNum_H + 1 : samePkLoseNum_H;
 					}
 
 					goals_H[index_H] = match.getHscore();
 					misses_H[index_H] = match.getAscore();
+					samePkGoals_H[samePkIndex_H] = samePkMatch ? match.getHscore() : samePkGoals_H[samePkIndex_H];
+					samePkMisses_H[samePkIndex_H] = samePkMatch ? match.getAscore() : samePkMisses_H[samePkIndex_H];
 					
 					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 						winPkNum_H ++;
@@ -288,6 +328,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 					}
 					
 					index_H++;
+					samePkIndex_H = samePkMatch ? samePkIndex_H + 1 : samePkIndex_H;
 					points_H += point;
 				} else { // away match
 					float point = 0;
@@ -295,15 +336,20 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 					if (match.getAscore() > match.getHscore()) {
 						winNum_A ++;
 						point = 3;
+						samePkWinNum_A = samePkMatch ? samePkWinNum_A + 1 : samePkWinNum_A;
 					} else if (match.getAscore() == match.getHscore()) {
 						drawNum_A ++;
 						point = 1;
+						samePkDrawNum_A = samePkMatch ? samePkDrawNum_A + 1 : samePkDrawNum_A;
 					} else {
 						loseNum_A ++;
+						samePkLoseNum_A = samePkMatch ? samePkLoseNum_A + 1 : samePkLoseNum_A;
 					}
 
 					goals_A[index_A] = match.getAscore();
 					misses_A[index_A] = match.getHscore();
+					samePkGoals_A[samePkIndex_A] = samePkMatch ? match.getAscore() : samePkGoals_A[samePkIndex_A];
+					samePkMisses_A[samePkIndex_A] = samePkMatch ? match.getHscore() : samePkMisses_A[samePkIndex_A];
 					
 					if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
 						winPkNum_A ++;
@@ -327,6 +373,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 					
 					index_A++;
 					points_A += point;
+					samePkIndex_A = samePkMatch ? samePkIndex_A + 1 : samePkIndex_A;
 				}
 
 				// calculate the latest 6 matches
@@ -372,7 +419,29 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				
 //				log.info(match.toString());
 
-				if (index_H >= 6 && index_A >= 6 || index_H + index_A >= 20) {
+				if (index_H >= 9 && index_A >= 9 || index_H + index_A >= 20) {
+					if (samePkIndex_H >= 3) {
+						LatestMatchMatrices hostSamePk = getMatchMatricesData(samePkWinNum_H,
+								samePkDrawNum_H, samePkLoseNum_H, samePkIndex_H,
+								StatUtils.sum(samePkGoals_H, 0, samePkIndex_H),
+								StatUtils.sum(samePkMisses_H, 0, samePkIndex_H),
+								0, 0, 0,
+								FastMath.sqrt(StatUtils.variance(samePkGoals_H, 0, samePkIndex_H)),
+								FastMath.sqrt(StatUtils.variance(samePkMisses_H, 0, samePkIndex_H)));
+						matchState.setHostSamePk(hostSamePk);
+					}
+					
+					if (samePkIndex_A >= 3) {
+						LatestMatchMatrices guestSamePk = getMatchMatricesData(samePkWinNum_A,
+								samePkDrawNum_A, samePkLoseNum_A, samePkIndex_A,
+								StatUtils.sum(samePkGoals_A, 0, samePkIndex_A),
+								StatUtils.sum(samePkMisses_A, 0, samePkIndex_A),
+								0, 0, 0,
+								FastMath.sqrt(StatUtils.variance(samePkGoals_A, 0, samePkIndex_A)),
+								FastMath.sqrt(StatUtils.variance(samePkMisses_A, 0, samePkIndex_A)));
+						matchState.setGuestSamePk(guestSamePk);
+					}
+					
 					break;
 				}
 			}

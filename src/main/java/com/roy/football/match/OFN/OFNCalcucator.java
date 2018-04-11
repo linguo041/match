@@ -80,11 +80,13 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
 		calResult.setJiaoShou(jsMatrices);
 		
-		MatchState matchState = latestMatchCalculator.calucate(matchData);
-		calResult.setMatchState(matchState);
-		
 		PankouMatrices pkMatrices = pankouCalculator.calucate(matchData, Company.Aomen);
 		calResult.setPkMatrices(pkMatrices);
+		matchData.setOriginalPk(pkMatrices.getOriginPk().getPanKou());
+		matchData.setMainPk(pkMatrices.getMainPk().getPanKou());
+		
+		MatchState matchState = latestMatchCalculator.calucate(matchData);
+		calResult.setMatchState(matchState);
 		
 		PankouMatrices ysbPkMatrices = pankouCalculator.calucate(matchData, Company.YiShenBo);
 		calResult.setYsbPkMatrices(ysbPkMatrices);

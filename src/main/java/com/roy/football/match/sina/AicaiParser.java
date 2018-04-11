@@ -119,8 +119,9 @@ public class AicaiParser {
 
 	public static void main (String [] args) {
 		AicaiParser pp = new AicaiParser();
-		System.out.println(pp.parseMatchData("170126"));
-		System.out.println(pp.parseEuroData(1251549L, Company.Jincai));
+		String matchDateStr = DateUtil.formatHarfYearDate(new Date());
+		System.out.println(pp.parseMatchData("180408"));
+//		System.out.println(pp.parseEuroData(1251549L, Company.Jincai));
 		
 	}
 }

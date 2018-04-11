@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,7 @@ public class MatchPersistService {
 	@Autowired
 	private PredictResultRepository predictResultRepository;
 	
+	@Transactional
 	public void save (OFNMatchData ofnMatch, OFNCalculateResult ofnCalculateResult, boolean finished) {
 		if (ofnMatch == null || ofnCalculateResult == null) {
 			return;
@@ -189,6 +191,7 @@ public class MatchPersistService {
 		}
 	}
 	
+	@Transactional
 	public CalculatedAndResult load (Long matchId) {
 		CalculatedAndResult calResult = new CalculatedAndResult();
 		
@@ -249,6 +252,7 @@ public class MatchPersistService {
 		return calResult;
 	}
 	
+	@Transactional
 	public void saveHistoryMatch (List<FinishedMatch> finishedMatches) {
 		if (finishedMatches == null || finishedMatches.size() <= 0) {
 			return ;

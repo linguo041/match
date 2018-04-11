@@ -2,6 +2,8 @@ package com.roy.football.match.OFN;
 
 import java.util.Date;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,7 @@ public class EuroAnalyzer {
 	@Autowired
 	private EuroAuditRepository euroAuditRepository;
 	
+	@Transactional
 	public EuroPl getLeagueAvgPl (Float pk, Company company, League league) {
 		try {
 			EEuroAudit euroAudit = euroAuditRepository.findByLeagueIdAndCompanyAndPkAndPkType(league.getLeagueId(),
@@ -30,7 +33,7 @@ public class EuroAnalyzer {
 				return new EuroPl(euroAudit.getAvgWin(), euroAudit.getAvgDraw(), euroAudit.getAvgLose(), new Date());
 			}
 		} catch (Exception e) {
-			log.warn("Can't find the euro audit for league {}, company {}, pk {}", league.name(), company, pk, e);
+			log.warn("Can't find the euro audit for league {}, company {}, pk {}", league, company, pk);
 		}
 		
 		return null;

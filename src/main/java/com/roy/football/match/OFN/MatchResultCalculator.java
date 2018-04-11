@@ -1,5 +1,7 @@
 package com.roy.football.match.OFN;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,7 @@ public class MatchResultCalculator {
 	@Autowired
 	private MatchRepository matchRepository;
 
+	@Transactional
 	public void calculateAndPersist (EMatch match, Integer hostScore, Integer guestScore) {
 		calculateAndPersist(match, hostScore, guestScore, false);
 	}

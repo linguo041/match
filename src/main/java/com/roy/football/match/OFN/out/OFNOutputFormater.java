@@ -19,6 +19,7 @@ import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
 import com.roy.football.match.OFN.statics.matrices.MatchState;
+import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
 import com.roy.football.match.OFN.statics.matrices.PredictResult;
 import com.roy.football.match.OFN.statics.matrices.PromoteMatrics;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
@@ -52,6 +53,9 @@ public class OFNOutputFormater {
 			ClubMatrices matrices = calculateResult.getClubMatrices();
 			StringBuilder hostGuestCompFormat = new StringBuilder();
 			List <Object> hostGuestCompArgs = new ArrayList<Object>();
+			
+			StringBuilder samePkHotFormat = new StringBuilder();
+			List <Object> samePkHotArgs = new ArrayList<Object>();
 
 			if (matrices != null) {
 				excelData.setLevel(getHostLevel(matrices.getHostLevel(), matrices.getHostAllMatrix())
@@ -70,9 +74,32 @@ public class OFNOutputFormater {
 				hostGuestCompArgs.add(matchState.getGuestAttackToHost());
 
 				Float hotPoint = matchState.getHotPoint();
-				excelData.setStateVariation(String.format("%.1f | %.1f, %.1f",
-						hotPoint, matchState.getHostAttackVariationToGuest(),
-						matchState.getGuestAttackVariationToHost()));
+//				excelData.setStateVariation(String.format("%.1f | %.1f, %.1f",
+//						hotPoint, matchState.getHostAttackVariationToGuest(),
+//						matchState.getGuestAttackVariationToHost()));
+				samePkHotFormat.append("%.1f | %.1f, %.1f");
+				samePkHotArgs.add(hotPoint);
+				samePkHotArgs.add(matchState.getHostAttackVariationToGuest());
+				samePkHotArgs.add(matchState.getGuestAttackVariationToHost());
+				
+				LatestMatchMatrices hostSame = matchState.getHostSamePk();
+				LatestMatchMatrices guestSame = matchState.getGuestSamePk();
+				if (hostSame != null) {
+					samePkHotFormat.append(samePkHotFormat.length() > 0 ? '\n' : "");
+					samePkHotFormat.append("H   %.1f : %.1f | %.2f");
+					samePkHotArgs.add(hostSame.getMatchGoal());
+					samePkHotArgs.add(hostSame.getMatchMiss());
+					samePkHotArgs.add(hostSame.getWinRate());
+				}
+				if (guestSame != null) {
+					samePkHotFormat.append(samePkHotFormat.length() > 0 ? '\n' : "");
+					samePkHotFormat.append("G   %.1f : %.1f | %.2f");
+					samePkHotArgs.add(guestSame.getMatchGoal());
+					samePkHotArgs.add(guestSame.getMatchMiss());
+					samePkHotArgs.add(guestSame.getWinDrawRate());
+				}
+				
+				excelData.setStateVariation(String.format(samePkHotFormat.toString(), samePkHotArgs.toArray()));
 			}
 
 			Float predictPk = calculateResult.getPredictPanKou();

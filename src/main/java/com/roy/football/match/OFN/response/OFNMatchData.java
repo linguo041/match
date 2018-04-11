@@ -47,4 +47,6 @@ public class OFNMatchData implements MatchData{
 	private Integer guestScore;
 	private boolean isSameCityOrNeutral = false;
 	private int levelDiff = 0;
+	private float originalPk;
+	private float mainPk;
 }

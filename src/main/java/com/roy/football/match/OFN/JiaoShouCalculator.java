@@ -50,11 +50,7 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 					
 					if (match.getHostId().equals(matchData.getHostId())) {
 						if (latestPankou == null) {
-							try {
-								latestPankou = Float.parseFloat(match.getAsiaPanKou());
-							} catch (Exception e) {
-								// ignore..
-							}
+							latestPankou = match.getAsiaPanKou();
 						}
 						
 						if (MatchUtil.UNICODE_WIN.equals(match.getAsiaPanLu())) {
@@ -83,7 +79,7 @@ public class JiaoShouCalculator extends AbstractBaseDataCalculator implements Ca
 					} else {
 						if (latestPankou == null) {
 							try {
-								latestPankou = Float.parseFloat(match.getAsiaPanKou()) * -1 + 0.5f;
+								latestPankou = match.getAsiaPanKou() * -1 + 0.5f;
 							} catch (Exception e) {
 								// ignore..
 							}

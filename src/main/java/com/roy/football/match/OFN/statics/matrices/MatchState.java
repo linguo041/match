@@ -16,6 +16,8 @@ public class MatchState implements CalculateResult, MatchData {
 	private LatestMatchMatrices guestAway5;
 //	private LatestMatchMatrices hostState10;
 //	private LatestMatchMatrices guestState10;
+	private LatestMatchMatrices hostSamePk;
+	private LatestMatchMatrices guestSamePk;
 	private Float hostAttackToGuest;
 	private Float guestAttackToHost;
 	private Float hostAttackVariationToGuest;
