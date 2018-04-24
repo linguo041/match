@@ -22,6 +22,7 @@ import com.roy.football.match.OFN.MatchResultCalculator;
 import com.roy.football.match.OFN.OFNCalcucator;
 import com.roy.football.match.OFN.out.OFNExcelData;
 import com.roy.football.match.OFN.out.OFNOutputFormater;
+import com.roy.football.match.OFN.parser.OFNHtmlParser;
 import com.roy.football.match.OFN.parser.OFNParser;
 import com.roy.football.match.OFN.parser.OFNResultCrawler;
 import com.roy.football.match.OFN.response.AsiaPl;
@@ -46,8 +47,10 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class HistoryMatchCalculationService {
+//	@Autowired
+//	private OFNParser parser;
 	@Autowired
-	private OFNParser parser;
+	private OFNHtmlParser parser;
 	@Autowired
 	private EWJincaiParser ewJincaiParser;
 	@Autowired

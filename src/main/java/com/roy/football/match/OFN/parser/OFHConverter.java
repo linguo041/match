@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.roy.football.match.OFN.response.ClubDatas;
 import com.roy.football.match.OFN.response.FinishedMatch;
+import com.roy.football.match.OFN.response.OFNResponseWrapper;
 import com.roy.football.match.util.DateDeserializer;
 import com.roy.football.match.util.GsonConverter;
 
@@ -40,6 +41,17 @@ public class OFHConverter {
 
 		json = json.replace(RSP_ARRAY, RSP_OBJECT);
 		return GsonConverter.convertJSonToObjectUseNormal(json, ClubDatas.class);
+	}
+	
+	public static ClubDatas convertWrappedClubDatas (String json) {
+		if (json.length() < 30) {
+			return null;
+		}
+		
+		json = json.replace(RSP_ARRAY, RSP_OBJECT);
+		
+		return GsonConverter.convertJSonToObjectUseNormal(json,
+				new TypeToken<OFNResponseWrapper<ClubDatas>>(){}).getData();
 	}
 	
 	public static List<FinishedMatch> convertJiaoShouMatch (String json) {

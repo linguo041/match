@@ -15,17 +15,6 @@ public class FinishedMatch implements MatchData, Comparable <FinishedMatch> {
 //		return (int) (this.getMatchTime().getTime() - o.getMatchTime().getTime());
 		return (int)(o.getMatchId() - this.getMatchId());
 	}
-	
-	@Override
-	public String toString() {
-		return "FinishedMatch [matchId=" + matchId + ", leagueId=" + leagueId
-				+ ", leagueName=" + leagueName + ", matchTime=" + matchTime
-				+ ", hostId=" + hostId + ", hostName=" + hostName
-				+ ", guestId=" + guestId + ", guestName=" + guestName + ", bc="
-				+ bc + ", asiaPanKou=" + asiaPanKou + ", asiaPanLu="
-				+ asiaPanLu + ", daxiaoPanKou=" + daxiaoPanKou + ", hscore="
-				+ hscore + ", ascore=" + ascore + "]";
-	}
 
 	@SerializedName("mid")
 	private Long matchId;

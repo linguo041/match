@@ -29,6 +29,7 @@ import com.roy.football.match.OFN.out.OFNExcelData;
 import com.roy.football.match.OFN.out.OFNOutputFormater;
 import com.roy.football.match.OFN.out.PoiWriter;
 import com.roy.football.match.OFN.parser.MatchParseException;
+import com.roy.football.match.OFN.parser.OFNHtmlParser;
 import com.roy.football.match.OFN.parser.OFNParser;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
@@ -50,8 +51,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class OFNMatchService {
 	
+//	@Autowired
+//	private OFNParser parser;
+	
 	@Autowired
-	private OFNParser parser;
+	private OFNHtmlParser parser;
+	
 	@Autowired
 	private EWJincaiParser ewJincaiParser;
 	@Autowired

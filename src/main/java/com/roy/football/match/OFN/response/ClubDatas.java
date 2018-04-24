@@ -3,6 +3,9 @@ package com.roy.football.match.OFN.response;
 import com.google.gson.annotations.SerializedName;
 import com.roy.football.match.base.MatchData;
 
+import lombok.Data;
+
+@Data
 public class ClubDatas implements MatchData {
 	
 	@Override
@@ -11,27 +14,11 @@ public class ClubDatas implements MatchData {
 				+ "]";
 	}
 
-	public ClubData getHostData() {
-		return hostData;
-	}
-
-	public void setHostData(ClubData hostData) {
-		this.hostData = hostData;
-	}
-
-	public ClubData getGuestData() {
-		return guestData;
-	}
-
-	public void setGuestData(ClubData guestData) {
-		this.guestData = guestData;
-	}
-
 	@SerializedName("home")
 	private ClubData hostData;
 	@SerializedName("away")
 	private ClubData guestData;
-	
+
 	public static class ClubData {
 
 		@Override
