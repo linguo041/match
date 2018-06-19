@@ -26,6 +26,8 @@ public class ClubMatrices implements CalculateResult, MatchData{
 	private List<TeamLabel> guestLabels;
 	private Float hostAttGuestDefInx;
 	private Float guestAttHostDefInx;
+	private Float hostWinRt;
+	private Float guestWinRt;
 	
 	@Data
 	@ToString

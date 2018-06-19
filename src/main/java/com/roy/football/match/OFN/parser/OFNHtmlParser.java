@@ -261,7 +261,7 @@ public class OFNHtmlParser {
 					HttpRequestService.GET_METHOD, null, headers);
 			
 			JsonParser parser = new JsonParser();
-			JsonObject rootObj = parser.parse(resData).getAsJsonObject();   
+			JsonObject rootObj = parser.parse(resData.toString()).getAsJsonObject();   
 			JsonObject dataObj = rootObj.getAsJsonObject("data");
 			JsonObject homeRecent = dataObj.getAsJsonObject("home");
 			JsonObject awayRecent = dataObj.getAsJsonObject("away");
@@ -340,6 +340,8 @@ public class OFNHtmlParser {
 			ofnMatchData.setJiaoShou(jsMatches);
 		} catch (HttpRequestException e) {
 			throw new MatchParseException("unable to parse jincai matches", e);
+		} catch (Exception e1) {
+			log.error(e1.getMessage());
 		}
 	}
 	

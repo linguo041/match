@@ -100,7 +100,7 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		EMatch  match = matchRepository.findOne(1075254L);
+		EMatch  match = matchRepository.findOne(1146922L);
 		
 		ofnMatchService.processMatches(Lists.newArrayList(JinCaiMatch.fromDBMatch(match)));
 	}

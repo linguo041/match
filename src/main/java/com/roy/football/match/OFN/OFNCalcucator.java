@@ -94,10 +94,10 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		DaxiaoMatrices dxMatrices = dxCalculator.calucate(matchData);
 		calResult.setDxMatrices(dxMatrices);
 		
-		if (matrices != null) {
-			Float predictPanKou = getPredictPanKou(jsMatrices, matchState, matrices.getHostLevel(), matrices.getGuestLevel());
-			calResult.setPredictPanKou(predictPanKou);
-		}
+		Float predictPanKou = getPredictPanKou(jsMatrices, matchState,
+				matrices == null ? TeamLevel.Nomal : matrices.getHostLevel(),
+				matrices == null ? TeamLevel.Nomal : matrices.getGuestLevel());
+		calResult.setPredictPanKou(predictPanKou);
 
 		EuroMatrices euroMatrices = euroCalculator.calucate(matchData);
 

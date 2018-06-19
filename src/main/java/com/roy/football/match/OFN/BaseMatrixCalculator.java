@@ -62,6 +62,8 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 			// goal is main key here
 			matrices.setHostAttGuestDefInx(0.6f * hostClub.getGoals() / hostClub.getNum() + 0.4f * guestClub.getMisses() / guestClub.getNum());
 			matrices.setGuestAttHostDefInx(0.6f * guestClub.getGoals() / guestClub.getNum() + 0.4f * hostClub.getMisses() / hostClub.getNum());
+			matrices.setHostWinRt(hostClub.getWinRt());
+			matrices.setGuestWinRt(guestClub.getWinRt());
 		}
 	}
 	

@@ -100,10 +100,12 @@ public class PoiWriter <T> implements Writer <T>{
 				sheet.setColumnWidth(i, 6 * 512);
 			} else if (order==148) {
 				sheet.setColumnWidth(i, 7 * 512);
-			} else if (order==20 || order == 60 || order==80 || order==90) {
+			} else if (order==20) {
 				sheet.setColumnWidth(i, 8 * 512);
 			} else if (order==190){
 				sheet.setColumnWidth(i, 40 * 512);
+			} else if (order==80 || order==60){
+				sheet.setColumnWidth(i, 10 * 512);
 			} else {
 				sheet.setColumnWidth(i, 9 * 512);
 			}

@@ -30,6 +30,7 @@ import com.roy.football.match.base.League;
 import com.roy.football.match.base.MatchContinent;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLabel;
+import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.util.EuroUtil;
 import com.roy.football.match.util.MatchStateUtil;
 import com.roy.football.match.util.MatchUtil;
@@ -54,8 +55,8 @@ public class MatchPromoter {
 		
 		rankByBase(kpRes.getRank(), kpRes.getPull(), calResult.getClubMatrices());
 		rankByLatest(kpRes.getRank(), kpRes.getPull(), calResult.getMatchState());
-		promote(kpRes, calResult.getPkMatrices(),
-				calResult.getEuroMatrices(), calResult.getPredictPanKou(), calResult.getLeague());
+		promote(kpRes, calResult.getPkMatrices(), calResult.getEuroMatrices(),
+				calResult.getPredictPanKou(), calResult.getExchanges(), calResult.getLeague());
 		
 		return kpRes;
 	}
@@ -148,8 +149,44 @@ public class MatchPromoter {
 		int lDegree = rank.getLRank();
 		
 		// by goal
-		float diff = FACTOR_H * latestHostAttack - FACTOR_G * latestGuestAttack;
+//		double factor = Math.pow(0.88, latestHostAttack + latestGuestAttack) * 1.15f;
+		double factor = 1;
+		float diff = (float)factor * (FACTOR_H * latestHostAttack - FACTOR_G * latestGuestAttack);
 		int degree = Math.round(16 * diff);
+		/*
+		System.out.println("before " + degree+ " : " + wDegree + " - " + dDegree + " - " + lDegree);
+		if (degree >= 0) {
+			int degreeDiff = degree + 9 - wDegree;
+			int adjustDegree = (int)Math.round(Math.pow(1.15, Math.abs(degreeDiff))) -1 ;
+			adjustDegree = adjustDegree >=3 ? 3 : adjustDegree;
+			
+			if (degreeDiff > 0 ) {
+				wDegree += adjustDegree;
+				lDegree -= (adjustDegree + 1)/2;
+				dDegree -= (adjustDegree - 1)/2;
+			} else {
+				wDegree -= adjustDegree;
+				lDegree += (adjustDegree + 1)/2;
+				dDegree += (adjustDegree - 1)/2;
+			}
+		} else {
+			int degreeDiff = -1* (degree - 10) - lDegree;
+			int adjustDegree = (int)Math.round(Math.pow(1.15, Math.abs(degreeDiff))) -1 ;
+			adjustDegree = adjustDegree >=3 ? 3 : adjustDegree;
+			
+			if (degreeDiff > 0 ) {
+				lDegree += adjustDegree;
+				wDegree -= (adjustDegree + 1)/2;
+				dDegree -= (adjustDegree - 1)/2;
+			} else {
+				lDegree -= adjustDegree;
+				wDegree += (adjustDegree + 1)/2;
+				dDegree += (adjustDegree - 1)/2;
+			}
+		}
+		
+		System.out.println("after: " + wDegree + " - " + dDegree + " - " + lDegree);
+		*/
 		if (degree >= 16) {
 			// latest is better than base
 			if (wDegree <= 10) {
@@ -230,65 +267,35 @@ public class MatchPromoter {
 		// by hotpoint
 		if (hotPoint >= 6) {
 			// latest is better than base
-			if (wDegree <= 10) {
-				wDegree += 2;
-				dDegree --;
-				lDegree --;
-			} else {
+			if (wDegree <= 14) {
 				wDegree ++;
 				lDegree --;
 			}
 		} else if (hotPoint >= 3) {
 			// latest is worse than base
-			if (wDegree >= 18) {
-				wDegree -= 2;
-				dDegree ++;
-				lDegree ++;
-			} else if (wDegree >= 10) {
-				
-			} else {
-				wDegree += 2;
-				dDegree --;
+			if (wDegree <= 10) {
+				wDegree ++;
 				lDegree --;
 			}
 		} else if (hotPoint > -3) {
 			// latest is worse than base
-			if (wDegree >= 18) {
-				wDegree -= 2;
-				dDegree ++;
-				lDegree ++;
-			} else if (wDegree > 14) {
+			if (wDegree > 15) {
 				wDegree --;
 				lDegree ++;
 			}
 			// latest is good than base
-			if (lDegree >= 18) {
-				lDegree -= 2;
-				dDegree ++;
-				wDegree ++;
-			} else if (lDegree > 14) {
+			if (lDegree > 15) {
 				lDegree --;
 				wDegree ++;
 			}
 		} else if (hotPoint >= -6){
 			// latest is worse than base
-			if (lDegree >= 18) {
-				lDegree -= 2;
-				dDegree ++;
-				wDegree ++;
-			} else if (lDegree >= 10) {
-				
-			} else {
-				wDegree -= 2;
-				dDegree ++;
+			if (lDegree <= 10) {
 				lDegree ++;
+				wDegree --;
 			}
 		} else {
-			if (lDegree <= 10) {
-				lDegree += 2;
-				dDegree --;
-				wDegree --;
-			} else {
+			if (lDegree <= 14) {
 				lDegree ++;
 				wDegree --;
 			}
@@ -322,7 +329,7 @@ public class MatchPromoter {
 	}
 
 	private void promote (OFNKillPromoteResult killPromoteResult, PankouMatrices pkMatrices,
-			EuroMatrices euroMatrices, Float predictPk, League le) {
+			EuroMatrices euroMatrices, Float predictPk, MatchExchangeData exchanges, League le) {
 		if (pkMatrices == null) {
 			return;
 		}
@@ -365,6 +372,7 @@ public class MatchPromoter {
 		
 		killByEuro(killPromoteResult.getKillByPl(), euroMatrices, pkMatrices, le);
 		killPkPlUnmatchChange(current, aomen.getCurrentEuro(), le, killPromoteResult.getKillByPlPkUnmatch());
+		killByExchange(killPromoteResult, exchanges, euroMatrices, pkMatrices);
 		
 		if (predictPk == null) {
 			return;
@@ -421,27 +429,27 @@ public class MatchPromoter {
 		float winAdjByPull = adjustEuroDiffReferPull(pull);
 		
 		PromoteRatio winRatio = new PromoteRatio();
-		winRatio.setRBaseDegree( (rank.getWRank() - PromotionUtil.getAvgWinDegreeByPk(current.getPanKou())) * 0.15f );
+		winRatio.setRBaseDegree( (rank.getWRank() - PromotionUtil.getAvgWinDegreeByPk(current.getPanKou())) * 0.2f );
 //		winRatio.setRPullNPredict( PromotionUtil.getHotDiffRateByPredictAndPull(current.getPanKou(), predictPk, currentPk, mainPk, pull));
 		winRatio.setRAomen(PromotionUtil.getWinLoseRateFromAomenEuro(current.getPanKou(),
 				aleWinDiff, aleOriginWinDiff, aaWinDiff, aomenWinChange, true));
-		winRatio.setRJincai( jaWinDiff * (-3.5f) + jcWinChange * (-15));
+		winRatio.setRJincai( jaWinDiff * (-4.5f) + jcWinChange * (-18));
 		winRatio.setRWilliam( waWinDiff * (-5));
 		
 		PromoteRatio drawRatio = new PromoteRatio();
-		drawRatio.setRBaseDegree( (rank.getDRank() - PromotionUtil.getAvgDrawDegreeByPk(current.getPanKou())) * 0.175f);
+		drawRatio.setRBaseDegree( (rank.getDRank() - PromotionUtil.getAvgDrawDegreeByPk(current.getPanKou())) * 0.25f);
 //		drawRatio.setRPullNPredict(PromotionUtil.getDrawHotDiffRateByPredictAndPull(current.getPanKou(), predictPk, currentPk, mainPk, pull));
 		drawRatio.setRAomen( PromotionUtil.getDrawRateFromAomenEuro(current.getPanKou(), leAvg!=null, 
 				aomen.getCurrentEuro().getEDraw(), aomen.getOriginEuro().getEDraw(), aleDrawDiff, aleOriginDrawDiff, aaDrawDiff, aomenDrawChange));
-		drawRatio.setRJincai( jaDrawDiff * (-5) + jcDrawChange * (-15));
+		drawRatio.setRJincai( jaDrawDiff * (-6f) + jcDrawChange * (-18));
 		drawRatio.setRWilliam( waDrawDiff * (-6));
 		
 		PromoteRatio loseRatio = new PromoteRatio();
-		loseRatio.setRBaseDegree( (rank.getLRank() - PromotionUtil.getAvgLoseDegreeByPk(current.getPanKou())) * 0.15f );
+		loseRatio.setRBaseDegree( (rank.getLRank() - PromotionUtil.getAvgLoseDegreeByPk(current.getPanKou())) * 0.2f );
 //		loseRatio.setRPullNPredict( -1f * PromotionUtil.getHotDiffRateByPredictAndPull(current.getPanKou(), predictPk, currentPk, mainPk, pull) );
 		loseRatio.setRAomen(PromotionUtil.getWinLoseRateFromAomenEuro(current.getPanKou(),
 				aaLoseDiff, aleOriginLoseDiff, aaLoseDiff, aomenLoseChange, false));
-		loseRatio.setRJincai( jaLoseDiff * (-3.5f) + jcLoseChange * (-15) );
+		loseRatio.setRJincai( jaLoseDiff * (-4.5f) + jcLoseChange * (-18) );
 		loseRatio.setRWilliam( waLoseDiff * (-5));
 		
 		promoteMatrics.setWinRatio(winRatio);
@@ -775,7 +783,8 @@ public class MatchPromoter {
 				}
 			}
 		} else if (current.getPanKou() >= 0) {
-			if (aaWinDiff < -0.03f && aomenWinChange < 0.011f
+			if (upChange <= -0.03
+					&& aaWinDiff < -0.03f && aomenWinChange < 0.011f
 					&& jaWinDiff < -0.035f + winAdjByPull && jcWinChange < 0.011f
 					&& waWinDiff <= 0.035f
 					&& rank.getWRank() > 8
@@ -784,7 +793,8 @@ public class MatchPromoter {
 					firstOption = ResultGroup.Three;
 				}
 			}
-			if (aaLoseDiff < -0.03f && aomenLoseChange < 0.011f
+			if (downChange <= -0.03
+					&& aaLoseDiff < -0.03f && aomenLoseChange < 0.011f
 					&& jaLoseDiff < -0.035f - winAdjByPull && jcLoseChange < 0.011f
 					&& waLoseDiff <= 0.035f
 					&& rank.getLRank() > 7
@@ -1307,6 +1317,7 @@ public class MatchPromoter {
 								&& (aaDrawRt + aomenDrawChange > -0.031)
 								&& (iaDrawRt + interDrawChange > -0.021)
 								&& waWinRt < -0.015
+								&& jaDrawDiff + jcDrawChange > -0.031
 								&& waDrawRt > 0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
@@ -1315,6 +1326,7 @@ public class MatchPromoter {
 								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
 								&& (aaLoseRt + aomenLoseChange > -0.041)
 								&& waWinRt < -0.015
+								&& jaLoseDiff + jcLoseChange > -0.045
 								&& waLoseRt > 0.021 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
@@ -1353,6 +1365,7 @@ public class MatchPromoter {
 								|| aaDrawRt > 0.02 && aomenDrawChange > -0.01)
 								&& (aaDrawRt + aomenDrawChange > -0.031)
 								&& (iaDrawRt + interDrawChange > -0.021)
+								&& jaDrawDiff + jcDrawChange > -0.032
 								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
@@ -1360,6 +1373,7 @@ public class MatchPromoter {
 								|| iaLoseRt > 0.051 && interLoseChange > 0.011 && interWinChange < 0.02
 								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.02)
 								&& (aaLoseRt + aomenLoseChange > -0.04)
+								&& jaLoseDiff + jcLoseChange > -0.045
 								&& waLoseRt > -0.011 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
@@ -1398,6 +1412,7 @@ public class MatchPromoter {
 								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
 								&& (aaDrawRt + aomenDrawChange > -0.031)
 								&& (iaDrawRt + interDrawChange > -0.021)
+								&& jaDrawDiff + jcDrawChange > -0.032
 								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
@@ -1405,6 +1420,7 @@ public class MatchPromoter {
 								|| iaLoseRt > 0.051 && interLoseChange > 0.011 && interWinChange < 0.021
 								|| aaLoseRt > 0.021 && aomenLoseChange > -0.011 && aomenWinChange < 0.021)
 								&& (aaLoseRt + aomenLoseChange > -0.041)
+								&& jaLoseDiff + jcLoseChange > -0.045
 								&& waLoseRt > -0.011 && willLoseChange > -0.021) {
 							killGps.add(ResultGroup.Zero);
 						}
@@ -1475,6 +1491,7 @@ public class MatchPromoter {
 								|| iaWinRt > 0.051 && interWinChange > 0.011 && interLoseChange < 0.021
 								|| aaWinRt > 0.021 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
 								&& (aaWinRt + aomenWinChange > -0.041)
+								&& jaWinDiff + jcWinChange > -0.045
 								&& waWinRt > -0.011 && willWinChange > -0.021) {
 							killGps.add(ResultGroup.Three);
 						}
@@ -1483,6 +1500,7 @@ public class MatchPromoter {
 								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
 								&& (aaDrawRt + aomenDrawChange > -0.031)
 								&& (iaDrawRt + interDrawChange > -0.021)
+								&& jaDrawDiff + jcDrawChange > -0.032
 								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
@@ -1520,6 +1538,7 @@ public class MatchPromoter {
 								|| iaWinRt > 0.051 && interWinChange > 0.011 && interLoseChange < 0.021
 								|| aaWinRt > 0.021 && aomenWinChange > -0.011 && aomenLoseChange < 0.021)
 								&& (aaWinRt + aomenWinChange > -0.041)
+								&& jaWinDiff + jcWinChange > -0.045
 								&& waWinRt > -0.011 && willWinChange > -0.021) {
 							killGps.add(ResultGroup.Three);
 						}
@@ -1528,6 +1547,7 @@ public class MatchPromoter {
 								|| aaDrawRt > 0.021 && aomenDrawChange > -0.011)
 								&& (aaDrawRt + aomenDrawChange > -0.031)
 								&& (iaDrawRt + interDrawChange > -0.021)
+								&& jaDrawDiff + jcDrawChange > -0.032
 								&& waDrawRt > -0.011 && willDrawChange > -0.02) {
 							killGps.add(ResultGroup.One);
 						}
@@ -1663,7 +1683,7 @@ public class MatchPromoter {
 			}
 			float euPkDiff = (currAomenEu.getEWin() - avg) - (aomenPk.getPanKou() - calculatedPk);
 			// 1.48-0.12 < pl < 1.48+0.12; 0.8 < pk < 1.2
-			if ( euPkDiff >= 0.08 || euPkDiff <= -0.1) {
+			if ( euPkDiff >= 0.09 || euPkDiff <= -0.11) {
 				killGps.add(ResultGroup.Three);
 			}
 		} else if (aomenPk.getPanKou() == 0.75f) {
@@ -1761,9 +1781,127 @@ public class MatchPromoter {
 		}
 	}
 	
+	private void killByExchange (OFNKillPromoteResult killPromoteResult,
+			MatchExchangeData exchange, EuroMatrices euroMatrices, PankouMatrices pkMatrices) {
+		if (exchange == null || euroMatrices == null) {
+			return;
+		}
+		
+		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
+		EuroMatrix jincaiMatrix = companyEus.get(Company.Jincai);
+		EuroMatrix aomenMatrix = companyEus.get(Company.Aomen);
+		Set<ResultGroup> exRes = killPromoteResult.getKillByExchange();
+		MatchRank rank = killPromoteResult.getRank();
+		AsiaPl current = pkMatrices.getCurrentPk();
+
+		if (exRes == null) {
+			exRes = new TreeSet<ResultGroup> ();
+			killPromoteResult.setKillByExchange(exRes);
+		}
+
+		if (exchange != null && jincaiMatrix != null && aomenMatrix != null) {
+			EuroPl euroAvg = euroMatrices.getCurrEuroAvg();
+			EuroPl euroJc = jincaiMatrix.getCurrentEuro();
+			EuroPl euroAomen = aomenMatrix.getCurrentEuro();
+			
+			float jaWinDiff = MatchUtil.getEuDiff(euroJc.getEWin(), euroAvg.getEWin(), false);
+			float jaDrawDiff = MatchUtil.getEuDiff(euroJc.getEDraw(), euroAvg.getEDraw(), false);
+			float jaLoseDiff = MatchUtil.getEuDiff(euroJc.getELose(), euroAvg.getELose(), false);
+			
+			float aaWinDiff = MatchUtil.getEuDiff(euroAomen.getEWin(), euroAvg.getEWin(), false);
+			float aaDrawDiff = MatchUtil.getEuDiff(euroAomen.getEDraw(), euroAvg.getEDraw(), false);
+			float aaLoseDiff = MatchUtil.getEuDiff(euroAomen.getELose(), euroAvg.getELose(), false);
+			
+			Long jcTotal= exchange.getJcTotalExchange();
+			Integer jcWinGain = exchange.getJcWinGain();
+			Integer jcDrawGain = exchange.getJcDrawGain();
+			Integer jcLoseGain = exchange.getJcLoseGain();
+			
+//			float jcWinChange = jincaiMatrix.getWinChange();
+//			float jcDrawChange = jincaiMatrix.getDrawChange();
+//			float jcLoseChange = jincaiMatrix.getLoseChange();
+			
+			if (current.getPanKou() >= 1f) {
+				if (jcWinGain < -40 && jaWinDiff < -0.055) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcDrawGain < -40 && jaDrawDiff < -0.025 && rank.getDRank() >= 7) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -40 && jaLoseDiff < -0.025 && rank.getLRank() >= 6) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else if (current.getPanKou() >= 0.5f) {
+				if (jcWinGain < -40 && jaWinDiff < -0.055 && rank.getWRank() >= 14) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcDrawGain < -40 && jaDrawDiff < -0.025 && rank.getDRank() >= 8) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -40 && jaLoseDiff < -0.025 && rank.getLRank() >= 7) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else if (current.getPanKou() >= 0f) {
+				if (jcWinGain < -40 && jaWinDiff < -0.055 && rank.getWRank() >= 12) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcDrawGain < -40 && jaDrawDiff < -0.025 && rank.getDRank() >= 9) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -40 && jaLoseDiff < -0.055 && rank.getLRank() >= 9) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else if (current.getPanKou() >= -0.5f) {
+				if (jcWinGain < -40 && jaWinDiff < -0.055 && rank.getWRank() >= 9) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcDrawGain < -40 && jaDrawDiff < -0.025 && rank.getDRank() >= 9) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -40 && jaLoseDiff < -0.055 && rank.getLRank() >= 12) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else if (current.getPanKou() >= -1f) {
+				if (jcWinGain < -40 && jaWinDiff < -0.025 && rank.getWRank() >= 8) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcDrawGain < -40 && jaDrawDiff < -0.025 && rank.getDRank() >= 8) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -40 && jaLoseDiff < -0.055 && rank.getLRank() >= 14) {
+					exRes.add(ResultGroup.Zero);
+				}
+			} else {
+				if (jcWinGain < -40 && jaWinDiff < -0.025 && rank.getWRank() >= 7) {
+					exRes.add(ResultGroup.Three);
+				}
+				
+				if (jcDrawGain < -40 && jaDrawDiff < -0.025 && rank.getDRank() >= 8) {
+					exRes.add(ResultGroup.One);
+				}
+				
+				if (jcLoseGain < -40 && jaLoseDiff < -0.055) {
+					exRes.add(ResultGroup.Zero);
+				}
+			}
+		}
+	}
+	
 	private float calculateWinDegree (ClubMatrix hostMatrix, ClubMatrix guestMatrix,
 			float hostAttGuestDefComp, float guestAttHostDefComp) {
-		float rawDiff = FACTOR_H * hostAttGuestDefComp - FACTOR_G * guestAttHostDefComp;
+		double factor = Math.pow(0.86, hostAttGuestDefComp + guestAttHostDefComp) * 1.22f;
+		float rawDiff = (float)factor * (FACTOR_H * hostAttGuestDefComp - FACTOR_G * guestAttHostDefComp);
+		
 		float winRt = hostMatrix.getWinRt() * 0.7f + (1 - guestMatrix.getWinDrawRt()) * 0.3f;
 		float loseRt = guestMatrix.getWinRt() * 0.6f + (1 - hostMatrix.getWinDrawRt()) * 0.4f;
 		float diff = rawDiff;
@@ -1772,9 +1910,9 @@ public class MatchPromoter {
 		float diffFromLoseRt = (loseRt * 32 - 10)/16;
 		
 		if (rawDiff > 0) {
-			diff = (rawDiff + diffFromWinRt) / 2;
+			diff = 0.6f * rawDiff + 0.4f * diffFromWinRt;
 		} else {
-			diff = (rawDiff - diffFromLoseRt) / 2;
+			diff = 0.6f * rawDiff - 0.4f * diffFromLoseRt;
 		}
 		
 		return diff;
@@ -1793,7 +1931,7 @@ public class MatchPromoter {
 		// diff is big, just consider of draw, if small, then check the opposite
 		if (diff >= 0) {
 			// host and guest are both good, and the goal diff is not high
-			if (hostMatrix.getWinDrawRt() >= 0.7 && guestMatrix.getWinDrawRt() >= 0.5) {
+			if (hostMatrix.getWinDrawRt() >= 0.7 && guestMatrix.getWinDrawRt() >= 0.55) {
 				drawDegree ++;
 				restDegree --;
 			}
@@ -1804,9 +1942,9 @@ public class MatchPromoter {
 			}
 			
 			// guest goals more -> guest win more possible
-			if (gGoalPerMatch > 1.4f) {
+			if (gGoalPerMatch > 1.35f) {
 				// host loses much
-				if (hostMatrix.getWinDrawRt() <= 0.7 && diff < 0.5) {
+				if (hostMatrix.getWinDrawRt() <= 0.65 && diff < 0.55) {
 					drawDegree --;
 					restDegree ++;
 					
@@ -1815,12 +1953,12 @@ public class MatchPromoter {
 						restDegree ++;
 					}
 				}
-			} else if (hGoalPerMatch < 1.55) {
+			} else if (hGoalPerMatch < 1.6) {
 				if (gMissPerMatch < 1.45f && guestMatrix.getWinDrawRt() >= 0.55) {
 					drawDegree ++;
 					restDegree --;
 					
-					if (hostAttGuestDefComp <= 1.55) {
+					if (hostAttGuestDefComp <= 1.45) {
 						drawDegree ++;
 						restDegree --;
 					}
@@ -1828,7 +1966,7 @@ public class MatchPromoter {
 			}
 		} else {
 			// host and guest are both good, and the goal diff is not high
-			if (guestMatrix.getWinDrawRt() >= 0.7 && hostMatrix.getWinDrawRt() >= 0.57) {
+			if (guestMatrix.getWinDrawRt() >= 0.7 && hostMatrix.getWinDrawRt() >= 0.57 && hostMatrix.getWinRt() <= 0.45) {
 				drawDegree ++;
 				restDegree --;
 			}
@@ -1839,7 +1977,7 @@ public class MatchPromoter {
 			}
 			
 			// host goals more -> host win more possible
-			if (hGoalPerMatch > 1.45f) {
+			if (hGoalPerMatch > 1.5f) {
 				// host loses much
 				if (guestMatrix.getWinDrawRt() <= 0.65 && diff > -0.5) {
 					drawDegree --;
@@ -1936,13 +2074,16 @@ public class MatchPromoter {
 	}
 
 	public static void main (String args[]) {
-		predictDraw(3.5833f, 0.2236f);
-		predictDraw(2.5833f, 0.9236f);
-		predictDraw(1.2534f, 1.9666f);
-		predictDraw(1.3714f, 1.3000f);
-		predictDraw(1.6214f, 1.4500f);
-		predictDraw(1.1114f, 1.2500f);
-		predictDraw(1.0577f, 0.4571f);
+//		predictDraw(3.5833f, 0.2236f);
+//		predictDraw(2.5833f, 0.9236f);
+//		predictDraw(1.2534f, 1.9666f);
+//		predictDraw(1.3714f, 1.3000f);
+//		predictDraw(1.6214f, 1.4500f);
+//		predictDraw(1.1114f, 1.2500f);
+//		predictDraw(1.0577f, 0.4571f);
+//		testPow(0.88f, 1.2f);
+		testPow1(0.86f, 1.22f);
+//		testPow(1.15f, 1f);
 	}
 	
 	private static void predictDraw (float a, float b) {
@@ -1955,5 +2096,69 @@ public class MatchPromoter {
 		dRate -= devariance * mean * 0.618;
 		
 		System.out.println(a + "   " + b + "    " + devariance  + "    "  + mean  + "    "+ devariance * mean * 0.382 + "   " + dRate);
+	}
+	
+	private static void testPow1 (float a, float m) {
+		System.out.println(Math.pow(a, 1.6) * m);
+		System.out.println(Math.pow(a, 1.8) * m);
+		System.out.println(Math.pow(a, 2) * m);
+		System.out.println(Math.pow(a, 2.2) * m);
+		System.out.println(Math.pow(a, 2.4) * m);
+		System.out.println(Math.pow(a, 2.6) * m);
+		System.out.println(Math.pow(a, 2.8) * m);
+		System.out.println(Math.pow(a, 3) * m);
+		System.out.println(Math.pow(a, 3.2) * m);
+		System.out.println(Math.pow(a, 3.4) * m);
+		System.out.println(Math.pow(a, 3.6) * m);
+		System.out.println(Math.pow(a, 3.8) * m);
+	}
+	
+	private static void testPow (float a, float m) {
+//		System.out.println(Math.pow(a, -0.8) * m);
+//		System.out.println(Math.pow(a, -0.6) * m);
+//		System.out.println(Math.pow(a, -0.4) * m);
+//		System.out.println(Math.pow(a, -0.2) * m);
+//		System.out.println(Math.pow(a, 0) * m);
+//		System.out.println(Math.pow(a, 0.2) * m);
+//		System.out.println(Math.pow(a, 0.4) * m);
+//		System.out.println(Math.pow(a, 0.6) * m);
+//		System.out.println(Math.pow(a, 0.8) * m);
+//		System.out.println(Math.pow(a, 1) * m);
+		
+		System.out.println("========");
+//		System.out.println(Math.pow(a, 1.6) * m);
+//		System.out.println(Math.pow(a, 1.8) * m);
+//		System.out.println(Math.pow(a, 2) * m);
+//		System.out.println(Math.pow(a, 2.2) * m);
+//		System.out.println(Math.pow(a, 2.4) * m);
+//		System.out.println(Math.pow(a, 2.6) * m);
+//		System.out.println(Math.pow(a, 2.8) * m);
+//		System.out.println(Math.pow(a, 3) * m);
+//		System.out.println(Math.pow(a, 3.2) * m);
+//		System.out.println(Math.pow(a, 3.4) * m);
+//		System.out.println(Math.pow(a, 3.6) * m);
+//		System.out.println(Math.pow(a, 3.8) * m);
+		
+		System.out.println(Math.pow(a, 0) * m);
+		System.out.println(Math.pow(a, 1) * m);
+		System.out.println(Math.pow(a, 2) * m);
+		System.out.println(Math.pow(a, 3) * m);
+		System.out.println(Math.pow(a, 4) * m);
+		System.out.println(Math.pow(a, 5) * m);
+		System.out.println(Math.pow(a, 6) * m);
+		System.out.println(Math.pow(a, 7) * m);
+		System.out.println(Math.pow(a, 8) * m);
+		System.out.println(Math.pow(a, 9) * m);
+		System.out.println(Math.pow(a, 10) * m);
+		System.out.println(Math.pow(a, 11) * m);
+		System.out.println(Math.pow(a, 12) * m);
+		System.out.println(Math.pow(a, 13) * m);
+		System.out.println(Math.pow(a, 14) * m);
+		System.out.println(Math.pow(a, 15) * m);
+		System.out.println(Math.pow(a, 16) * m);
+		System.out.println(Math.pow(a, 17) * m);
+		System.out.println(Math.pow(a, 18) * m);
+		System.out.println(Math.pow(a, 19) * m);
+		System.out.println(Math.pow(a, 20) * m);
 	}
 }

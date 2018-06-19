@@ -5,10 +5,10 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.roy.football.match.OFN.CalculationType;
 import com.roy.football.match.OFN.response.Company;
@@ -55,6 +55,7 @@ import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.util.MatchUtil;
 
 @Service
+@Transactional(readOnly = true, value = "transactionManager")
 public class MatchPersistService {
 
 	@Autowired
@@ -89,7 +90,6 @@ public class MatchPersistService {
 	@Autowired
 	private PredictResultRepository predictResultRepository;
 	
-	@Transactional
 	public void save (OFNMatchData ofnMatch, OFNCalculateResult ofnCalculateResult, boolean finished) {
 		if (ofnMatch == null || ofnCalculateResult == null) {
 			return;
@@ -191,7 +191,6 @@ public class MatchPersistService {
 		}
 	}
 	
-	@Transactional
 	public CalculatedAndResult load (Long matchId) {
 		CalculatedAndResult calResult = new CalculatedAndResult();
 		

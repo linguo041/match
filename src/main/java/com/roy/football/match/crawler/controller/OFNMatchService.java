@@ -220,11 +220,17 @@ public class OFNMatchService {
 	}
 	
 	private List<EuroPl> getJincaiPls (Long oddsmid, Long matchDayId) throws MatchParseException {
+		List<EuroPl> jinCais = Lists.newArrayList();
+		
 		if (matchDayId != null) {
-			return ewJincaiParser.getJincaiEuro(matchDayId);
-		} else {
-			return parser.parseEuroData(oddsmid, Company.Jincai);
+			jinCais = ewJincaiParser.getJincaiEuro(matchDayId);
 		}
+		
+		if (jinCais == null || jinCais.isEmpty()) {
+			jinCais = parser.parseEuroData(oddsmid, Company.Jincai);
+		}
+		
+		return jinCais;
 	}
 	
 	private boolean filterValidMatch (JinCaiMatch jcMatch, Date now) {

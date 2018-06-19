@@ -1,5 +1,6 @@
 package com.roy.football.match.OFN.out;
 
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,7 +36,7 @@ import com.roy.football.match.util.MatchUtil;
 
 @Component
 public class OFNOutputFormater {
-	private static NumberFormat nf = NumberFormat.getInstance();
+	private static NumberFormat nf = new DecimalFormat("#.##");
 
 	public OFNExcelData format (OFNMatchData ofnMatch, OFNCalculateResult calculateResult) {
 		OFNExcelData excelData = new OFNExcelData();
@@ -61,17 +62,21 @@ public class OFNOutputFormater {
 				excelData.setLevel(getHostLevel(matrices.getHostLevel(), matrices.getHostAllMatrix())
 						+ "\r\n" + getHostLevel(matrices.getGuestLevel(), matrices.getGuestAllMatrix()));
 				
-				hostGuestCompFormat.append("B   %.1f : %.1f");
+				hostGuestCompFormat.append("B [%.1f : %.1f | %.1f : %.1f]");
 				hostGuestCompArgs.add(matrices.getHostAttGuestDefInx());
 				hostGuestCompArgs.add(matrices.getGuestAttHostDefInx());
+				hostGuestCompArgs.add(matrices.getHostWinRt());
+				hostGuestCompArgs.add(matrices.getGuestWinRt());
 			}
 
 			MatchState matchState = calculateResult.getMatchState();
 			if (matchState != null) {
 				hostGuestCompFormat.append(hostGuestCompFormat.length() > 0 ? '\n' : "");
-				hostGuestCompFormat.append("S   %.1f : %.1f");
+				hostGuestCompFormat.append("S [%.1f : %.1f | %.1f : %.1f]");
 				hostGuestCompArgs.add(matchState.getHostAttackToGuest());
 				hostGuestCompArgs.add(matchState.getGuestAttackToHost());
+				hostGuestCompArgs.add(matchState.getHostWinRt());
+				hostGuestCompArgs.add(matchState.getGuestWinRt());
 
 				Float hotPoint = matchState.getHotPoint();
 //				excelData.setStateVariation(String.format("%.1f | %.1f, %.1f",
@@ -292,6 +297,7 @@ public class OFNOutputFormater {
 				Set<ResultGroup> killByPl = predictRes.getKpResult().getKillByPl();
 				Set<ResultGroup> killByPlPkUnmatch = predictRes.getKpResult().getKillByPlPkUnmatch();
 				Set<ResultGroup> killByPull = predictRes.getKpResult().getKillByPull();
+				Set<ResultGroup> killByExchange = predictRes.getKpResult().getKillByExchange();
 				String kill = "";
 				if (killByPk != null && killByPk.size() > 0) {
 					kill = " ~" + getSetVals(killByPk);
@@ -307,6 +313,9 @@ public class OFNOutputFormater {
 				
 				if (killByPull != null && killByPull.size() > 0) {
 					kill = kill + " *"+ getSetVals(killByPull);
+				}
+				if (killByExchange != null && killByExchange.size() > 0) {
+					kill = kill + " e"+ getSetVals(killByExchange);
 				}
 				excelData.setKill(kill);
 				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByBase();
@@ -333,15 +342,11 @@ public class OFNOutputFormater {
 			return "";
 		}
 		
-		StringBuilder sb = new StringBuilder(tl.name());
-		
-		if (baseMatrix != null) {
-			sb.append('[').append(nf.format(baseMatrix.getWinRt())).append(", ")
-				.append(baseMatrix.getGoals() - baseMatrix.getMisses())
-				.append(']');
-		}
-
-		return sb.toString();
+		return String.format("%s[%s, %s, %d]",
+				tl.name(),
+				nf.format(baseMatrix.getWinRt()),
+				nf.format(baseMatrix.getWinDrawRt() - baseMatrix.getWinRt()),
+				baseMatrix.getGoals() - baseMatrix.getMisses());
 	}
 	
 	private String getSetVals (Set<ResultGroup> sets) {
@@ -369,5 +374,9 @@ public class OFNOutputFormater {
 			args.add(latestPk);
 		}
 		return String.format(format, args.toArray());
+	}
+	
+	public static void main (String args[]) {
+		System.out.println(nf.format(25.6789));
 	}
 }

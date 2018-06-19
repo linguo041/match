@@ -82,6 +82,7 @@ public class HistoryMatchCalculationService {
 						@Override
 						public Void call() throws Exception {
 							parseAndCalculate(ematch);
+							Thread.sleep(1000);
 							return null;
 						}
 					}));

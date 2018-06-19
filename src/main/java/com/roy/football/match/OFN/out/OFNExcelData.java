@@ -17,11 +17,11 @@ public class OFNExcelData {
 	private String leagueName;
 	@Header(order=40, title="Match Team")
 	private String matchInfor;
-	@Header(order=60, title="Level [winRt, winGoal]")
+	@Header(order=60, title="Level [w%, d%, wgoal#]")
 	private String level;
-	@Header(order=80, title="H:G Base State JS")
+	@Header(order=80, title="H:G B[attDef | winRt]")
 	private String hostGuestComp;
-	@Header(order=90, title="Hot | variance{H:G} ")
+	@Header(order=90, title="Hot | variance H:G ")
 	private String stateVariation;
 	@Header(order=100, title="Predict,Main,curr")
 	private String originPanKou;
@@ -37,7 +37,7 @@ public class OFNExcelData {
 	private String aomen;
 	@Header(order=142, title="avg jc chg")
 	private String jincai;
-	@Header(order=145, title="bf jc")
+//	@Header(order=145, title="bf jc")
 	private String bifa;
 	@Header(order=148, title="exg jc_gain")
 	private String jincaiJY;

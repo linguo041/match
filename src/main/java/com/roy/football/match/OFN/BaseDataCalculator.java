@@ -22,7 +22,7 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 	public ClubMatrices calucate(OFNMatchData matchData) {
 		ClubDatas baseData = matchData.getBaseData();
 
-		if (baseData != null) {
+		if (baseData != null && baseData.getHostData() != null && baseData.getGuestData() != null) {
 			try {
 				ClubMatrices clubBaseMatx = new ClubMatrices();
 				
@@ -49,50 +49,48 @@ public class BaseDataCalculator extends AbstractBaseDataCalculator implements Ca
 	}
 	
 	private ClubMatrix calculate (ClubData clubData, MatrixType type) throws CommonException {
-		if (clubData == null) {
-			throw new CommonException("Club base data is empty.");
-		}
-		
 		ClubMatrix matrix = null;
 		
-		if (type == MatrixType.All && clubData.getAllNum() > 0) {
-			matrix = new ClubMatrix();
-			matrix.setNum(clubData.getAllNum());
-			matrix.setWinRt((float)clubData.getAllWin() / clubData.getAllNum());
-			matrix.setWinDrawRt((float)(clubData.getAllWin() + clubData.getAllDraw()) / clubData.getAllNum());
-			matrix.setWinGoals(clubData.getAllNet());
-			matrix.setDrawLoseRt((float)(clubData.getAllDraw() + clubData.getAllLose()) / clubData.getAllNum());
-			matrix.setWinLoseDiff(Math.abs(clubData.getAllWin() - clubData.getAllLose()));
-			matrix.setGoals(clubData.getAllGoal());
-			matrix.setMisses(clubData.getAllMiss());
-			matrix.setPm(clubData.getPm().getAllPm());
-			matrix.setPoint(clubData.getAllScore());
-		} else if (type == MatrixType.Home && clubData.getHomeNum() > 0) {
-			matrix = new ClubMatrix();
-			matrix.setNum(clubData.getHomeNum());
-			matrix.setWinRt((float)clubData.getHomeWin() / clubData.getHomeNum());
-			matrix.setWinDrawRt((float)(clubData.getHomeWin() + clubData.getHomeDraw()) / clubData.getHomeNum());
-			matrix.setWinGoals(clubData.getHomeNet());
-			matrix.setDrawLoseRt((float)(clubData.getHomeDraw() + clubData.getHomeLose()) / clubData.getHomeNum());
-			matrix.setWinLoseDiff(Math.abs(clubData.getHomeWin() - clubData.getHomeLose()));
-			matrix.setGoals(clubData.getHomeGoal());
-			matrix.setMisses(clubData.getHomeMiss());
-			matrix.setPm(clubData.getPm().getHomePm());
-			matrix.setPoint(clubData.getHomeScore());
-		} else if (type == MatrixType.Away && clubData.getAwayNum() > 0) {
-			matrix = new ClubMatrix();
-			matrix.setNum(clubData.getAwayNum());
-			matrix.setWinRt((float)clubData.getAwayWin() / clubData.getAwayNum());
-			matrix.setWinDrawRt((float)(clubData.getAwayWin() + clubData.getAwayDraw()) / clubData.getAwayNum());
-			matrix.setWinGoals(clubData.getAwayNet());
-			matrix.setDrawLoseRt((float)(clubData.getAwayDraw() + clubData.getAwayLose()) / clubData.getAwayNum());
-			matrix.setWinLoseDiff(Math.abs(clubData.getAwayWin() - clubData.getAwayLose()));
-			matrix.setGoals(clubData.getAwayGoal());
-			matrix.setMisses(clubData.getAwayMiss());
-			matrix.setPm(clubData.getPm().getAwayPm());
-			matrix.setPoint(clubData.getAwayScore());
+		if (clubData != null) {
+			if (type == MatrixType.All && clubData.getAllNum() > 0) {
+				matrix = new ClubMatrix();
+				matrix.setNum(clubData.getAllNum());
+				matrix.setWinRt((float)clubData.getAllWin() / clubData.getAllNum());
+				matrix.setWinDrawRt((float)(clubData.getAllWin() + clubData.getAllDraw()) / clubData.getAllNum());
+				matrix.setWinGoals(clubData.getAllNet());
+				matrix.setDrawLoseRt((float)(clubData.getAllDraw() + clubData.getAllLose()) / clubData.getAllNum());
+				matrix.setWinLoseDiff(Math.abs(clubData.getAllWin() - clubData.getAllLose()));
+				matrix.setGoals(clubData.getAllGoal());
+				matrix.setMisses(clubData.getAllMiss());
+				matrix.setPm(clubData.getPm().getAllPm());
+				matrix.setPoint(clubData.getAllScore());
+			} else if (type == MatrixType.Home && clubData.getHomeNum() > 0) {
+				matrix = new ClubMatrix();
+				matrix.setNum(clubData.getHomeNum());
+				matrix.setWinRt((float)clubData.getHomeWin() / clubData.getHomeNum());
+				matrix.setWinDrawRt((float)(clubData.getHomeWin() + clubData.getHomeDraw()) / clubData.getHomeNum());
+				matrix.setWinGoals(clubData.getHomeNet());
+				matrix.setDrawLoseRt((float)(clubData.getHomeDraw() + clubData.getHomeLose()) / clubData.getHomeNum());
+				matrix.setWinLoseDiff(Math.abs(clubData.getHomeWin() - clubData.getHomeLose()));
+				matrix.setGoals(clubData.getHomeGoal());
+				matrix.setMisses(clubData.getHomeMiss());
+				matrix.setPm(clubData.getPm().getHomePm());
+				matrix.setPoint(clubData.getHomeScore());
+			} else if (type == MatrixType.Away && clubData.getAwayNum() > 0) {
+				matrix = new ClubMatrix();
+				matrix.setNum(clubData.getAwayNum());
+				matrix.setWinRt((float)clubData.getAwayWin() / clubData.getAwayNum());
+				matrix.setWinDrawRt((float)(clubData.getAwayWin() + clubData.getAwayDraw()) / clubData.getAwayNum());
+				matrix.setWinGoals(clubData.getAwayNet());
+				matrix.setDrawLoseRt((float)(clubData.getAwayDraw() + clubData.getAwayLose()) / clubData.getAwayNum());
+				matrix.setWinLoseDiff(Math.abs(clubData.getAwayWin() - clubData.getAwayLose()));
+				matrix.setGoals(clubData.getAwayGoal());
+				matrix.setMisses(clubData.getAwayMiss());
+				matrix.setPm(clubData.getPm().getAwayPm());
+				matrix.setPoint(clubData.getAwayScore());
+			}
 		}
-
+		
 		return matrix;
 	}
 }

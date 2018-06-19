@@ -121,6 +121,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matchState.setGuestAttackToHost(ggoal);
 		matchState.setHostAttackVariationToGuest(hvariation);
 		matchState.setGuestAttackVariationToHost(gvariation);
+		matchState.setHostWinRt(hostMatches.getWinRate());
+		matchState.setGuestWinRt(guestMatches.getWinRate());
 		
 		return true;
 	}
@@ -269,7 +271,8 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 			for (int i = 0; i < matches.size(); i++) {
 				FinishedMatch match = matches.get(i);
 				
-				if (MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, league.isState(), i)
+				if (match == null
+						|| MatchUtil.isMatchTooOld(match.getMatchTime(), matchDate, league.isState(), i)
 						|| matchDate.getTime() <= match.getMatchTime().getTime()
 						|| match.getAsiaPanKou() == null) {
 					continue;
@@ -404,6 +407,17 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 								FastMath.sqrt(StatUtils.variance(misses_H, 0, index_H)));
 						matchState.setHostHome5(hostHome5);
 					}
+					
+					if (index_H > 5) {
+						LatestMatchMatrices hostHome10 = getMatchMatricesData(winNum_H,
+								drawNum_H, loseNum_H, index_H,
+								StatUtils.sum(goals_H, 0, index_H),
+								StatUtils.sum(misses_H, 0, index_H),
+								winPkNum_H, drawPkNum_H, points_H,
+								FastMath.sqrt(StatUtils.variance(goals_H, 0, index_H)),
+								FastMath.sqrt(StatUtils.variance(misses_H, 0, index_H)));
+						matchState.setHostState10(hostHome10);
+					}
 				} else {
 					if (index_A >= 3 && index_A <= 5) {
 						LatestMatchMatrices guestAway5 = getMatchMatricesData(winNum_A,
@@ -414,6 +428,17 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 								FastMath.sqrt(StatUtils.variance(goals_A, 0, index_A)),
 								FastMath.sqrt(StatUtils.variance(misses_A, 0, index_A)));
 						matchState.setGuestAway5(guestAway5);
+					}
+					
+					if (index_A > 5) {
+						LatestMatchMatrices guestAway10 = getMatchMatricesData(winNum_A,
+								drawNum_A, loseNum_A, index_A,
+								StatUtils.sum(goals_A, 0, index_A),
+								StatUtils.sum(misses_A, 0, index_A),
+								winPkNum_A, drawPkNum_A, points_A,
+								FastMath.sqrt(StatUtils.variance(goals_A, 0, index_A)),
+								FastMath.sqrt(StatUtils.variance(misses_A, 0, index_A)));
+						matchState.setGuestState10(guestAway10);
 					}
 				}
 				
