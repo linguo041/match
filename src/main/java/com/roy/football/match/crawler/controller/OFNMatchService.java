@@ -75,7 +75,8 @@ public class OFNMatchService {
 	public void process () throws MatchParseException {	
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
 		
-		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatches();
+//		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatches();
+		List<JinCaiMatch> jinCaiMatches = parser.parseJinCaiMatchesBf();
 
 		if (jinCaiMatches != null && jinCaiMatches.size() > 0) {
 			jinCaiMatches = jinCaiMatches.stream().filter(jcMatch -> {
@@ -129,14 +130,14 @@ public class OFNMatchService {
 		Long oddsmid = jcMatch.getOddsmid();
 		Long matchDayId = jcMatch.getXid();
 		League league = League.getLeagueById(jcMatch.getLid());
-		EuroPl euroAverage = new EuroPl(jcMatch.getOh(), jcMatch.getOd(), jcMatch.getOa(), null);
+//		EuroPl euroAverage = new EuroPl(jcMatch.getOh(), jcMatch.getOd(), jcMatch.getOa(), null);
 		
 		try {
 			// get match base data
 			OFNMatchData ofnMatch = parser.parseMatchData(oddsmid);
 			ofnMatch.setMatchDayId(matchDayId);
 			ofnMatch.setLeague(league);
-			ofnMatch.setEuroAvg(euroAverage);
+//			ofnMatch.setEuroAvg(euroAverage);
 			
 			if (matchDayId != null) {
 				ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));

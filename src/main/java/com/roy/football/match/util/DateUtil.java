@@ -18,6 +18,7 @@ public class DateUtil {
     /**-- add start ziczhou 2015.06.02 --*/
     /** "yyyy-MM-dd HH:mm:ss" format */
 	public static final String DATE_TIME_DATABASE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final String date_time_comma_format = "yyyy,MM,dd,HH,mm,ss";
 	
 	public static final String EIGHTWIN_FORMAT = "yyyy-MM-dd HH:mm";
 
@@ -33,6 +34,7 @@ public class DateUtil {
     private static ThreadLocal<DateFormat> simpleDateWithDatabaseThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithSlashThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> eightWinDateThread = new ThreadLocal<DateFormat>();
+    private static ThreadLocal<DateFormat> commaDateThread = new ThreadLocal<DateFormat>();
     
     public static DateFormat getHarfYearFormat() {
     	DateFormat df = harfYearDateThread.get();
@@ -199,6 +201,21 @@ public class DateUtil {
     	
     	return df;
     }
+    
+    public static DateFormat getDateTimeCommonFormat() {
+    	DateFormat df = commaDateThread.get();
+    	if (df == null) {
+    		df = new SimpleDateFormat(date_time_comma_format);
+    		commaDateThread.set(df);
+    	}
+    	
+    	return df;
+    }
+    
+    public static Date parseCommaDate (String dateStr) throws ParseException {
+    	DateFormat format = getDateTimeCommonFormat();
+        return format.parse(dateStr);
+    }
 
     public static Date parseComplexDate (String dateStr) throws ParseException {
         return parseComplexDate(dateStr, GMT_TIMEZONE);
@@ -313,6 +330,20 @@ public class DateUtil {
         } else {
             return -1;
         }
+    }
+    
+    public static Date yesterday(Date today) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) - 1);
+        return calendar.getTime();
+    }
+    
+    public static Date tomorrow(Date today) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(today);
+        calendar.set(Calendar.DATE, calendar.get(Calendar.DATE) + 1);
+        return calendar.getTime();
     }
 
     /**

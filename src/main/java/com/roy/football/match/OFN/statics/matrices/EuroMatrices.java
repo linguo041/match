@@ -9,47 +9,8 @@ import com.roy.football.match.process.CalculateResult;
 
 import lombok.Data;
 
+@Data
 public class EuroMatrices implements CalculateResult, MatchData{
-
-	public EuroPl getCurrEuroAvg() {
-		return currEuroAvg;
-	}
-
-	public void setCurrEuroAvg(EuroPl currEuroAvg) {
-		this.currEuroAvg = currEuroAvg;
-	}
-
-	public float getMainAvgDrawDiff() {
-		return mainAvgDrawDiff;
-	}
-
-	public void setMainAvgDrawDiff(float mainAvgDrawDiff) {
-		this.mainAvgDrawDiff = mainAvgDrawDiff;
-	}
-
-	public float getMainAvgWinDiff() {
-		return mainAvgWinDiff;
-	}
-
-	public void setMainAvgWinDiff(float mainAvgWinDiff) {
-		this.mainAvgWinDiff = mainAvgWinDiff;
-	}
-
-	public float getMainAvgLoseDiff() {
-		return mainAvgLoseDiff;
-	}
-
-	public void setMainAvgLoseDiff(float mainAvgLoseDiff) {
-		this.mainAvgLoseDiff = mainAvgLoseDiff;
-	}
-
-	public Map<Company, EuroMatrix> getCompanyEus() {
-		return companyEus;
-	}
-
-	public void setCompanyEus(Map<Company, EuroMatrix> companyEus) {
-		this.companyEus = companyEus;
-	}
 
 //	private EuroMatrix jincaiMatrix;
 //	private EuroMatrix williamMatrix;
@@ -65,6 +26,9 @@ public class EuroMatrices implements CalculateResult, MatchData{
 	private float mainAvgWinDiff;
 	private float mainAvgDrawDiff;
 	private float mainAvgLoseDiff;
+	private double euWinVariance;
+	private double euDrawVariance;
+	private double euLoseVariance;
 
 	@Data
 	public static class EuroMatrix {

@@ -29,7 +29,7 @@ public enum League {
 	XiJia(85, 20, MatchContinent.Euro), XiBei(54, 10, MatchContinent.Euro),
 	DeJia(39, 18, MatchContinent.Euro), DeYi(140, 18, MatchContinent.Euro), DeBei(52, 18, MatchContinent.Euro),
 	YiJia(34, 20, Company.SNAI, MatchContinent.Euro), YiBei(332, 20, Company.SNAI, MatchContinent.Euro),
-	FaJia(93, 20, MatchContinent.Euro), FaYi(171, 20, MatchContinent.Euro), FaBei(101, 20, MatchContinent.Euro),
+	FaJia(93, 20, MatchContinent.Euro), FaYi(171, 20, MatchContinent.Euro), FaBei(101, 20, MatchContinent.Euro), FaLianBei(62, 12, MatchContinent.Euro),
 	HeJia(99, 18, MatchContinent.Euro), HeYi(202, 18, MatchContinent.Euro), HeBei(146, 10, MatchContinent.Euro),
 	PuChao(88, 18, MatchContinent.Euro), PuLianBei(251, 18, MatchContinent.Euro),
 	OuGuan(74, 16, MatchContinent.Euro), OuLian(58, 16, MatchContinent.Euro),
@@ -40,6 +40,7 @@ public enum League {
 
 	RiLian(102, 18, Company.Aomen, MatchContinent.Asia), RiYi(347, 22, Company.Aomen, MatchContinent.Asia),
 	RiLianBei(158, 8, Company.Aomen, MatchContinent.Asia),
+	TianHuangBei(252, 8, Company.Aomen, MatchContinent.Asia),
 	RiXinBei(392, 8, Company.Aomen, MatchContinent.Asia),
 	HanZhiLian(250, 12, Company.Aomen, MatchContinent.Asia),
 	AoChao(339, 10, Company.Aomen, MatchContinent.Asia),

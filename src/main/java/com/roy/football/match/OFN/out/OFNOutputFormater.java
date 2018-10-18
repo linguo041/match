@@ -148,9 +148,15 @@ public class OFNOutputFormater {
 			}
 
 			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
+			String euVarianceStr = "";
 			if (euroMatrics != null) {
 				League league = ofnMatch.getLeague();
 				EuroMatrix majorComp = EuroUtil.getMainEuro(euroMatrics, league);
+				
+				euVarianceStr = String.format("%.2f : %.2f : %.2f\n",
+						euroMatrics.getEuWinVariance(),
+						euroMatrics.getEuDrawVariance(),
+						euroMatrics.getEuLoseVariance());
 
 				if (majorComp != null && (league.getMajorCompany() != Company.Aomen || league.getMajorCompany() != Company.William)) {
 					excelData.setPlMatrix((String.format("%s\n%.2f   %.2f   %.2f\n"
@@ -281,12 +287,13 @@ public class OFNOutputFormater {
 								exgData.getJcDrawExgRt() * 100,
 								exgData.getJcLoseExgRt() * 100)
 							: bfjcRate;
-					excelData.setJincaiJY(String.format("%.2f万\n%d   %d   %d",
+					excelData.setJincaiJY(euVarianceStr + String.format("%.2f万\n%d   %d   %d",
 							exgData.getJcTotalExchange() / 10000f,
 							exgData.getJcWinGain(),
 							exgData.getJcDrawGain(),
 							exgData.getJcLoseGain()));
 				}
+				
 				
 				excelData.setBifa(bfjcRate);
 			}

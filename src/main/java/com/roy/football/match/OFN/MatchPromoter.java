@@ -570,8 +570,9 @@ public class MatchPromoter {
 						&& aleWinDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaWinDiff < -0.015f || jaWinDiff <= -0.035f || rank.getWRank() >= 14)
-							&& winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenWinChange < -0.005 && upChange < -0.005 ||
+							(aaWinDiff < -0.015f || jaWinDiff <= -0.035f || rank.getWRank() >= 14) &&
+							winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Three;
 					}
 				}
@@ -625,8 +626,9 @@ public class MatchPromoter {
 						&& aleWinDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaWinDiff < -0.02f || jaWinDiff <= -0.035f + winAdjByPull || rank.getWRank() >= 14)
-							&& winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenWinChange < -0.008 && upChange < -0.009 ||
+							(aaWinDiff < -0.02f || jaWinDiff <= -0.035f + winAdjByPull || rank.getWRank() >= 14) &&
+							winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Three;
 					}
 				}
@@ -683,8 +685,9 @@ public class MatchPromoter {
 						&& aleWinDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaWinDiff < -0.015f || jaWinDiff <= -0.02f + winAdjByPull || rank.getWRank() >= 14)
-							&& winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenWinChange < -0.006 && upChange < -0.006 ||
+							(aaWinDiff < -0.015f || jaWinDiff <= -0.02f + winAdjByPull || rank.getWRank() >= 14) &&
+							winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Three;
 					}
 				}
@@ -736,10 +739,11 @@ public class MatchPromoter {
 						&& aleWinDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaWinDiff < -0.025f || jaWinDiff <= -0.045f + winAdjByPull
-							|| rank.getWRank() >= 14
-							|| pkDirection.ordinal() > PKDirection.Middle.ordinal())
-							&& winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenWinChange < -0.008 && upChange < -0.009 ||
+							(aaWinDiff < -0.025f || jaWinDiff <= -0.045f + winAdjByPull ||
+								rank.getWRank() >= 14 ||
+								pkDirection.ordinal() > PKDirection.Middle.ordinal()) &&
+							winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Three;
 					}
 				}
@@ -838,8 +842,9 @@ public class MatchPromoter {
 						&& aleLoseDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaLoseDiff < -0.015f || jaLoseDiff <= -0.03f || rank.getLRank() >= 14)
-							&& loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenLoseChange < -0.005 && downChange < -0.005 ||
+							(aaLoseDiff < -0.015f || jaLoseDiff <= -0.03f || rank.getLRank() >= 14) &&
+								loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
@@ -891,9 +896,10 @@ public class MatchPromoter {
 						&& aleLoseDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaLoseDiff < -0.025f || jaLoseDiff <= -0.045f - winAdjByPull
-							|| rank.getLRank() >= 14
-							|| pkDirection.ordinal() < PKDirection.Middle.ordinal())
+					if (aomenLoseChange < -0.007 && downChange < -0.009 ||
+							(aaLoseDiff < -0.025f || jaLoseDiff <= -0.045f - winAdjByPull
+								|| rank.getLRank() >= 14
+								|| pkDirection.ordinal() < PKDirection.Middle.ordinal())
 							&& loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Zero;
 					}
@@ -951,9 +957,9 @@ public class MatchPromoter {
 						&& aleLoseDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaLoseDiff < -0.015f || jaLoseDiff <= -0.025f - winAdjByPull
-							|| rank.getLRank() >= 14)
-							&& loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenLoseChange < -0.006 && downChange < -0.007 ||
+							(aaLoseDiff < -0.015f || jaLoseDiff <= -0.025f - winAdjByPull || rank.getLRank() >= 14) &&
+								loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Zero;
 					}
 				}
@@ -1007,9 +1013,9 @@ public class MatchPromoter {
 						&& aleLoseDiff <= 0.025f
 						&& rank.getDRank() <= 11
 						) {
-					if ((aaLoseDiff < -0.02f || jaLoseDiff <= -0.04f - winAdjByPull
-							|| rank.getLRank() >= 16)
-							&& loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
+					if (aomenLoseChange < -0.007 && downChange < -0.009 ||
+							(aaLoseDiff < -0.02f || jaLoseDiff <= -0.04f - winAdjByPull || rank.getLRank() >= 16) &&
+								loseNegatives(jaLoseDiff, aaLoseDiff, downChange, pmPkDiff, pcPkDiff) < 2) {
 						firstOption = ResultGroup.Zero;
 					}
 				}

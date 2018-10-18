@@ -2,7 +2,10 @@ package com.roy.football.match.OFN.parser;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +20,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -38,6 +42,7 @@ import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.httpRequest.HttpRequestException;
 import com.roy.football.match.httpRequest.HttpRequestService;
 import com.roy.football.match.service.HistoryMatchCalculationService;
+import com.roy.football.match.util.DateUtil;
 import com.roy.football.match.util.GsonConverter;
 import com.roy.football.match.util.MatchUtil;
 import com.roy.football.match.util.StringUtil;
@@ -52,8 +57,10 @@ public class OFNHtmlParser {
 //	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String JIN_CAI_URL = "http://m.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/json/match/oddshistory";
+	private final static String JIN_CAI_BF_URL = "http://bf.159cai.com/mcache/livejcjs/";
 
 	private final static Pattern KEY_VALUE_REG = Pattern.compile("\\b(\\w+)\\b\\s*=\\s*(.+?);");
+	private final static Pattern BF_KEY_VALUE_REG = Pattern.compile("zcdz\\['(\\d+)'\\]=\\[(.+?)\\];");
 	
 	private final static String HOME_PANKOU = "H";
 	private final static String AWAY_PANKOU = "A";
@@ -71,6 +78,59 @@ public class OFNHtmlParser {
 
 			return response.getRows();
 		} catch (HttpRequestException | XmlParseException e) {
+			throw new MatchParseException("unable to parse jincai matches", e);
+		}
+	}
+	
+	public List<JinCaiMatch> parseJinCaiMatchesBf () throws MatchParseException {
+		Date today = new Date();
+		String todayStr = DateUtil.formatSimpleDate(today);
+		
+		Date yestoday = DateUtil.yesterday(today);
+		String yestodayStr = DateUtil.formatSimpleDate(yestoday);
+		
+		Date beforeYest = DateUtil.yesterday(yestoday);
+		String beforeYestStr = DateUtil.formatSimpleDate(beforeYest);
+		
+		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
+		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
+		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
+		beforeYestodayMatches.addAll(yestodayMatches);
+		beforeYestodayMatches.addAll(todayMatches);
+		return yestodayMatches;
+	}
+	
+	public List<JinCaiMatch> parseJinCaiMatchesBf (String dateStr) throws MatchParseException {
+		try {
+			Map<String, String> headers = new HashMap<String, String>();
+			
+			String resData = HttpRequestService.getInstance().doHttpRequest(JIN_CAI_BF_URL + dateStr + ".js", HttpRequestService.GET_METHOD, null, headers);
+			
+			Matcher matcher = BF_KEY_VALUE_REG.matcher(resData);
+
+			List<JinCaiMatch> matches = Lists.newArrayList();
+			while (matcher.find()) {
+				JinCaiMatch match = new JinCaiMatch();
+				String key = matcher.group(1);
+				String val = matcher.group(2);
+
+				match.setXid(Long.parseLong(key));
+				String[] arr = val.split("^'|','|'$");
+//				System.out.println(Lists.newArrayList(arr));
+				
+				match.setOddsmid(Long.parseLong(arr[1]));
+				match.setHtid(Long.parseLong(arr[18]));
+				match.setHn(arr[5]);
+				match.setGtid(Long.parseLong(arr[19]));
+				match.setGn(arr[6]);
+				match.setLid(Long.parseLong(arr[28]));
+				match.setLn(arr[2]);
+				match.setMtime(DateUtil.parseCommaDate(arr[4]));
+				matches.add(match);
+			}
+			
+			return matches;
+		} catch (HttpRequestException | ParseException e) {
 			throw new MatchParseException("unable to parse jincai matches", e);
 		}
 	}
@@ -129,7 +189,6 @@ public class OFNHtmlParser {
 			}
 		}
 	}
-
 	
 	public List <EuroPl> parseEuroData (Long oddsmid, Company company) throws MatchParseException {
 		try {
@@ -139,24 +198,27 @@ public class OFNHtmlParser {
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.eruo,
 					HttpRequestService.GET_METHOD, null, headers);
 			
-			String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData,
-					new TypeToken<OFNResponseWrapper<String[][]>>(){}).getData();
-			
-			if (datas != null && datas.length > 0) {
-				List <EuroPl> euroPls = new ArrayList<EuroPl>();
+			if (!StringUtil.isEmpty(resData)) {
+				String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData,
+						new TypeToken<OFNResponseWrapper<String[][]>>(){}).getData();
 				
-				for (String[] eu : datas) {
-					EuroPl pl = new EuroPl(Float.parseFloat(eu[0]),
-							Float.parseFloat(eu[1]),
-							Float.parseFloat(eu[2]),
-							MatchUtil.parseFromOFHString(eu[3]));
+				if (datas != null && datas.length > 0) {
+					List <EuroPl> euroPls = new ArrayList<EuroPl>();
 					
-					euroPls.add(pl);
+					for (String[] eu : datas) {
+						EuroPl pl = new EuroPl(Float.parseFloat(eu[0]),
+								Float.parseFloat(eu[1]),
+								Float.parseFloat(eu[2]),
+								MatchUtil.parseFromOFHString(eu[3]));
+						
+						euroPls.add(pl);
+					}
+					
+					return euroPls;
 				}
-				
-				return euroPls;
 			}
 			
+			log.warn(String.format("Euro data of match id %d & company %s is empty", oddsmid, company));
 		} catch (HttpRequestException e) {
 			throw new MatchParseException(String.format("Parse euro pl: ofn_match_id: %d, company: %s", oddsmid, company), e);
 		}
@@ -171,33 +233,36 @@ public class OFNHtmlParser {
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.asia,
 					HttpRequestService.GET_METHOD, null, headers);
 			
-			String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData,
-					new TypeToken<OFNResponseWrapper<String[][]>>(){}).getData();
-			
-			if (datas != null && datas.length > 0) {
-				List <AsiaPl> asiaPls = new ArrayList<AsiaPl>();
+			if (!StringUtil.isEmpty(resData)) {
+				String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData,
+						new TypeToken<OFNResponseWrapper<String[][]>>(){}).getData();
 				
-				for (String[] as : datas) {
-					AsiaPl asia = new AsiaPl();
-					asia.sethWin(Float.parseFloat(as[0]));
-					asia.setaWin(Float.parseFloat(as[2]));
+				if (datas != null && datas.length > 0) {
+					List <AsiaPl> asiaPls = new ArrayList<AsiaPl>();
 					
-					Double pankouVal = (Float.parseFloat(as[1]) - 1) * 0.25;
-					
-					if (HOME_PANKOU.equalsIgnoreCase(as[3])) {
-						asia.setPanKou(pankouVal.floatValue());
-					} else if (AWAY_PANKOU.equalsIgnoreCase(as[3])) {
-						asia.setPanKou(-1 * pankouVal.floatValue());
+					for (String[] as : datas) {
+						AsiaPl asia = new AsiaPl();
+						asia.sethWin(Float.parseFloat(as[0]));
+						asia.setaWin(Float.parseFloat(as[2]));
+						
+						Double pankouVal = (Float.parseFloat(as[1]) - 1) * 0.25;
+						
+						if (HOME_PANKOU.equalsIgnoreCase(as[3])) {
+							asia.setPanKou(pankouVal.floatValue());
+						} else if (AWAY_PANKOU.equalsIgnoreCase(as[3])) {
+							asia.setPanKou(-1 * pankouVal.floatValue());
+						}
+						
+						asia.setPkDate(MatchUtil.parseFromOFHString(as[4]));
+						
+						asiaPls.add(asia);
 					}
 					
-					asia.setPkDate(MatchUtil.parseFromOFHString(as[4]));
-					
-					asiaPls.add(asia);
+					return asiaPls;
 				}
-				
-				return asiaPls;
 			}
 			
+			log.warn(String.format("Asia data of match id %d & company %s is empty", oddsmid, company));
 		} catch (HttpRequestException e) {
 			throw new MatchParseException(String.format("Parse asia pk: ofn_match_id: %d, company: %s", oddsmid, company), e);
 		}
@@ -351,13 +416,13 @@ public class OFNHtmlParser {
 		return quoteStr.substring(1, end);
 	}
 
-	public static void main (String [] args) throws MatchParseException {
+	public static void main (String [] args) throws MatchParseException, Exception {
 //		String instr = "[[\"4.00\",\"3.75\",\"1.75\",\"1454880574\"],[\"3.60\",\"3.75\",\"1.83\",\"1455221779\"],[\"4.20\",\"3.80\",\"1.70\",\"1455434403\"],[\"3.60\",\"3.75\",\"1.83\",\"1455435003\"],[\"4.20\",\"3.80\",\"1.70\",\"1455435312\"]]";
 //		
 //		String out[][] = GsonConverter.convertJSonToObjectUseNormal(instr, new TypeToken<String[][]>(){});
 //		
 //		System.out.println(out);
-		
+		/*
 		OFNHtmlParser ppp = new OFNHtmlParser();
 		OFNMatchData ofnMatchData = new OFNMatchData();
 //		ppp.parseClubDatas(1074452L, ofnMatchData);
@@ -370,6 +435,30 @@ public class OFNHtmlParser {
 		ofnMatchData.setHostId(1269L);
 		ppp.parseJiaoShouMatches(1074452L, ofnMatchData);
 		System.out.println(ofnMatchData);
+		*/
 		
+		String tests = " zcdz['180824039']=['1243179','亚运男足','#E03C1C','2018,08,24,17,00,00','印度尼西亚国奥','阿联酋国奥','2','2','0','0','4','','0-1','','5','27℃～28℃ ','90分钟[2-2],120分钟[2-2],点球[3-4]','3141','1156','1','A1','C3','0','0','0.0','1.73','1.97','474','0','1','第二圈','2','0'];";
+				
+		Matcher matcher = BF_KEY_VALUE_REG.matcher(tests);
+
+		while (matcher.find()) {
+			JinCaiMatch match = new JinCaiMatch();
+			String key = matcher.group(1);
+			String val = matcher.group(2);
+
+			match.setXid(Long.parseLong(key));
+			System.out.println(val);
+			String[] arr = val.split("^'|','|'$");
+			System.out.println(Lists.newArrayList(arr));
+			match.setOddsmid(Long.parseLong(arr[1]));
+			match.setHtid(Long.parseLong(arr[18]));
+			match.setHn(arr[5]);
+			match.setGtid(Long.parseLong(arr[19]));
+			match.setGn(arr[6]);
+			match.setLid(Long.parseLong(arr[28]));
+			match.setLn(arr[2]);
+			match.setMtime(DateUtil.parseCommaDate(arr[4]));
+			System.out.println(match);
+		}
 	}
 }

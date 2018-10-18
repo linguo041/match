@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.stat.StatUtils;
+import org.apache.commons.math3.util.FastMath;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -122,6 +125,41 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				euroMatrices.setMainAvgLoseDiff(MatchUtil.getEuDiff(currMajorpl.getELose(), currAvgPl.getELose(), false));
 			}
 		}
+		
+		double[] winEuArray = new double[10];
+		double[] drawEuArray = new double[10];
+		double[] loseEuArray = new double[10];
+		int index = 0;
+		
+		for (Map.Entry<Company, EuroMatrix> entry : euroMatrices.getCompanyEus().entrySet()) {
+			if (!Company.Jincai.equals(entry.getKey()) && entry.getValue() != null) {
+				winEuArray[index] = entry.getValue().getCurrentEuro().getEWin();
+				drawEuArray[index] = entry.getValue().getCurrentEuro().getEDraw();
+				loseEuArray[index] = entry.getValue().getCurrentEuro().getELose();
+				index++;
+			}
+		}
+		
+		euroMatrices.setEuWinVariance(FastMath.sqrt(StatUtils.variance(winEuArray, 0, index)));
+		euroMatrices.setEuDrawVariance(FastMath.sqrt(StatUtils.variance(drawEuArray, 0, index)));
+		euroMatrices.setEuLoseVariance(FastMath.sqrt(StatUtils.variance(loseEuArray, 0, index)));
+	}
+	
+	public static void main (String args[]) {
+		double[] winEuArray = new double[10];
+		int index = 0;
+		winEuArray[index] = 10;
+		index++;
+		winEuArray[index] = 11;
+		index++;
+		winEuArray[index] = 9;
+		index++;
+		winEuArray[index] = 12;
+		index++;
+		winEuArray[index] = 8;
+		index++;
+		
+		System.out.println(FastMath.sqrt(StatUtils.variance(winEuArray, 0, index)));
 	}
 	
 	private EuroMatrix getAbsoluteEuroMatrix (List<EuroPl> euroPls, Date matchDt) {
