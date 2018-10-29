@@ -134,6 +134,10 @@ public class MatchUtil {
 	}
 	
 	public static boolean isMatchFinished (Date matchTime) {
+		return new Date().getTime() - matchTime.getTime() > DAY_TIME * 3;
+	}
+	
+	public static boolean isMatchFinishedNow (Date matchTime) {
 		return new Date().getTime() - matchTime.getTime() > 3600000 * 2.2;
 	}
 	

@@ -109,7 +109,9 @@ public class MatchPersistService {
 		matchRepository.save(EntityConverter.toEMatch(ofnMatch, CalculationType.calculated));
 		
 		MatchState matchState = ofnCalculateResult.getMatchState();
-		if (!finished && matchState != null && matchState.getHostAttackToGuest() != null) {
+		ELatestMatchState storedMatchState = latestMatchStateRepository.findOne(ofnMatchId);
+		
+		if (!finished && matchState != null && matchState.getHostAttackToGuest() != null && storedMatchState == null) {
 			ELatestMatchState eLatestMatchState = EntityConverter.toELatestMatchState(ofnMatchId,
 					ofnMatch.getLeague(), matchState);
 			latestMatchStateRepository.save(eLatestMatchState);
@@ -123,13 +125,17 @@ public class MatchPersistService {
 		
 		JiaoShouMatrices jsMatrices = ofnCalculateResult.getJiaoShou();
 		Float latestPk = null;
-		if (!finished && jsMatrices != null) {
+		EJiaoShou storedJiaoShou = jiaoShouRepository.findOne(ofnMatchId);
+		
+		if (!finished && jsMatrices != null && storedJiaoShou == null) {
 			latestPk = jsMatrices.getLatestPankou();
 			jiaoShouRepository.save(EntityConverter.toEJiaoShou(ofnMatchId, jsMatrices));
 		}
 		
 		ClubMatrices clubMatrices = ofnCalculateResult.getClubMatrices();
-		if (!finished && clubMatrices != null) {
+		EMatchClubState storedMatchClubState = matchClubStateRepository.findOne(ofnMatchId);
+		
+		if (!finished && clubMatrices != null && storedMatchClubState == null) {
 			EMatchClubState eMatchClubState = EntityConverter.toEMatchClubState(ofnMatchId,
 					ofnMatch.getLeague(), ofnMatch.getHostId(), ofnMatch.getGuestId(), clubMatrices);
 

@@ -86,6 +86,9 @@ public class OFNHtmlParser {
 		Date today = new Date();
 		String todayStr = DateUtil.formatSimpleDate(today);
 		
+		Date tomorrow = DateUtil.tomorrow(today);
+		String tomorrowStr = DateUtil.formatSimpleDate(tomorrow);
+		
 		Date yestoday = DateUtil.yesterday(today);
 		String yestodayStr = DateUtil.formatSimpleDate(yestoday);
 		
@@ -95,9 +98,11 @@ public class OFNHtmlParser {
 		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
 		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
 		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
+		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
 		beforeYestodayMatches.addAll(yestodayMatches);
 		beforeYestodayMatches.addAll(todayMatches);
-		return yestodayMatches;
+		beforeYestodayMatches.addAll(tomorrowMatches);
+		return beforeYestodayMatches;
 	}
 	
 	public List<JinCaiMatch> parseJinCaiMatchesBf (String dateStr) throws MatchParseException {

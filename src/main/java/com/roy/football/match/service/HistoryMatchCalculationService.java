@@ -107,7 +107,7 @@ public class HistoryMatchCalculationService {
 		Long oddsmid = match.getOfnMatchId();
 		log.debug("start to parse and calculate match {}", match);
 		
-		boolean finished = MatchUtil.isMatchFinished(match.getMatchTime());
+		boolean finished = MatchUtil.isMatchFinishedNow(match.getMatchTime());
 		
 		if (!finished) {
 			return;

@@ -46,7 +46,7 @@ public class MatchResultCalculator {
 	public void calculateAndPersist (EMatch match, Integer hostScore, Integer guestScore, boolean recraw) {
 		Long ofnMatchId = match.getOfnMatchId();
 		
-		if (!MatchUtil.isMatchFinished(match.getMatchTime())) {
+		if (!MatchUtil.isMatchFinishedNow(match.getMatchTime())) {
 			return;
 		}
 		

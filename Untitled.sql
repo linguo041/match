@@ -29,9 +29,10 @@ select m.ofn_match_id, m.league, m.match_time, m.host_name, m.guest_name, mr.hos
 		left join match_result mr on m.ofn_match_id = mr.ofn_match_id
 		left join match_predict mp on m.ofn_match_id = mp.ofn_match_id
     where 1=1
-	  and m.match_time > '2018-10-05 13:45:00' 
+	  and m.match_time > '2018-10-25 13:45:00' 
 
 
 select * from matches where cal_phase < 2
 
-update matches set cal_phase = 4 where cal_phase = 0 and match_time < '2018-10-01 13:45:00' and league = 'Friendly';
+update matches set cal_phase = 4
+ where cal_phase = 0 and match_time < '2018-10-15 13:45:00' and league in ('Friendly', 'Euro21Outter', 'Country');
