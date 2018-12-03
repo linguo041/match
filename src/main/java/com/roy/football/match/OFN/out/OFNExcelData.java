@@ -39,7 +39,7 @@ public class OFNExcelData {
 	private String jincai;
 //	@Header(order=145, title="bf jc")
 	private String bifa;
-	@Header(order=148, title="exg jc_gain")
+	@Header(order=148, title="eu_var exg jc_gain")
 	private String jincaiJY;
 	@Header(order=150, title="Kill[~pk !pl @plpk *pu]")
 	private String kill;

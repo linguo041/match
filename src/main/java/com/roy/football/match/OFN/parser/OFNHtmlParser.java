@@ -95,14 +95,14 @@ public class OFNHtmlParser {
 		Date beforeYest = DateUtil.yesterday(yestoday);
 		String beforeYestStr = DateUtil.formatSimpleDate(beforeYest);
 		
+		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
 		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
 		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
-		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
 		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
-		beforeYestodayMatches.addAll(yestodayMatches);
-		beforeYestodayMatches.addAll(todayMatches);
-		beforeYestodayMatches.addAll(tomorrowMatches);
-		return beforeYestodayMatches;
+		todayMatches.addAll(beforeYestodayMatches);
+		todayMatches.addAll(yestodayMatches);
+		todayMatches.addAll(tomorrowMatches);
+		return todayMatches;
 	}
 	
 	public List<JinCaiMatch> parseJinCaiMatchesBf (String dateStr) throws MatchParseException {
@@ -160,11 +160,19 @@ public class OFNHtmlParser {
 
 				if ("match".equals(key)) {
 					OFNMatchGeneralData mgData = GsonConverter.convertJSonToObjectUseNormal(val, OFNMatchGeneralData.class);
+					
+					try {
+						String xidStr = mgData.getXidStr();
+						ofnMatchData.setMatchDayId(Long.parseLong(xidStr));
+					} catch (Exception e) {
+						
+					}
+					
 					ofnMatchData.setHostId(mgData.getHtid());
 					ofnMatchData.setHostName(mgData.getHome());
 					ofnMatchData.setGuestId(mgData.getAtid());
 					ofnMatchData.setGuestName(mgData.getAway());
-					ofnMatchData.setMatchDayId(mgData.getXid());
+					
 					ofnMatchData.setMatchId(mgData.getMid());
 					ofnMatchData.setMatchTime(new Date(mgData.getMtime() * 1000));
 				}
@@ -422,11 +430,12 @@ public class OFNHtmlParser {
 	}
 
 	public static void main (String [] args) throws MatchParseException, Exception {
-//		String instr = "[[\"4.00\",\"3.75\",\"1.75\",\"1454880574\"],[\"3.60\",\"3.75\",\"1.83\",\"1455221779\"],[\"4.20\",\"3.80\",\"1.70\",\"1455434403\"],[\"3.60\",\"3.75\",\"1.83\",\"1455435003\"],[\"4.20\",\"3.80\",\"1.70\",\"1455435312\"]]";
-//		
+		String instr = "{\"euro99\":[\"2.90\",\"3.26\",\"2.36\"],\"ltype\":1,\"cl\":\"9E277D\",\"venues\":\"\",\"except\":\"\",\"hhs\":\"0\",\"weather\":\"\",\"mtime\":1541533500,\"home\":\"\u8bfa\u8328\u90e1\",\"rid\":13,\"lid\":106,\"atid\":633,\"rq\":\"\",\"ln\":\"\u82f1\u4e59\",\"away\":\"\u5965\u5fb7\u6c49\u59c6\",\"htid\":771,\"mid\":1195423,\"sid\":7854,\"has\":\"0\",\"referee\":\"\",\"hs\":\"0\",\"xid\":\"\",\"asiatop\":[\"1.090\",2,\"0.810\",\"H\",1541328210,448],\"exflag\":0,\"as\":\"0\",\"season\":\"2018-2019\",\"oname\":\"\"}";
+				
+		OFNMatchGeneralData mgData = GsonConverter.convertJSonToObjectUseNormal(instr, OFNMatchGeneralData.class);
 //		String out[][] = GsonConverter.convertJSonToObjectUseNormal(instr, new TypeToken<String[][]>(){});
-//		
-//		System.out.println(out);
+		
+		System.out.println(mgData);
 		/*
 		OFNHtmlParser ppp = new OFNHtmlParser();
 		OFNMatchData ofnMatchData = new OFNMatchData();
@@ -441,7 +450,7 @@ public class OFNHtmlParser {
 		ppp.parseJiaoShouMatches(1074452L, ofnMatchData);
 		System.out.println(ofnMatchData);
 		*/
-		
+		/*
 		String tests = " zcdz['180824039']=['1243179','亚运男足','#E03C1C','2018,08,24,17,00,00','印度尼西亚国奥','阿联酋国奥','2','2','0','0','4','','0-1','','5','27℃～28℃ ','90分钟[2-2],120分钟[2-2],点球[3-4]','3141','1156','1','A1','C3','0','0','0.0','1.73','1.97','474','0','1','第二圈','2','0'];";
 				
 		Matcher matcher = BF_KEY_VALUE_REG.matcher(tests);
@@ -465,5 +474,6 @@ public class OFNHtmlParser {
 			match.setMtime(DateUtil.parseCommaDate(arr[4]));
 			System.out.println(match);
 		}
+		*/
 	}
 }

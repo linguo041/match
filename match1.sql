@@ -18,7 +18,8 @@ select m.ofn_match_id, m.league, m.match_time, m.host_name, m.guest_name, mr.hos
     where 1=1
       and m.cal_phase = 2
 	  and mcd.num >= 5
-	into outfile '/Users/roy.guo/Documents/match/data_preparing_eu.csv'
+      and m.match_time > '2015-10-01 00:00:00'
+	into outfile '/Users/roy.guo/Documents/match/data_preparing_eu20181123.csv'
 		fields terminated by ',' optionally enclosed by '"' lines terminated by '\r\n';
 
 	  and mpk.current_pk = 0.25

@@ -20,6 +20,7 @@ public enum League {
 	LianHeHui(291, true, null),
 	Euro21Outter(464, true, MatchContinent.Euro),
 	WorldCup(149, true, MatchContinent.Euro),
+	EuroCountry(1530, true, MatchContinent.Euro),
 	ANYMOUS1(297, true, null),
 	
 	YingChao(92, 20, Company.William, MatchContinent.Euro), YingGuang(177, 24, Company.William, MatchContinent.Euro),

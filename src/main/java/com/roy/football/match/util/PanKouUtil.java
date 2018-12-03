@@ -10,8 +10,9 @@ public class PanKouUtil {
 		
 		float pkDiff = current.getPanKou() - main.getPanKou();
 		currentPk = currentPk + pkDiff *0.25f;
+		float summedPk = main.gethWin() + main.getaWin();
 		
-		// aomen summed pk is 1.94
+		// aomen summed pk is 1.84
 		// 1.16 - 0.68
 		// 1.12 - 0.72
 		// 1.10 - 0.74
@@ -22,48 +23,112 @@ public class PanKouUtil {
 		// 0.96 - 0.88
 		// 0.94 - 0.90
 		// 0.92 - 0.92
-		
-		// 0.92 -> 0.68
-		if (currentPk - mainPk >= 0.24f
-				// 0.6 -> 0.68 or 0.68 -> 0.76
-				|| main.gethWin() <= 0.68f && currentPk - mainPk >= -0.08f
-				// 0.7 -> 0.74 or 0.72 -> 0.76
-				|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.04f
-				// 0.8 -> 0.72
-				|| main.gethWin() <= 0.8f && currentPk - mainPk >= 0.08f) {
-			return PKDirection.Uper;
-		} else if (currentPk - mainPk >= 0.18f
-				|| main.gethWin() <= 0.66f && currentPk - mainPk >= -0.16f
-				// 0.6 -> 0.72 or 0.72 -> 0.84
-				|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.12f
-				// 0.72 -> 0.8 or 0.76 -> 0.84
-				|| main.gethWin() <= 0.76f && currentPk - mainPk >= -0.08f
-				// 0.74 -> 0.78  or 0.8 -> 0.84
-				|| main.gethWin() <= 0.8f && currentPk - mainPk >= -0.04f
-				// 0.9 -> 0.82
-				|| main.gethWin() <= 0.9f && currentPk - mainPk >= 0.08f) {
-			return PKDirection.Up;
-		} else if (currentPk - mainPk <= -0.24f
-				|| main.gethWin() >= 1.20f && currentPk - mainPk <= 0.14f
-				// 1.20 -> 1.1 or 1.16 -> 1.06
-				|| main.gethWin() >= 1.16f && currentPk - mainPk <= 0.1f
-				// 1.16 -> 1.12 or 1.1 -> 1.06
-				|| main.gethWin() >= 1.1f && currentPk - mainPk <= 0.04f
-				|| main.gethWin() >= 1.02f && currentPk - mainPk <= -0.06f) {
-			return PKDirection.Downer;
-		} else if (currentPk - mainPk <= -0.18f
-				// 1.20 -> 1.08 or 1.10 -> 0.98
-				|| main.gethWin() >= 1.10f && currentPk - mainPk <= 0.12f
-				// 1.10 -> 1.02 or 1.06 -> 0.98
-				|| main.gethWin() >= 1.06f && currentPk - mainPk <= 0.08f
-				// 1.06 -> 1.02 or 1.02 -> 0.98
-				|| main.gethWin() >= 1.02f && currentPk - mainPk <= 0.04f
-				// 0.92 -> 0.98
-				|| main.gethWin() >= 0.92f && currentPk - mainPk <= -0.08f) {
-			return PKDirection.Down;
+		if (summedPk >= 1.80f) {
+			// 0.92 -> 0.68
+			if (currentPk - mainPk >= 0.24f
+					// 0.6 -> 0.68 or 0.68 -> 0.76
+					|| main.gethWin() <= 0.68f && currentPk - mainPk >= -0.08f
+					// 0.7 -> 0.74 or 0.72 -> 0.76
+					|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.04f
+					// 0.8 -> 0.72
+					|| main.gethWin() <= 0.8f && currentPk - mainPk >= 0.08f) {
+				return PKDirection.Uper;
+			} else if (currentPk - mainPk >= 0.18f
+					|| main.gethWin() <= 0.66f && currentPk - mainPk >= -0.16f
+					// 0.6 -> 0.72 or 0.72 -> 0.84
+					|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.12f
+					// 0.72 -> 0.8 or 0.76 -> 0.84
+					|| main.gethWin() <= 0.76f && currentPk - mainPk >= -0.08f
+					// 0.74 -> 0.78  or 0.8 -> 0.84
+					|| main.gethWin() <= 0.8f && currentPk - mainPk >= -0.04f
+					// 0.85 -> 0.82
+					|| main.gethWin() <= 0.85f && currentPk - mainPk >= 0.03f
+					// 0.9 -> 0.82
+					|| main.gethWin() <= 0.9f && currentPk - mainPk >= 0.08f) {
+				return PKDirection.Up;
+			} else if (currentPk - mainPk <= -0.24f
+					|| main.gethWin() >= 1.20f && currentPk - mainPk <= 0.14f
+					// 1.20 -> 1.1 or 1.16 -> 1.06
+					|| main.gethWin() >= 1.16f && currentPk - mainPk <= 0.1f
+					// 1.16 -> 1.12 or 1.1 -> 1.06
+					|| main.gethWin() >= 1.1f && currentPk - mainPk <= 0.04f
+					|| main.gethWin() >= 1.02f && currentPk - mainPk <= -0.06f) {
+				return PKDirection.Downer;
+			} else if (currentPk - mainPk <= -0.18f
+					// 1.20 -> 1.08 or 1.10 -> 0.98
+					|| main.gethWin() >= 1.10f && currentPk - mainPk <= 0.12f
+					// 1.10 -> 1.02 or 1.06 -> 0.98
+					|| main.gethWin() >= 1.06f && currentPk - mainPk <= 0.08f
+					// 1.06 -> 1.02 or 1.02 -> 0.98
+					|| main.gethWin() >= 1.02f && currentPk - mainPk <= 0.04f
+					// 0.96 -> 1.00
+					|| main.gethWin() >= 0.96f && currentPk - mainPk <= -0.04f
+					// 0.92 -> 0.98
+					|| main.gethWin() >= 0.92f && currentPk - mainPk <= -0.08f) {
+				return PKDirection.Down;
+			} else {
+				return PKDirection.Middle;
+			}
 		} else {
-			return PKDirection.Middle;
+			// aomen summed pk is 1.75
+			// 1.07 - 0.68
+			// 1.03 - 0.72
+			// 1.01 - 0.74
+			// 0.99 - 0.76
+			// 0.93 - 0.82
+			// 0.91 - 0.84
+			// 0.89 - 0.86
+			// 0.87 - 0.88
+			// 0.85 - 0.90
+			// 0.83 - 0.92
+			
+			// 0.92 -> 0.68
+			if (currentPk - mainPk >= 0.24f
+					// 0.6 -> 0.68 or 0.68 -> 0.76
+					|| main.gethWin() <= 0.68f && currentPk - mainPk >= -0.08f
+					// 0.7 -> 0.74 or 0.72 -> 0.76
+					|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.04f
+					// 0.8 -> 0.72
+					|| main.gethWin() <= 0.8f && currentPk - mainPk >= 0.08f) {
+				return PKDirection.Uper;
+			} else if (currentPk - mainPk >= 0.18f
+					|| main.gethWin() <= 0.66f && currentPk - mainPk >= -0.16f
+					// 0.6 -> 0.72 or 0.72 -> 0.84
+					|| main.gethWin() <= 0.72f && currentPk - mainPk >= -0.12f
+					// 0.72 -> 0.8 or 0.76 -> 0.84
+					|| main.gethWin() <= 0.76f && currentPk - mainPk >= -0.08f
+					// 0.74 -> 0.78  or 0.8 -> 0.84
+					|| main.gethWin() <= 0.8f && currentPk - mainPk >= -0.04f
+					// 0.85 -> 0.81
+					|| main.gethWin() <= 0.85f && currentPk - mainPk >= 0.04f
+					// 0.9 -> 0.82
+					|| main.gethWin() <= 0.9f && currentPk - mainPk >= 0.08f) {
+				return PKDirection.Up;
+			} else if (currentPk - mainPk <= -0.24f
+					|| main.gethWin() >= 1.11f && currentPk - mainPk <= 0.14f
+					// 1.20 -> 1.1 or 1.16 -> 1.06
+					|| main.gethWin() >= 1.07f && currentPk - mainPk <= 0.1f
+					// 1.16 -> 1.12 or 1.1 -> 1.06
+					|| main.gethWin() >= 1.01f && currentPk - mainPk <= 0.04f
+					|| main.gethWin() >= 0.93f && currentPk - mainPk <= -0.06f) {
+				return PKDirection.Downer;
+			} else if (currentPk - mainPk <= -0.18f
+					// 1.20 -> 1.08 or 1.10 -> 0.98
+					|| main.gethWin() >= 1.01f && currentPk - mainPk <= 0.12f
+					// 1.10 -> 1.02 or 1.06 -> 0.98
+					|| main.gethWin() >= 0.97f && currentPk - mainPk <= 0.08f
+					// 1.06 -> 1.02 or 1.02 -> 0.98
+					|| main.gethWin() >= 0.93f && currentPk - mainPk <= 0.04f
+					// 0.88 -> 0.92
+					|| main.gethWin() >= 0.88f && currentPk - mainPk <= -0.04f
+					// 0.92 -> 0.98
+					|| main.gethWin() >= 0.83f && currentPk - mainPk <= -0.08f) {
+				return PKDirection.Down;
+			} else {
+				return PKDirection.Middle;
+			}
 		}
+		
 	}
 	
 	public static float getCalculatedPk (AsiaPl asiaPk) {

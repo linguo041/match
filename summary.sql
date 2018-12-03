@@ -68,7 +68,7 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
             -- and cal_phase = 1
 			-- and match_time > '2017-04-10 00:00:00'
 			-- and match_time < '2017-04-20 00:00:00'
-			and match_time > '2018-10-25 00:00:00'
+			and match_time > '2018-11-29 00:00:00'
 			-- and match_day_id is not null
 			)
       and m.match_time > '2015-10-01 00:00:00'
@@ -83,17 +83,16 @@ select m1.ofn_match_id, m1.league, m1.match_time, m1.host_name, m1.guest_name, c
 			and abs((mp.predict_pk - mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mp1.predict_pk - mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.35))
 	  and abs((mpk.main_pk-(mpk.main_h_win-mpk.main_a_win)/2) - (mpk1.main_pk-(mpk1.main_h_win-mpk1.main_a_win)/2)) <= 0.08
       and abs((mpk.current_pk-(mpk.current_h_win-mpk.current_a_win)/2) - (mpk1.current_pk-(mpk1.current_h_win-mpk1.current_a_win)/2)) <= 0.075
-      and abs(mpk1.current_h_win - mpk.current_h_win) <= 0.8
-	  and abs(mpk.home_win_change_rate - mpk1.home_win_change_rate) <= 0.08
+      and abs(mpk1.current_h_win - mpk.current_h_win) <= 0.07
+	  and abs(mpk.home_win_change_rate - mpk1.home_win_change_rate) <= 0.07
 	  -- state
 	  and abs(mls.hot_point - mls1.hot_point) <= 4
-      and abs((mls.host_att_to_guest - mls.guest_att_to_host) - (mls1.host_att_to_guest - mls1.guest_att_to_host)) < 0.45
+      and abs((mls.host_att_to_guest - mls.guest_att_to_host) - (mls1.host_att_to_guest - mls1.guest_att_to_host)) < 0.4
       -- and abs((mls.host_att_variation_to_guest - mls.guest_att_variation_to_host) - (mls1.host_att_variation_to_guest - mls1.guest_att_variation_to_host)) < 0.75
       -- base
-      and (abs(mpk1.main_pk-0.2) <= 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.45
-		or abs(mpk1.main_pk-0.2) > 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.55)
-      and abs(mcs.host_level - mcs1.host_level) <= 1
-	  and abs(mcs.guest_level - mcs1.guest_level) <= 1
+      and (abs(mpk1.main_pk-0.2) <= 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.5
+		or abs(mpk1.main_pk-0.2) > 0.75 and abs((mcs.host_att_guest_def - mcs.guest_att_host_def) - (mcs1.host_att_guest_def - mcs1.guest_att_host_def)) < 0.6)
+      and abs(mcs.host_level - mcs.guest_level - mcs1.host_level + mcs1.guest_level) <= 2
       and mcd.num >= 5
 	  -- js
       -- and (abs(mj.win_draw_pk_rate - mj1.win_draw_pk_rate) <= 0.4 or abs(mj.win_draw_rate - mj1.win_draw_rate) <= 0.4)

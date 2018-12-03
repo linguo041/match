@@ -82,8 +82,10 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 		
 		PankouMatrices pkMatrices = pankouCalculator.calucate(matchData, Company.Aomen);
 		calResult.setPkMatrices(pkMatrices);
-		matchData.setOriginalPk(pkMatrices.getOriginPk().getPanKou());
-		matchData.setMainPk(pkMatrices.getMainPk().getPanKou());
+		if (pkMatrices != null) {
+			matchData.setOriginalPk(pkMatrices.getOriginPk().getPanKou());
+			matchData.setMainPk(pkMatrices.getMainPk().getPanKou());
+		}
 		
 		MatchState matchState = latestMatchCalculator.calucate(matchData);
 		calResult.setMatchState(matchState);

@@ -272,6 +272,8 @@ select m.ofn_match_id, m.match_day_id, m.match_time, m.league, m.host_name, m.gu
 		and mr.host_score = mr.guest_score
 		and m.match_time > '2016-01-15 0:00:00';
 
+delete from league_euro_audit;
+
 insert into league_euro_audit (league_id, name, company, pk, pk_type, euro_avg_win, euro_avg_draw, euro_avg_lose)
 select t.league_id, t.name, t.company, t.current_pk, 'Current', t.avg_win, t.avg_draw, t.avg_lose from (
 	select l.league_id, l.name, mpk.company, mpk.current_pk,
