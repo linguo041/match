@@ -17,11 +17,11 @@ public class OFNExcelData {
 	private String leagueName;
 	@Header(order=40, title="Match Team")
 	private String matchInfor;
-	@Header(order=60, title="Level [w%, d%, wgoal#]")
+	@Header(order=60, title="Level_all [w%, d%, wg#]")  // based on all matches
 	private String level;
-	@Header(order=80, title="H:G B[attDef | winRt]")
+	@Header(order=80, title="H:G_ha [attDef | winRt]")  // based on host home, guest away
 	private String hostGuestComp;
-	@Header(order=90, title="Hot | variance H:G ")
+	@Header(order=90, title="Hot_all | var H:G ")		// based on latest 6 matches
 	private String stateVariation;
 	@Header(order=100, title="Predict,Main,curr")
 	private String originPanKou;

@@ -21,7 +21,7 @@ import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.response.JinCaiSummary.JinCaiMatch;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.fivemillion.FMParser;
-import com.roy.football.match.fivemillion.FmMatch;
+import com.roy.football.match.fivemillion.FmRawMatch;
 import com.roy.football.match.jpa.EntiryReverseConverter;
 import com.roy.football.match.jpa.EntityConverter;
 import com.roy.football.match.jpa.entities.calculation.EEuroPlState;

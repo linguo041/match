@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EuroCalculator extends AbstractBaseDataCalculator implements Calculator<EuroMatrices, OFNMatchData>{
 	
-	private final static int PL_CHECKED_HOURS = 20;
+	private final static int PL_CHECKED_HOURS = 32;
 
 	@Override
 	public EuroMatrices calucate(OFNMatchData matchData) {

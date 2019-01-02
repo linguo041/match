@@ -19,6 +19,11 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.roy.football.match.OFN.parser.OFHKey.Match;
 import com.roy.football.match.OFN.response.AsiaPl;
@@ -48,11 +53,34 @@ public class FMParser {
 	private final static String FIVE_M_JCZQ = "http://trade.500.com/jczq/";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.500.com/fenxi/shuju-{fmId}.shtml";
 	private final static String EURO_URL = "http://odds.500.com/fenxi/json/ouzhi.php";
+	private final static String FM_JCZQ_URL = "https://ews.500.com/static/ews/jczq/";
 
 
-	
-	public List<FmMatch> parseMatchData (String dateStr) {
-		List<FmMatch> matches = Lists.newArrayList();
+	public List<FmRawMatch> parseMatchData (String month, String day) {
+		Map<String, String> headers = new HashMap<String, String>();
+		
+		try {
+			String resData = HttpRequestService.getInstance().doHttpRequest(FM_JCZQ_URL + month +"/" + day + ".json",
+					HttpRequestService.GET_METHOD, null, headers);
+			
+			JsonParser parser = new JsonParser();
+			JsonObject rootObj = parser.parse(resData).getAsJsonObject();   
+			JsonObject dataObj = rootObj.getAsJsonObject("data");
+			JsonArray matchArray = dataObj.getAsJsonArray("matches");
+			
+			Gson gson = new GsonBuilder().create();
+			
+			return gson.fromJson(matchArray, new TypeToken<List<FmRawMatch>>(){}.getType());
+		} catch (HttpRequestException e) {
+			log.warn(String.format("Can't get the matches of %s", day));
+		}
+		
+		return Lists.newArrayList();
+	}
+
+/*	
+	public List<FmRawMatch> parseMatchData (String dateStr) {
+		List<FmRawMatch> matches = Lists.newArrayList();
 
 		try {
 			Document doc = Jsoup.connect(FIVE_M_JCZQ).data("date", dateStr).get();
@@ -72,7 +100,7 @@ public class FMParser {
 					String matchHostName = row.select(".left_team a").attr("title");
 					String matchGuestName = row.select(".right_team a").attr("title");
 					
-					FmMatch fmMatch = new FmMatch();
+					FmRawMatch fmMatch = new FmRawMatch();
 					fmMatch.setFmMatchId(Long.parseLong(fid));
 					fmMatch.setMatchOrderId(Integer.parseInt(morderId));
 					fmMatch.setMatchDate(DateUtil.parseEightWinDate(matchTime));
@@ -90,6 +118,7 @@ public class FMParser {
 		
 		return matches;
 	}
+*/
 
 	public List <EuroPl> parseEuroData (Long fmatchId, Company company) {
 		try {

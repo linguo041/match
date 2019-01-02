@@ -56,8 +56,17 @@ import lombok.extern.slf4j.Slf4j;
 public class OFNHtmlParser {
 //	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String JIN_CAI_URL = "http://m.159cai.com/cpdata/omi/jczq/odds/odds.xml";
-	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/json/match/oddshistory";
-	private final static String JIN_CAI_BF_URL = "http://bf.159cai.com/mcache/livejcjs/";
+//	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/json/match/oddshistory";
+//	private final static String JIN_CAI_BF_URL = "http://bf.159cai.com/mcache/livejcjs/";
+	private final static String JIN_CAI_BF_URL = "http://mcache.iuliao.com/mcache/livejcjs/";
+//	private final static String OFN_HOST = "odds.159cai.com";
+	private final static String OFN_HOST = "www.iuliao.com";
+	
+	private final static String MATCH_DETAIL_URL = "https://www.iuliao.com/odds/match/";
+	private final static String MATCH_ODDS_HISTORY_URL = "https://www.iuliao.com/json/match/oddshistory";
+	private final static String MATCH_TEAM_URL = "https://www.iuliao.com/json/match/standingteam?mid=";
+	private final static String MATCH_RECENT_URL = "https://www.iuliao.com/json/match/recentmatch?mid=";
+	private final static String MATCH_JIAOSHOU_URL = "https://www.iuliao.com/json/match/historywars?mid=";
 
 	private final static Pattern KEY_VALUE_REG = Pattern.compile("\\b(\\w+)\\b\\s*=\\s*(.+?);");
 	private final static Pattern BF_KEY_VALUE_REG = Pattern.compile("zcdz\\['(\\d+)'\\]=\\[(.+?)\\];");
@@ -99,6 +108,12 @@ public class OFNHtmlParser {
 		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
 		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
 		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
+		
+//		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf("20181215");
+//		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf("20181214");
+//		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf("20181213");
+//		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf("20181212");
+		
 		todayMatches.addAll(beforeYestodayMatches);
 		todayMatches.addAll(yestodayMatches);
 		todayMatches.addAll(tomorrowMatches);
@@ -144,7 +159,7 @@ public class OFNHtmlParser {
 		OFNMatchData ofnMatchData = null;
 
 		try {
-			Document doc = Jsoup.connect("http://odds.159cai.com/match/" + oddsmid).get();
+			Document doc = Jsoup.connect(MATCH_DETAIL_URL + oddsmid).get();
 			
 			Element script = doc.select("script").first();
 			String jsData = script.data();
@@ -207,7 +222,7 @@ public class OFNHtmlParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = HttpRequestService.getInstance().doHttpRequest(DETAIL_URL_PREIX
+			String resData = HttpRequestService.getInstance().doHttpRequest(MATCH_ODDS_HISTORY_URL
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.eruo,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -242,7 +257,7 @@ public class OFNHtmlParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = HttpRequestService.getInstance().doHttpRequest(DETAIL_URL_PREIX
+			String resData = HttpRequestService.getInstance().doHttpRequest(MATCH_ODDS_HISTORY_URL
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.asia,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -286,7 +301,7 @@ public class OFNHtmlParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 
-			String resData = HttpRequestService.getInstance().doHttpRequest("http://odds.159cai.com/json/match/oddshistory" 
+			String resData = HttpRequestService.getInstance().doHttpRequest(MATCH_ODDS_HISTORY_URL 
 						+ "?cid=" + company.getCompanyId() + "&mid=" + oddsmid + "&etype=" + EType.shangxia,
 					HttpRequestService.GET_METHOD, null, headers);
 			
@@ -322,7 +337,7 @@ public class OFNHtmlParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 			
-			String resData = HttpRequestService.getInstance().doHttpRequest("http://odds.159cai.com/json/match/standingteam?mid="+oddsmid,
+			String resData = HttpRequestService.getInstance().doHttpRequest(MATCH_TEAM_URL+oddsmid,
 					HttpRequestService.GET_METHOD, null, headers);
 			
 			ofnMatchData.setBaseData(OFHConverter.convertWrappedClubDatas(resData));
@@ -335,7 +350,7 @@ public class OFNHtmlParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 			
-			String resData = HttpRequestService.getInstance().doHttpRequest("http://odds.159cai.com/json/match/recentmatch?mid="+oddsmid,
+			String resData = HttpRequestService.getInstance().doHttpRequest(MATCH_RECENT_URL+oddsmid,
 					HttpRequestService.GET_METHOD, null, headers);
 			
 			JsonParser parser = new JsonParser();
@@ -360,7 +375,7 @@ public class OFNHtmlParser {
 		try {
 			Map<String, String> headers = new HashMap<String, String>();
 			
-			String resData = HttpRequestService.getInstance().doHttpRequest("http://odds.159cai.com/json/match/historywars?mid="+oddsmid,
+			String resData = HttpRequestService.getInstance().doHttpRequest(MATCH_JIAOSHOU_URL+oddsmid,
 					HttpRequestService.GET_METHOD, null, headers);
 			
 			JsonParser parser = new JsonParser();
@@ -430,26 +445,28 @@ public class OFNHtmlParser {
 	}
 
 	public static void main (String [] args) throws MatchParseException, Exception {
-		String instr = "{\"euro99\":[\"2.90\",\"3.26\",\"2.36\"],\"ltype\":1,\"cl\":\"9E277D\",\"venues\":\"\",\"except\":\"\",\"hhs\":\"0\",\"weather\":\"\",\"mtime\":1541533500,\"home\":\"\u8bfa\u8328\u90e1\",\"rid\":13,\"lid\":106,\"atid\":633,\"rq\":\"\",\"ln\":\"\u82f1\u4e59\",\"away\":\"\u5965\u5fb7\u6c49\u59c6\",\"htid\":771,\"mid\":1195423,\"sid\":7854,\"has\":\"0\",\"referee\":\"\",\"hs\":\"0\",\"xid\":\"\",\"asiatop\":[\"1.090\",2,\"0.810\",\"H\",1541328210,448],\"exflag\":0,\"as\":\"0\",\"season\":\"2018-2019\",\"oname\":\"\"}";
+//		String instr = "{\"euro99\":[\"2.90\",\"3.26\",\"2.36\"],\"ltype\":1,\"cl\":\"9E277D\",\"venues\":\"\",\"except\":\"\",\"hhs\":\"0\",\"weather\":\"\",\"mtime\":1541533500,\"home\":\"\u8bfa\u8328\u90e1\",\"rid\":13,\"lid\":106,\"atid\":633,\"rq\":\"\",\"ln\":\"\u82f1\u4e59\",\"away\":\"\u5965\u5fb7\u6c49\u59c6\",\"htid\":771,\"mid\":1195423,\"sid\":7854,\"has\":\"0\",\"referee\":\"\",\"hs\":\"0\",\"xid\":\"\",\"asiatop\":[\"1.090\",2,\"0.810\",\"H\",1541328210,448],\"exflag\":0,\"as\":\"0\",\"season\":\"2018-2019\",\"oname\":\"\"}";
 				
-		OFNMatchGeneralData mgData = GsonConverter.convertJSonToObjectUseNormal(instr, OFNMatchGeneralData.class);
+//		OFNMatchGeneralData mgData = GsonConverter.convertJSonToObjectUseNormal(instr, OFNMatchGeneralData.class);
 //		String out[][] = GsonConverter.convertJSonToObjectUseNormal(instr, new TypeToken<String[][]>(){});
 		
-		System.out.println(mgData);
-		/*
-		OFNHtmlParser ppp = new OFNHtmlParser();
-		OFNMatchData ofnMatchData = new OFNMatchData();
-//		ppp.parseClubDatas(1074452L, ofnMatchData);
-//		ppp.parseRecentMatches(1074452L, ofnMatchData);
+//		System.out.println(mgData);
 		
-		System.out.println(ppp.parseEuroData(1074452L, Company.Aomen));
-		System.out.println(ppp.parseAsiaData(1074452L, Company.Aomen));
-		System.out.println(ppp.parseDaxiaoData(1074452L, Company.Aomen));
-//		System.out.println(ppp.parseMatchData(1074452L));
-		ofnMatchData.setHostId(1269L);
-		ppp.parseJiaoShouMatches(1074452L, ofnMatchData);
-		System.out.println(ofnMatchData);
-		*/
+		OFNHtmlParser ppp = new OFNHtmlParser();
+		System.out.println(ppp.parseMatchData(1201196L));
+		
+//		OFNMatchData ofnMatchData = new OFNMatchData();
+//		ppp.parseClubDatas(1201196L, ofnMatchData);
+//		ppp.parseRecentMatches(1201196L, ofnMatchData);
+//		ppp.parseJiaoShouMatches(1201196L, ofnMatchData);
+//		System.out.println(ofnMatchData);
+		
+//		System.out.println(ppp.parseEuroData(1201196L, Company.Aomen));
+//		System.out.println(ppp.parseAsiaData(1201196L, Company.Aomen));
+//		System.out.println(ppp.parseDaxiaoData(1201196L, Company.Aomen));
+		
+//		ofnMatchData.setHostId(1269L);
+
 		/*
 		String tests = " zcdz['180824039']=['1243179','亚运男足','#E03C1C','2018,08,24,17,00,00','印度尼西亚国奥','阿联酋国奥','2','2','0','0','4','','0-1','','5','27℃～28℃ ','90分钟[2-2],120分钟[2-2],点球[3-4]','3141','1156','1','A1','C3','0','0','0.0','1.73','1.97','474','0','1','第二圈','2','0'];";
 				

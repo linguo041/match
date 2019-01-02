@@ -6,33 +6,59 @@ public class PromotionUtil {
 
 	public static float getAvgWinDegreeByPk (float pk) {
 		if (pk >= 1.75f) {
-			return 17f;
+			return 18f;
 		} else if (pk >= 1.5f) {
-			return 16f;
+			return 17.5f;
 		} else if (pk >= 1.25f) {
-			return 15f;
+			return 17f;
 		} else if (pk >= 1f) {
-			return 14f;
+			return 16.5f;
 		} else if (pk >= 0.75f) {
-			return 13f;
+			return 15f;
 		} else if (pk >= 0.5f) {
-			return 12f;
+			return 13.5f;
 		} else if (pk >= 0.25f) {
-			return 11f;
+			return 12f;
 		} else if (pk >= 0f) {
-			return 10f;
+			return 10.5f;
 		} else if (pk >= -0.25f) {
-			return 9f;
+			return 9.5f;
 		} else if (pk >= -0.5f) {
-			return 8f;
+			return 8.5f;
 		} else if (pk >= -0.75f) {
+			return 7.5f;
+		} else {
+			return 6.5f;
+		}
+	}
+	
+	public static float getAvgDrawDegreeByPk (float pk) {
+		if (pk >= 1.25f) {
+			return 6f;
+		} else if (pk >= 1f) {
+			return 7f;
+		} else if (pk >= 0.75f) {
+			return 8f;
+		} else if (pk >= 0.5f) {
+			return 8.5f;
+		} else if (pk >= 0.25f) {
+			return 10f;
+		} else if (pk >= 0f) {
+			return 10.5f;
+		} else if (pk >= -0.25f) {
+			return 10f;
+		} else if (pk >= -0.5f) {
+			return 8.5f;
+		} else if (pk >= -0.75f) {
+			return 8f;
+		} else if (pk >= -1f) {
 			return 7f;
 		} else {
 			return 6f;
 		}
 	}
 	
-	public static float getAvgDrawDegreeByPk (float pk) {
+	public static float getAvgLoseDegreeByPk (float pk) {
 		if (pk >= 1.25f) {
 			return 5f;
 		} else if (pk >= 1f) {
@@ -42,45 +68,21 @@ public class PromotionUtil {
 		} else if (pk >= 0.5f) {
 			return 8f;
 		} else if (pk >= 0.25f) {
-			return 9.5f;
+			return 9f;
 		} else if (pk >= 0f) {
 			return 10f;
 		} else if (pk >= -0.25f) {
-			return 9.5f;
+			return 11f;
 		} else if (pk >= -0.5f) {
-			return 8f;
-		} else if (pk >= -0.75f) {
-			return 7f;
-		} else if (pk >= -1f) {
-			return 6f;
-		} else {
-			return 5f;
-		}
-	}
-	
-	public static float getAvgLoseDegreeByPk (float pk) {
-		if (pk >= 1f) {
-			return 5f;
-		} else if (pk >= 0.75f) {
-			return 6.5f;
-		} else if (pk >= 0.5f) {
-			return 7.5f;
-		} else if (pk >= 0.25f) {
-			return 8.5f;
-		} else if (pk >= 0f) {
-			return 9.5f;
-		} else if (pk >= -0.25f) {
-			return 10.5f;
-		} else if (pk >= -0.5f) {
-			return 11.5f;
-		} else if (pk >= -0.75f) {
 			return 12.5f;
+		} else if (pk >= -0.75f) {
+			return 14f;
 		} else if (pk >= -1f) {
-			return 13.5f;
-		} else if (pk >= -1.25f) {
-			return 14.5f;
-		} else {
 			return 15.5f;
+		} else if (pk >= -1.25f) {
+			return 16.5f;
+		} else {
+			return 17.5f;
 		}
 	}
 	
@@ -124,6 +126,26 @@ public class PromotionUtil {
 		return rate;
 	}
 	
+	public static float getWinLoseRateFromJcEuro (float pankou, float jaWinDiff, float jcWinChange, boolean winRate) {
+		float rate = 0f;
+		float pk = winRate ? pankou : pankou * -1f;
+		
+		// e.g. diff = 0.2f, pull=6 
+		if (pk >= 0.5f) {
+			rate = (jaWinDiff + 0.04f) * (-5f) + jcWinChange * (-5);
+		} else if (pk >= 0.25f) {
+			rate = (jaWinDiff + 0.04f) * (-5f) + jcWinChange * (-5);
+		} else if (pk <= -0.5f) {
+			rate = jaWinDiff * (-5f) + jcWinChange * (-5);
+		} else if (pk <= -0.25f) {
+			rate = (jaWinDiff + 0.02f) * (-5f) + jcWinChange * (-5);
+		} else {
+			rate = (jaWinDiff + 0.03f) * (-5f) + jcWinChange * (-5);
+		}
+
+		return rate;
+	}
+	
 	public static float getWinLoseRateFromAomenEuro (float pankou, float aleWinDiff,
 			float aleOriginWinDiff, float aaWinDiff, float aomenWinChange, boolean winRate) {
 		float rate = 0f;
@@ -131,15 +153,15 @@ public class PromotionUtil {
 		
 		// e.g. diff = 0.2f, pull=6 
 		if (pk >= 0.5f) {
-			rate = aleWinDiff * (-3.5f) + aleOriginWinDiff * (-3.5f) + aaWinDiff * (-15f) + aomenWinChange * (-45) * 0.5f;
+			rate = aleWinDiff * (-2f) + aleOriginWinDiff * (-2f) + (aaWinDiff+0.01f) * (-12.5f) + aomenWinChange * (-6.5f);
 		} else if (pk >= 0.25f) {
-			rate = aleWinDiff * (-2f) + aleOriginWinDiff * (-2f) + aaWinDiff * (-10f) + aomenWinChange * (-45) * 0.5f;
+			rate = aleWinDiff * (-1.5f) + aleOriginWinDiff * (-1.5f) + (aaWinDiff+0.01f) * (-10f) + aomenWinChange * (-6.5f);
 		} else if (pk <= -0.5f) {
-			rate = aleWinDiff * (-2f) + aleOriginWinDiff * (-2f) + aaWinDiff * (-2.5f) + aomenWinChange * (-45) * 0.5f;
+			rate = aleWinDiff * (-1f) + aleOriginWinDiff * (-1f) + (aaWinDiff+0.01f) * (-5f) + aomenWinChange * (-6.5f);
 		} else if (pk <= -0.25f) {
-			rate = aleWinDiff * (-2f) + aleOriginWinDiff * (-2f) + aaWinDiff * (-5f) + aomenWinChange * (-45) * 0.5f;
+			rate = aleWinDiff * (-0.5f) + aleOriginWinDiff * (-0.5f) + (aaWinDiff+0.01f) * (-5f) + aomenWinChange * (-6.5f);
 		} else {
-			rate = aleWinDiff * (-1.5f) + aleOriginWinDiff * (-1.5f) + aaWinDiff * (-8f) + aomenWinChange * (-4) * 0.5f;
+			rate = aleWinDiff * (-0.25f) + aleOriginWinDiff * (-0.25f) + (aaWinDiff+0.01f) * (-5f) + aomenWinChange * (-6.5f);
 		}
 
 		return rate;
@@ -168,13 +190,13 @@ public class PromotionUtil {
 			avgDraw = 3.2f;
 		}
 		
-		rate += MatchUtil.getEuDiff(aoOriginDraw, avgDraw, false) * (-5f) + MatchUtil.getEuDiff(aoCurrentDraw, avgDraw, false) * (-5f);
+		rate += MatchUtil.getEuDiff(aoOriginDraw, avgDraw, false) * (-2f) + MatchUtil.getEuDiff(aoCurrentDraw, avgDraw, false) * (-2f);
 
 		if (useAvg && pk != 0f) {
-			rate = rate * 0.5f + (aleDrawDiff * (-4.5f) + aleOriginDrawDiff * (-7f)) * 0.5f;
+			rate = rate * 0.5f + (aleDrawDiff * (-2f) + aleOriginDrawDiff * (-3f)) * 0.5f;
 		}
 		
-		rate += (aaDrawDiff+0.01f) * (-6f) + aomenDrawChange * (-45) * 0.5;
+		rate += (aaDrawDiff+0.01f) * (-8f) + aomenDrawChange * (-6.5f);
 		
 		return rate;
 	}

@@ -57,7 +57,7 @@ public enum League {
 	JieFangZhe(159, 16, MatchContinent.America),
 	NanQiuBei(216, 4, MatchContinent.America),
 	
-	AfricaCup(383, 12, MatchContinent.Africa)
+	AfricaCup(383, 6, MatchContinent.Africa)
 	;
 	
 	League(int leagueId, MatchContinent con) {

@@ -25,7 +25,7 @@ public class PromoteMatrics {
 		private Float rWilliam;
 		private Float rAomenPk;
 		
-		private float getTotal () {
+		public float getTotal () {
 			return (rBaseDegree == null ? 0 : rBaseDegree)
 					+ (rPullNPredict == null ? 0 : rPullNPredict)
 					+ (rAomen == null ? 0 : rAomen)
