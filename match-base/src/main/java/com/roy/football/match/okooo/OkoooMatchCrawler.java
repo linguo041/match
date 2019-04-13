@@ -129,7 +129,10 @@ public class OkoooMatchCrawler {
 				url = url + DateUtil.formatSimpleDateWithDash(matchDate) + "/";
 			}
 			
-			Document doc = Jsoup.connect(url).maxBodySize(MAX_BODY_SIZE).get();
+			Document doc = Jsoup.connect(url)
+					.userAgent("Mozilla")
+					.maxBodySize(MAX_BODY_SIZE)
+					.get();
 
 			Elements eles = doc.select(all ? OKOOO_ALL_MATCH_SELECT : OKOOO_MATCH_SELECT);
 

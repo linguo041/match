@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.roy.football.match.jpa.entities.calculation.EMatchResult;
 
 @Repository
-public interface MatchResultRepository extends CrudRepository<EMatchResult, Long>{
+public interface MatchResultRepository extends RoyRepository<EMatchResult, Long>{
 
 }

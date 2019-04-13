@@ -46,7 +46,7 @@ public class MatchResultRefetchService {
 				.from(eMatch).join(eMatchResultDetail)
 					.on(eMatch.ofnMatchId.eq(eMatchResultDetail.ofnMatchId))
 				.where(eMatch.phase.eq(CalculationType.resulted)
-						.and(eMatch.matchTime.after(DateUtil.parseSimpleDateWithDash("2015-10-01")))
+						.and(eMatch.matchTime.after(DateUtil.parseSimpleDateWithDash("2018-08-01")))
 						.and(eMatchResultDetail.hostCorner.isNull().or(eMatchResultDetail.hostTime.isNull())))
 				.list(eMatch);
 		} catch (ParseException e) {

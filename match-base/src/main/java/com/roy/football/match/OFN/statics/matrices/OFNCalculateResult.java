@@ -1,5 +1,6 @@
 package com.roy.football.match.OFN.statics.matrices;
 
+import com.roy.football.match.OFN.response.MatchResultAnalyzed;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.MatchData;
 import com.roy.football.match.okooo.MatchExchangeData;
@@ -11,7 +12,7 @@ import lombok.Data;
 public class OFNCalculateResult implements CalculateResult, MatchData {
 
 	private League league;
-	private boolean isSameCityOrNeutral = false;
+	private boolean distinctHomeAway = false;
 	private ClubMatrices clubMatrices;
 	private JiaoShouMatrices jiaoShou;
 	private MatchState matchState;
@@ -22,4 +23,6 @@ public class OFNCalculateResult implements CalculateResult, MatchData {
 	private PredictResult predictResult;
 	private EuroMatrices euroMatrices;
 	private MatchExchangeData exchanges;
+	private MatchResultAnalyzed hostMra;
+	private MatchResultAnalyzed guestMra;
 }

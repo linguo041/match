@@ -81,8 +81,8 @@ public class ToolTasklet implements Tasklet{
 //		fetchTeamRanking();
 //		fetchTeamName();
 //		saveLeagues();
-		processOneMatch();
-//		processMatches();
+//		processOneMatch();
+		processMatches();
 //		recrawResult();
 //		checkPkDirection();
 //		predictFactor();
@@ -100,13 +100,13 @@ public class ToolTasklet implements Tasklet{
 	}
 	
 	private void processOneMatch () {
-		EMatch  match = matchRepository.findOne(1196776L);
+		EMatch  match = matchRepository.findOne(1269372L);
 		
 		ofnMatchService.processMatches(Lists.newArrayList(JinCaiMatch.fromDBMatch(match)));
 	}
 	
 	private void processMatches () {
-		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2017-12-29 12:00:00", "2017-12-31 11:00:00");
+		List<EMatch> matches = matchComplexQueryService.findMatchesByDateRange("2019-02-15 12:00:00", "2019-02-19 11:00:00");
 		
 		if (matches != null && !matches.isEmpty()) {
 			List<JinCaiMatch> jcMatches = matches.stream().map(match -> {

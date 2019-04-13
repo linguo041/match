@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.roy.football.match.jpa.entities.calculation.EExchange;
 
 @Repository
-public interface ExchangeRepository extends CrudRepository<EExchange, Long>{
+public interface ExchangeRepository extends RoyRepository<EExchange, Long>{
 
 }

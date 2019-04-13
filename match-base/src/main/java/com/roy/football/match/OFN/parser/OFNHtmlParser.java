@@ -54,6 +54,7 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class OFNHtmlParser {
+	private final static String LEAGUE_URL = "http://info.159cai.com/league/";
 //	private final static String JIN_CAI_URL = "http://www.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 	private final static String JIN_CAI_URL = "http://m.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 //	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/json/match/oddshistory";
@@ -109,9 +110,9 @@ public class OFNHtmlParser {
 		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
 		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
 		
-//		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf("20181215");
-//		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf("20181214");
-//		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf("20181213");
+//		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf("20190207");
+//		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf("20190206");
+//		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf("20190205");
 //		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf("20181212");
 		
 		todayMatches.addAll(beforeYestodayMatches);

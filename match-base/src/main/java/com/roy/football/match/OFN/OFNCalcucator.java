@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.roy.football.match.OFN.response.Company;
+import com.roy.football.match.OFN.response.MatchResultAnalyzed;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.DaxiaoMatrices;
@@ -51,6 +52,9 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 	@Autowired
 	private PankouKillPromoter pankouKiller;
 	
+	@Autowired
+	private MatchResultAnalyzer matchResultAnalyzer;
+	
 	// more....
 
 	@Override
@@ -69,13 +73,16 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			baseMatrixCalculator.calucate(matrices);
 			calResult.setClubMatrices(matrices);
 			
+			boolean distinctHomeAway = baseMatrixCalculator.calDistinctHomeAway(matrices, matchData.getLeague());
+			matchData.setDistinctHomeAway(distinctHomeAway);
+			
 			hostLevel = matrices.getHostLevel();
 			guestLevel = matrices.getGuestLevel();
 			matchData.setLevelDiff(hostLevel.ordinal() - guestLevel.ordinal());
 		}
 
 		calResult.setLeague(matchData.getLeague());
-		calResult.setSameCityOrNeutral(matchData.isSameCityOrNeutral());
+		calResult.setDistinctHomeAway(matchData.isDistinctHomeAway());
 
 		JiaoShouMatrices jsMatrices = jiaoshouCalculator.calucate(matchData);
 		calResult.setJiaoShou(jsMatrices);
@@ -110,6 +117,11 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			MatchExchangeData exchangeData =okoooMatchCrawler.getExchangeData(okMatchId);
 			calResult.setExchanges(exchangeData);
 		}
+		
+		MatchResultAnalyzed hostMra = matchResultAnalyzer.calMatchResultSummary(matchData.getHostId(), 8, 8);
+		MatchResultAnalyzed guestMra = matchResultAnalyzer.calMatchResultSummary(matchData.getGuestId(), 8, 8);
+		calResult.setHostMra(hostMra);
+		calResult.setGuestMra(guestMra);
 		
 		predict(calResult);
 

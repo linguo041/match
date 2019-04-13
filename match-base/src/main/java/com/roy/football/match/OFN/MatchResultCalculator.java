@@ -72,6 +72,7 @@ public class MatchResultCalculator {
 				detail.setHostName(match.getHostName());
 				detail.setGuestId(match.getGuestId());
 				detail.setGuestName(match.getGuestName());
+				detail.setLeague(match.getLeague());
 				
 				matchResultRepository.save(matchResult);
 				

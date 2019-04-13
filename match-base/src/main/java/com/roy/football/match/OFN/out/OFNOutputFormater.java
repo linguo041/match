@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.roy.football.match.OFN.MatchPromoter.MatchRank;
 import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
+import com.roy.football.match.OFN.response.MatchResultAnalyzed;
 import com.roy.football.match.OFN.response.OFNMatchData;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
@@ -336,14 +337,32 @@ public class OFNOutputFormater {
 				excelData.setPredictScore(String.format("%d  -  %d  -  %d\n%.2f : %.2f",
 						rank.getWRank(), rank.getDRank(), rank.getLRank(),
 						predictRes.getHostScore(), predictRes.getGuestScore()));
-				PromoteMatrics promoteMatrics = predictRes.getKpResult().getPromoteMatrics();
-				excelData.setPromoteRatio(promoteMatrics.toString());
+//				PromoteMatrics promoteMatrics = predictRes.getKpResult().getPromoteMatrics();
+//				excelData.setPromoteRatio(promoteMatrics.toString());
+				excelData.setPromoteRatio(getMatchResultAnalyzed(calculateResult));
 			}
 
 //			excelData
 //			TODO
 		}
 		return excelData;
+	}
+	
+	private String getMatchResultAnalyzed (OFNCalculateResult calculateResult) {
+		MatchResultAnalyzed hostMra = calculateResult.getHostMra();
+		MatchResultAnalyzed guestMra = calculateResult.getGuestMra();
+		
+		if (hostMra != null && guestMra != null) {
+			return String.format("Time:%.2f; Shot:%.1f, SoT:%.1f, Score:%.1f; fault:%.1f, save:%.1f, Soted:%.1f\n"
+					+ "Time:%.2f; Shot:%.1f, SoT:%.1f, Score:%.1f; fault:%.1f, save:%.1f, Soted:%.1f",
+				hostMra.getHostTime(), hostMra.getHostShot(), hostMra.getHostShotOnTarget(), hostMra.getHostScore(),
+				hostMra.getHostFault(), hostMra.getHostSave(), hostMra.getGuestShotOnTarget(),
+				guestMra.getHostTime(), guestMra.getHostShot(), guestMra.getHostShotOnTarget(), guestMra.getHostScore(),
+				guestMra.getHostFault(), guestMra.getHostSave(), guestMra.getGuestShotOnTarget()
+				);
+		}
+		
+		return "";
 	}
 	
 	private String getHostLevel (TeamLevel tl, ClubMatrix baseMatrix) {

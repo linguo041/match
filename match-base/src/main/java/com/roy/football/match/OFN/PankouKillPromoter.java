@@ -249,10 +249,10 @@ public class PankouKillPromoter {
 
 			if (pkMatrices != null && euroMatrices != null && predictPk != null) {
 				promoteByEuro(promoteGps, euroMatrices, predictPk, pkMatrices,
-						league, hotPoint, matchState, calResult.isSameCityOrNeutral());
+						league, hotPoint, matchState, calResult.isDistinctHomeAway());
 
 				promoteByPk(promoteGps, pkMatrices, predictPk, hotPoint,
-						matchState, clubMatrices, exchange, euroMatrices, calResult.isSameCityOrNeutral(), league);
+						matchState, clubMatrices, exchange, euroMatrices, calResult.isDistinctHomeAway(), league);
 			}
 
 			killPromoteResult.setPromoteByBase(promoteGps);
@@ -276,10 +276,10 @@ public class PankouKillPromoter {
 
 		if (pkMatrices != null && euroMatrices != null) {
 			promoteByEuro(promoteGps, euroMatrices, predictPk, pkMatrices,
-					league, hotPoint, matchState, calResult.isSameCityOrNeutral());
+					league, hotPoint, matchState, calResult.isDistinctHomeAway());
 
 			promoteByPk(promoteGps, pkMatrices, predictPk, hotPoint,
-					matchState, clubMatrices, exchange, euroMatrices, calResult.isSameCityOrNeutral(), league);
+					matchState, clubMatrices, exchange, euroMatrices, calResult.isDistinctHomeAway(), league);
 		}
 
 		killPromoteResult.setPromoteByBase(promoteGps);
@@ -971,7 +971,7 @@ public class PankouKillPromoter {
 
 	private Set<ResultGroup> promoteByBase (Set<ResultGroup> rgs, Float hotPoint, ClubMatrices clubMatrices,
 			MatchState matchState, Float predictPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices,
-			boolean isSameCityOrNeutral, League league) {
+			boolean isDistinctHomeAway, League league) {
 		if (rgs == null
 				|| clubMatrices.getHostAllMatrix() != null
 					&& clubMatrices.getHostAllMatrix().getNum() < 5) {
@@ -979,7 +979,7 @@ public class PankouKillPromoter {
 		}
 		
 		Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
-				isSameCityOrNeutral, league, false);
+				isDistinctHomeAway, league, false);
 		
 		LatestMatchMatrices hostMatches = pair.getFirst();
 		LatestMatchMatrices guestMatches = pair.getSecond();
@@ -1100,7 +1100,7 @@ public class PankouKillPromoter {
 	
 	private Set<ResultGroup> promoteByBase1 (Set<ResultGroup> rgs, Float hotPoint, ClubMatrices clubMatrices,
 			MatchState matchState, Float predictPk, AsiaPl main, AsiaPl current, EuroMatrices euroMatrices,
-			boolean isSameCityOrNeutral, League league) {
+			boolean isDistinctHomeAway, League league) {
 		if (rgs == null
 				|| clubMatrices.getHostAllMatrix() != null
 					&& clubMatrices.getHostAllMatrix().getNum() < 5) {
@@ -1108,7 +1108,7 @@ public class PankouKillPromoter {
 		}
 		
 		Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
-				isSameCityOrNeutral, league, false);
+				isDistinctHomeAway, league, false);
 		
 		LatestMatchMatrices hostMatches = pair.getFirst();
 		LatestMatchMatrices guestMatches = pair.getSecond();
@@ -1310,7 +1310,7 @@ public class PankouKillPromoter {
 	
 	private Set<ResultGroup> promoteByPk (Set<ResultGroup> rgs, PankouMatrices pkMatrices, Float predictPk, Float hotPoint,
 			MatchState matchState, ClubMatrices clubMatrices, MatchExchangeData exchange, EuroMatrices euroMatrices,
-			boolean isSameCityOrNeutral, League league) {
+			boolean isDistinctHomeAway, League league) {
 		if (pkMatrices != null && predictPk != null && matchState != null && clubMatrices != null) {
 			AsiaPl main = pkMatrices.getMainPk();
 			AsiaPl current = pkMatrices.getCurrentPk();
@@ -1321,10 +1321,10 @@ public class PankouKillPromoter {
 			float currentPk = MatchUtil.getCalculatedPk(current);
 
 			promoteByBase1(rgs, hotPoint, clubMatrices, matchState, predictPk,
-					main, current, euroMatrices, isSameCityOrNeutral, league);
+					main, current, euroMatrices, isDistinctHomeAway, league);
 			
 			Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
-					isSameCityOrNeutral, league, true);
+					isDistinctHomeAway, league, true);
 			
 			LatestMatchMatrices hostMatches = pair.getFirst();
 			LatestMatchMatrices guestMatches = pair.getSecond();
@@ -1603,7 +1603,7 @@ public class PankouKillPromoter {
 	
 	private void promoteByEuro (Set<ResultGroup> promoteGps, EuroMatrices euMatrices,
 			Float predictPk, PankouMatrices pkMatrices, League league, Float hotPoint,
-			MatchState matchState, boolean isSameCityOrNeutral) {
+			MatchState matchState, boolean isDistinctHomeAway) {
 
 		if (euMatrices != null) {
 			Map<Company, EuroMatrix> companyEus = euMatrices.getCompanyEus();
@@ -1627,7 +1627,7 @@ public class PankouKillPromoter {
 			boolean isAomenMajor = EuroUtil.isAomenTheMajor(league);
 			
 			Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
-					isSameCityOrNeutral, league);
+					isDistinctHomeAway, league, false);
 			
 			LatestMatchMatrices hostMatches = pair.getFirst();
 			LatestMatchMatrices guestMatches = pair.getSecond();

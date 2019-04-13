@@ -2,14 +2,22 @@ package com.roy.football.match.jpa.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.mysema.query.Tuple;
 import com.mysema.query.jpa.impl.JPAQueryFactory;
+import com.mysema.query.types.Projections;
+import com.roy.football.match.OFN.MatchResultAnalyzer;
 import com.roy.football.match.OFN.response.Company;
+import com.roy.football.match.OFN.response.MatchResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.jpa.entities.calculation.EMatch;
+import com.roy.football.match.jpa.entities.calculation.EMatchResultDetail;
 import com.roy.football.match.util.DateUtil;
+
+import lombok.extern.slf4j.Slf4j;
+
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
@@ -21,8 +29,11 @@ import static com.roy.football.match.jpa.entities.calculation.QEAsiaPk.eAsiaPk;
 import static com.roy.football.match.jpa.entities.calculation.QEJiaoShou.eJiaoShou;
 import static com.roy.football.match.jpa.entities.calculation.QEEuroPlCompany.eEuroPlCompany;
 import static com.roy.football.match.jpa.entities.calculation.QEMatchResult.eMatchResult;
+import static com.roy.football.match.jpa.entities.calculation.QEMatchResultDetail.eMatchResultDetail;
 
 @Service
+@Slf4j
+@Transactional(readOnly = true, value = "transactionManager")
 public class MatchComplexQueryService {
 	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
@@ -79,6 +90,23 @@ public class MatchComplexQueryService {
 					eLatestMatchState.hostAttackToGuest, eLatestMatchState.guestAttackToHost,
 					eLatestMatchState.hostAttackVariationToGuest, eLatestMatchState.guestAttackVariationToHost,
 					eJiaoShou.hgoalPerMatch, eJiaoShou.ggoalPerMatch);
+	}
+	
+	public List<EMatchResultDetail> findLatestMatchResult(Long teamId, Boolean host, int limit) {
+		try {
+			return jpaQueryFactory
+					.from(eMatchResultDetail)
+						.join(eMatch).on(eMatchResultDetail.ofnMatchId.eq(eMatch.ofnMatchId)
+								.and(eMatchResultDetail.league.eq(eMatch.league)))
+					.where(host ? eMatchResultDetail.hostId.eq(teamId) : eMatchResultDetail.guestId.eq(teamId))
+					.orderBy(eMatch.matchTime.desc())
+					.limit(limit)
+					.list(eMatchResultDetail);
+		} catch (Exception e) {
+			log.error("unable to find latest match result of team: {}", teamId);
+		}
+		
+		return Lists.newArrayList();
 	}
 	
 	public List<EMatch> findMatchesByDateRange (String from, String to) {

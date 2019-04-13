@@ -7,6 +7,6 @@ import com.roy.football.match.jpa.entities.calculation.EEuroPlCompany;
 import com.roy.football.match.jpa.entities.calculation.EEuroPlCompany.EEuroPlCompanyPk;
 
 @Repository
-public interface EuroPlCompanyRepository extends CrudRepository<EEuroPlCompany, EEuroPlCompany.EEuroPlCompanyPk>{
+public interface EuroPlCompanyRepository extends RoyRepository<EEuroPlCompany, EEuroPlCompany.EEuroPlCompanyPk>{
 
 }

@@ -55,7 +55,7 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 				matchData.getGuestId(), matchData.getMatchTime(), false, le);
 		matchState.setCalculatePk(getPankouByFinishedMatches(matchData, le));
 
-		if (!calMatchStateIndex(matchState, matchData.isSameCityOrNeutral(), matchData.getLevelDiff(), le)) {
+		if (!calMatchStateIndex(matchState, matchData.isDistinctHomeAway(), matchData.getLevelDiff(), le)) {
 			log.warn(String.format("No enough matches to calculate for matchId:%d, league:%s", matchData.getMatchId(), le));
 		}
 		
@@ -86,9 +86,9 @@ public class LatestMatchCalculator extends AbstractBaseDataCalculator implements
 		matchState.setHotPoint(pointDiff);
 	}
 	
-	private boolean calMatchStateIndex (MatchState matchState, boolean isSameCityOrNeutral, int levelDiff, League le) {		
+	private boolean calMatchStateIndex (MatchState matchState, boolean isDistinctHomeAway, int levelDiff, League le) {		
 		Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
-				isSameCityOrNeutral, le);
+				isDistinctHomeAway, le, false);
 		
 		LatestMatchMatrices hostMatches = pair.getFirst();
 		LatestMatchMatrices guestMatches = pair.getSecond();

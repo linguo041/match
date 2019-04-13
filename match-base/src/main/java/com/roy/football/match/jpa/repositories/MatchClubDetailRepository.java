@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.roy.football.match.jpa.entities.calculation.EMatchClubDetail;
 
 @Repository
-public interface MatchClubDetailRepository extends CrudRepository<EMatchClubDetail, EMatchClubDetail.EMatchClubDetailPk>{
+public interface MatchClubDetailRepository extends RoyRepository<EMatchClubDetail, EMatchClubDetail.EMatchClubDetailPk>{
 
 }

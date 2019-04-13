@@ -2,12 +2,18 @@ select * from match_club_detail;
 
 select * from matches m, match_result mr
  where m.ofn_match_id = mr.ofn_match_id
-   and m.match_time > '2018-03-28 13:45:00'
+   and m.match_time > '2019-02-01 13:45:00'
  order by m.match_time desc;
 
 select * from matches m, match_result_detail mrd
  where m.ofn_match_id = mrd.ofn_match_id
-   and m.match_time > '2018-10-04 13:45:00' 
+   and m.match_time > '2018-08-01 13:45:00' 
+   -- and host_shot is null 
+ order by m.match_time desc;
+
+select * from matches m, match_exchange mex
+ where m.ofn_match_id = mex.ofn_match_id
+   and m.match_time > '2018-12-27 13:45:00' 
  order by m.match_time desc;
 
 select * from match_result_detail where 1=1
@@ -34,7 +40,7 @@ select m.ofn_match_id, m.league, m.match_time, m.host_name, m.guest_name, mr.hos
 
 select * from matches where cal_phase < 2;
 
-select * from matches  order by match_time desc
+select * from matches where league is null order by match_time desc
 
 update matches set cal_phase = 0
 -- select * from matches

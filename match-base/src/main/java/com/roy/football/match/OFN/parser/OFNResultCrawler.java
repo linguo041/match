@@ -20,8 +20,16 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class OFNResultCrawler {
-	private final static String DETAIL_URL_PREIX = "http://bf.159cai.com/detail/index/";
+	private final static String DETAIL_URL_PREIX = "https://www.iuliao.com/live/matchlive/";
 	private final static NumberFormat NF_FORMAT = NumberFormat.getPercentInstance();
+	private final static String TIME = "控球";
+	private final static String SHOT = "射门";
+	private final static String SHOT_ON_TARGET = "射正";
+	private final static String CORNER = "角球";
+	private final static String SAVE = "扑救";
+	private final static String FAULT = "犯规";
+	private final static String YELLOW_CARD = "黄牌";
+	private final static String OFFSIDE = "越位";
 	
 	public MatchResult craw (long matchId) {
 		MatchResult res = new MatchResult();
@@ -41,77 +49,65 @@ public class OFNResultCrawler {
 	}
 	
 	private void parseScore (MatchResult res, Document doc) {
-		Elements eles = doc.select("h1.score");
+		Elements eles = doc.select(".live-score");
+		Elements hEles = eles.select(".live-score-home");
+		Elements aEles = eles.select(".live-score-away");
 		
-		for (Element ele : eles) {
-			String scoreText = ele.text();
-			
-			String[] tokens = scoreText.split("-");
-			
-			Integer hostScore = Integer.parseInt(tokens[0].trim());
-			Integer guestScore = Integer.parseInt(tokens[1].trim());
-			
+		for (Element ele : hEles) {
+			String hScoretext = ele.text();
+			Integer hostScore = Integer.parseInt(hScoretext.trim());
 			res.setHostScore(hostScore);
-			res.setGuestScore(guestScore);
+		}
+		
+		for (Element ele : aEles) {
+			String aScoretext = ele.text();
+			Integer awayScore = Integer.parseInt(aScoretext.trim());
+			res.setGuestScore(awayScore);
 		}
 	}
 	
 	private void parseOther (MatchResult res, Document doc) {
-		Elements eles = doc.select(".zs_mactecdate_con table");
+		Elements eles = doc.select(".match-statistics table td");
 		
 		for (Element ele : eles) {
-			Element shotEle = ele.select("tr:nth-child(1)").first();
-			String hostShot = shotEle.child(1).text();
-			String guestShot = shotEle.child(3).text();
-			res.setHostShot(parseIntNum(hostShot));
-			res.setGuestShot(parseIntNum(guestShot));
+			String action = ele.select(".match-action").first().text();
+			String homeNum = ele.select(".percent-num-home").first().text();
+			String awayNum = ele.select(".percent-num-away").first().text();
 			
-			Element shotOnTargetEle = ele.select("tr:nth-child(2)").first();
-			String hostShotOnTarget = shotOnTargetEle.child(1).text();
-			String guestShotOnTarget = shotOnTargetEle.child(3).text();
-			res.setHostShotOnTarget(parseIntNum(hostShotOnTarget));
-			res.setGuestShotOnTarget(parseIntNum(guestShotOnTarget));
-			
-			Element faultEle = ele.select("tr:nth-child(3)").first();
-			String hostFault = faultEle.child(1).text();
-			String guestFault = faultEle.child(3).text();
-			res.setHostFault(parseIntNum(hostFault));
-			res.setGuestFault(parseIntNum(guestFault));
-			
-			Element cornerEle = ele.select("tr:nth-child(4)").first();
-			String hostCorner = cornerEle.child(1).text();
-			String guestCorner = cornerEle.child(3).text();
-			res.setHostCorner(parseIntNum(hostCorner));
-			res.setGuestCorner(parseIntNum(guestCorner));
-			
-			Element offsideEle = ele.select("tr:nth-child(5)").first();
-			String hostOffside = offsideEle.child(1).text();
-			String guestOffside = offsideEle.child(3).text();
-			res.setHostOffside(parseIntNum(hostOffside));
-			res.setGuestOffside(parseIntNum(guestOffside));
-			
-			Element yellowCardEle = ele.select("tr:nth-child(6)").first();
-			String hostYellowCard = yellowCardEle.child(1).text();
-			String guestYellowCard = yellowCardEle.child(3).text();
-			res.setHostYellowCard(parseIntNum(hostYellowCard));
-			res.setGuestYellowCard(parseIntNum(guestYellowCard));
-			
-			Element timeEle = ele.select("tr:nth-child(7)").first();
-			String hostTime = timeEle.child(1).text();
-			String guestTime = timeEle.child(3).text();
-			res.setHostTime(parsePercentNum(hostTime));
-			res.setGuestTime(parsePercentNum(guestTime));
-			
-			Element saveEle = ele.select("tr:nth-child(8)").first();
-			String hostSave = saveEle.child(1).text();
-			String guestSave = saveEle.child(3).text();
-			res.setHostSave(parseIntNum(hostSave));
-			res.setGuestSave(parseIntNum(guestSave));
+			if (TIME.equals(action)) {
+				res.setHostTime(parsePercentNum(homeNum));
+				res.setGuestTime(parsePercentNum(awayNum));
+			} else if (SHOT.equals(action)) {
+				res.setHostShot(parseIntNum(homeNum));
+				res.setGuestShot(parseIntNum(awayNum));
+			} else if (SHOT_ON_TARGET.equals(action)) {
+				res.setHostShotOnTarget(parseIntNum(homeNum));
+				res.setGuestShotOnTarget(parseIntNum(awayNum));
+			} else if (CORNER.equals(action)) {
+				res.setHostCorner(parseIntNum(homeNum));
+				res.setGuestCorner(parseIntNum(awayNum));
+			} else if (SAVE.equals(action)) {
+				res.setHostSave(parseIntNum(homeNum));
+				res.setGuestSave(parseIntNum(awayNum));
+			} else if (FAULT.equals(action)) {
+				res.setHostFault(parseIntNum(homeNum));
+				res.setGuestFault(parseIntNum(awayNum));
+			} else if (YELLOW_CARD.equals(action)) {
+				res.setHostYellowCard(parseIntNum(homeNum));
+				res.setGuestYellowCard(parseIntNum(awayNum));
+			} else if (OFFSIDE.equals(action)) {
+				res.setHostOffside(parseIntNum(homeNum));
+				res.setGuestOffside(parseIntNum(awayNum));
+			}
 		}
 	}
 	
 	private Float parsePercentNum(String num) {
 		try {
+			if ("0".equals(num)) {
+				return 0f;
+			}
+			
 			return ((Double)NF_FORMAT.parse(num)).floatValue();
 		} catch (Exception e) {
 			log.warn("unable to parse percent number {}.", num);
@@ -132,8 +128,9 @@ public class OFNResultCrawler {
 	
 	public static void main (String args[]) {
 		OFNResultCrawler crawler = new OFNResultCrawler();
-		System.out.println(crawler.craw(1046608));
+		System.out.println(crawler.craw(1192861));
 		
+		System.out.println(crawler.parsePercentNum("0"));
 	}
 
 }

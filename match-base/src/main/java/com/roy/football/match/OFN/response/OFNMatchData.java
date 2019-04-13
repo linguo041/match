@@ -26,6 +26,7 @@ public class OFNMatchData implements MatchData{
 	}
 
 	private Long okoooMatchId;
+	private String fmMatchId;
 	private Long matchDayId;
 	private Long matchId;
 	private Date matchTime;
@@ -45,7 +46,7 @@ public class OFNMatchData implements MatchData{
 	private List<AsiaPl> ysb;
 	private Integer hostScore;
 	private Integer guestScore;
-	private boolean isSameCityOrNeutral = false;
+	private boolean distinctHomeAway = false;
 	private int levelDiff = 0;
 	private float originalPk;
 	private float mainPk;

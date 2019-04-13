@@ -23,6 +23,7 @@ import com.roy.football.match.OFN.statics.matrices.MatchState;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.OFN.statics.matrices.PredictResult;
+import com.roy.football.match.base.League;
 import com.roy.football.match.jpa.EntiryReverseConverter;
 import com.roy.football.match.jpa.EntityConverter;
 import com.roy.football.match.jpa.entities.calculation.EAsiaPk;
@@ -54,8 +55,11 @@ import com.roy.football.match.jpa.repositories.PredictResultRepository;
 import com.roy.football.match.okooo.MatchExchangeData;
 import com.roy.football.match.util.MatchUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
-@Transactional(readOnly = true, value = "transactionManager")
+//@Transactional(readOnly = true, value = "transactionManager")
+@Slf4j
 public class MatchPersistService {
 
 	@Autowired
@@ -257,7 +261,6 @@ public class MatchPersistService {
 		return calResult;
 	}
 	
-	@Transactional
 	public void saveHistoryMatch (List<FinishedMatch> finishedMatches) {
 		if (finishedMatches == null || finishedMatches.size() <= 0) {
 			return ;
@@ -265,7 +268,8 @@ public class MatchPersistService {
 		
 		Date now = new Date();
 		for (FinishedMatch fm : finishedMatches) {
-			if (MatchUtil.isMatchInTwoYear(fm.getMatchTime(), now)) {
+			League le = League.getLeagueById(fm.getLeagueId());
+			if (MatchUtil.isMatchInTwoYear(fm.getMatchTime(), now) && le != null) {
 				saveFinishedMatch(fm);
 			}
 		}
@@ -282,7 +286,7 @@ public class MatchPersistService {
 				matchRepository.save(eMatch);
 			}
 		} catch (Exception e) {
-			// ignore..
+			log.error("unable to save finished match: {}", ofnMatchId);
 		}
 	}
 }

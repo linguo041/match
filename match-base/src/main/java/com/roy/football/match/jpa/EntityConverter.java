@@ -63,7 +63,8 @@ public class EntityConverter {
 	public static EMatch toEMatch (FinishedMatch finishedMatch, CalculationType phase) {
 		EMatch ematch = new EMatch();
 		ematch.setOfnMatchId(finishedMatch.getMatchId());
-		ematch.setLeague(League.getLeagueById(finishedMatch.getLeagueId()));
+		League le = League.getLeagueById(finishedMatch.getLeagueId());
+		ematch.setLeague(le);
 		ematch.setMatchTime(finishedMatch.getMatchTime());
 //		ematch.setMatchDayId(finishedMatch.getMatchDayId());
 //		ematch.setOkoooMatchId(finishedMatch.getOkoooMatchId());
@@ -358,6 +359,7 @@ public class EntityConverter {
 	public static EMatchResultDetail toEMatchResultDetail (Long ofnMatchId, MatchResult result) {
 		EMatchResultDetail resultDetail = new EMatchResultDetail();
 		resultDetail.setOfnMatchId(ofnMatchId);
+		resultDetail.setLeague(result.getLeague());
 		
 		resultDetail.setHostId(result.getHostId());
 		resultDetail.setHostName(result.getHostName());
@@ -369,6 +371,7 @@ public class EntityConverter {
 		resultDetail.setHostFault(result.getHostFault());
 		resultDetail.setHostOffside(result.getHostOffside());
 		resultDetail.setHostTime(result.getHostTime());
+		resultDetail.setHostYellowCard(result.getHostYellowCard());
 		
 		resultDetail.setGuestId(result.getGuestId());
 		resultDetail.setGuestName(result.getGuestName());
@@ -380,6 +383,7 @@ public class EntityConverter {
 		resultDetail.setGuestFault(result.getGuestFault());
 		resultDetail.setGuestOffside(result.getGuestOffside());
 		resultDetail.setGuestTime(result.getGuestTime());
+		resultDetail.setGuestYellowCard(result.getGuestYellowCard());
 		
 		return resultDetail;
 	}

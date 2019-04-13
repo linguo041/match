@@ -9,6 +9,8 @@ import org.springframework.util.CollectionUtils;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
+import com.roy.football.match.base.League;
+import com.roy.football.match.base.MatchContinent;
 import com.roy.football.match.base.MatrixType;
 import com.roy.football.match.base.TeamLabel;
 import com.roy.football.match.base.TeamLevel;
@@ -40,6 +42,47 @@ public class BaseMatrixCalculator extends AbstractBaseDataCalculator implements 
 	public void calucate(ClubMatrices matchResult, ClubMatrices matchData) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public boolean calDistinctHomeAway (ClubMatrices matrices, League le) {
+		/*
+		 * check one status: host home is strong, guest away is week
+		 * 		away is strong always means all is strong
+		 */
+		
+		if (matrices == null) {
+			return false;
+		}
+		
+		ClubMatrix hostAllMatrix = matrices.getHostAllMatrix();
+		ClubMatrix guestAllMatrix = matrices.getGuestAllMatrix();
+		ClubMatrix hostHomeMatrix = matrices.getHostHomeMatrix();
+		ClubMatrix guestAwayMatrix = matrices.getGuestAwayMatrix();
+		
+		int pmThreshold = le.getClubNum() > 20 ? 4
+				: (le.getClubNum() >= 16 ? 3 : 2);
+		
+		if (le.getContinent() == MatchContinent.America) {
+			pmThreshold = 2;
+		}
+
+		if (hostHomeMatrix != null && guestAwayMatrix != null && hostHomeMatrix.getNum() > 3 && guestAwayMatrix.getNum() > 3) {
+			int hostHomeAll = -1 * (hostHomeMatrix.getPm() - hostAllMatrix.getPm());
+			int guestAwayAll = -1 * (guestAwayMatrix.getPm() - guestAllMatrix.getPm());
+			
+			float hostWinToAll = hostHomeMatrix.getWinRt() - hostAllMatrix.getWinRt();
+			float guestLostToAll = guestAllMatrix.getWinDrawRt() - guestAwayMatrix.getWinDrawRt();
+			
+			if (hostHomeAll >= pmThreshold || guestAwayAll <= -1 * pmThreshold) {
+				return true;
+			}
+			
+			if (hostWinToAll >= 0.3f || guestLostToAll >= 0.3f) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	private void compareClubsAttackDefend (ClubMatrices matrices) {

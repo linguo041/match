@@ -2,7 +2,9 @@ package com.roy.football.match.fivemillion;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -18,6 +20,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -55,22 +59,56 @@ public class FMParser {
 	private final static String EURO_URL = "http://odds.500.com/fenxi/json/ouzhi.php";
 	private final static String FM_JCZQ_URL = "https://ews.500.com/static/ews/jczq/";
 
-
+	private Cache<Long, FmRawMatch> fmMatches = CacheBuilder.newBuilder()
+			.maximumSize(1000)
+			.build();
+	
+	public synchronized FmRawMatch getFmMatch (Long matchDayId) {
+		// matchDayId: 190107102
+		try {
+			FmRawMatch fmMatch = fmMatches.getIfPresent(matchDayId);
+			
+			if (fmMatch == null) {
+				log.info(String.format("No fm match found for match order %s, recraw.", matchDayId));
+				
+				Long month = 200000 + matchDayId / 100000;
+				Long day = 20000000 + matchDayId / 1000;
+				Long matchDay = matchDayId / 1000;
+				List<FmRawMatch> matches = parseMatchData(month.toString(), day.toString());
+				for (FmRawMatch match : matches) {
+					fmMatches.put(generateMatchDayId(matchDay, match.getMatchDayOrder()), match);
+				}
+				
+				return fmMatches.getIfPresent(matchDayId);
+			}
+			
+			return fmMatch;
+		} catch (Exception e) {
+			log.error(String.format("Unable to parse to fm match id from match day id %s", matchDayId), e);
+		}
+		
+		return null;
+	}
+	
 	public List<FmRawMatch> parseMatchData (String month, String day) {
 		Map<String, String> headers = new HashMap<String, String>();
 		
 		try {
+			log.info("Get FM matches of " + day);
+			// https://ews.500.com/static/ews/jczq/201812/20181214.json
 			String resData = HttpRequestService.getInstance().doHttpRequest(FM_JCZQ_URL + month +"/" + day + ".json",
 					HttpRequestService.GET_METHOD, null, headers);
 			
-			JsonParser parser = new JsonParser();
-			JsonObject rootObj = parser.parse(resData).getAsJsonObject();   
-			JsonObject dataObj = rootObj.getAsJsonObject("data");
-			JsonArray matchArray = dataObj.getAsJsonArray("matches");
-			
-			Gson gson = new GsonBuilder().create();
-			
-			return gson.fromJson(matchArray, new TypeToken<List<FmRawMatch>>(){}.getType());
+			if (!StringUtil.isEmpty(resData)) {
+				JsonParser parser = new JsonParser();
+				JsonObject rootObj = parser.parse(resData).getAsJsonObject();   
+				JsonObject dataObj = rootObj.getAsJsonObject("data");
+				JsonArray matchArray = dataObj.getAsJsonArray("matches");
+				
+				Gson gson = new GsonBuilder().create();
+				
+				return gson.fromJson(matchArray, new TypeToken<List<FmRawMatch>>(){}.getType());
+			}
 		} catch (HttpRequestException e) {
 			log.warn(String.format("Can't get the matches of %s", day));
 		}
@@ -120,7 +158,7 @@ public class FMParser {
 	}
 */
 
-	public List <EuroPl> parseEuroData (Long fmatchId, Company company) {
+	public List <EuroPl> parseEuroData (String fmatchId, Company company) {
 		try {
 			Document doc = Jsoup.connect(EURO_URL
 					+ "?cid=" + company.getFmCompanyId() + "&fid=" + fmatchId + "&type=europe").get();
@@ -147,6 +185,10 @@ public class FMParser {
 		}
 		return null;
 	}
+	
+	private Long generateMatchDayId (Long day, String fmMatchDayOrder) {
+		return Long.parseLong(day + fmMatchDayOrder.substring(fmMatchDayOrder.length() - 3));
+	}
 
 	public static void main (String [] args) {
 //		String instr = "[[\"4.00\",\"3.75\",\"1.75\",\"1454880574\"],[\"3.60\",\"3.75\",\"1.83\",\"1455221779\"],[\"4.20\",\"3.80\",\"1.70\",\"1455434403\"],[\"3.60\",\"3.75\",\"1.83\",\"1455435003\"],[\"4.20\",\"3.80\",\"1.70\",\"1455435312\"]]";
@@ -155,7 +197,15 @@ public class FMParser {
 //		
 //		System.out.println(out);
 		FMParser p = new FMParser();
-		List <EuroPl> pls = p.parseEuroData(449928L, Company.Aomen);
-		System.out.println(pls);
+//		List <EuroPl> pls = p.parseEuroData(449928L, Company.Aomen);
+//		System.out.println(pls);
+		
+//		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
+//		System.out.println(ms);
+		
+		FmRawMatch match1 = p.getFmMatch(190107005L);
+		System.out.println(match1);
+		FmRawMatch match2 = p.getFmMatch(190107006L);
+		System.out.println(match2);
 	}
 }

@@ -40,6 +40,8 @@ import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.context.MatchContext;
 import com.roy.football.match.eightwin.EWJincaiParser;
+import com.roy.football.match.fivemillion.FMParser;
+import com.roy.football.match.fivemillion.FmRawMatch;
 import com.roy.football.match.jpa.service.MatchPersistService;
 import com.roy.football.match.okooo.OkoooMatchCrawler;
 import com.roy.football.match.util.DateUtil;
@@ -71,6 +73,9 @@ public class OFNMatchService {
 
 	@Autowired
 	public ExecutorService calculateExecutorService;
+	
+	@Autowired
+	private FMParser fmParser;
 	
 	public void process () throws MatchParseException {	
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
@@ -141,13 +146,22 @@ public class OFNMatchService {
 			
 			if (matchDayId != null) {
 				ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));
+				
+				FmRawMatch fmMatch = fmParser.getFmMatch(matchDayId);
+				if (fmMatch != null) {
+					String hostName = fmMatch.getHomeName().replace(" ", "");
+					String guestName = fmMatch.getAwayName().replace(" ", "");
+					if (ofnMatch.getHostName().contains(hostName) || ofnMatch.getGuestName().contains(guestName)) {
+						ofnMatch.setFmMatchId(fmMatch.getFmId());
+					}
+				}
 			}
 
 			// get euro peilv
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();
 			for (Company comp : Company.values()) {
 				if (comp == Company.Jincai) {
-					List<EuroPl> euroPls = getJincaiPls(oddsmid, matchDayId);
+					List<EuroPl> euroPls = getJincaiPls(oddsmid, ofnMatch.getFmMatchId(), null);
 					euroMap.put(comp, euroPls);
 				} else {
 					List<EuroPl> euroPls = parser.parseEuroData(oddsmid, comp);
@@ -220,13 +234,17 @@ public class OFNMatchService {
 		return (day + month * 100 + (year - 2000) * 10000) * 1000;
 	}
 	
-	private List<EuroPl> getJincaiPls (Long oddsmid, Long matchDayId) throws MatchParseException {
+	private List<EuroPl> getJincaiPls (Long oddsmid, String fmatchId, Long matchDayId) throws MatchParseException {
 		List<EuroPl> jinCais = Lists.newArrayList();
 		
 		if (matchDayId != null) {
 			jinCais = ewJincaiParser.getJincaiEuro(matchDayId);
 		}
-		
+		/*
+		if (fmatchId != null) {
+			jinCais = fmParser.parseEuroData(fmatchId, Company.Jincai);
+		}
+		*/
 		if (jinCais == null || jinCais.isEmpty()) {
 			jinCais = parser.parseEuroData(oddsmid, Company.Jincai);
 		}

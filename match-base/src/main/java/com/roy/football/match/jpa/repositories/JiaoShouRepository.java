@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.roy.football.match.jpa.entities.calculation.EJiaoShou;
 
 @Repository
-public interface JiaoShouRepository extends CrudRepository<EJiaoShou, Long>{
+public interface JiaoShouRepository extends RoyRepository<EJiaoShou, Long>{
 
 }

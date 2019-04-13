@@ -19,11 +19,13 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.mysema.query.jpa.impl.JPAQueryFactory;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.roy.football.match.jpa.repositories")
+@EnableTransactionManagement
 public class MatchJpaConfiguration {
 
 	@Bean(name="jpaDataSource")
@@ -67,14 +69,17 @@ public class MatchJpaConfiguration {
     }
 	
 	@Bean
-	public JpaTransactionManager transactionManager (EntityManagerFactory entityManagerFactory) {
+	public JpaTransactionManager transactionManager (
+			@Qualifier(value = "entityManagerFactory")
+			EntityManagerFactory entityManagerFactory) {
 		return new JpaTransactionManager(entityManagerFactory);
 	}
 	
-	@Bean JPAQueryFactory jpaQueryFactory(
-	        @Qualifier(value = "entityManagerFactory")
+	@Bean
+	public JPAQueryFactory jpaQueryFactory(
+			@Qualifier(value = "entityManagerFactory")
 	        Provider<EntityManager> entityManager) {
-	        return new JPAQueryFactory(entityManager);
-	    }
+	    return new JPAQueryFactory(entityManager);
+	}
 
 }

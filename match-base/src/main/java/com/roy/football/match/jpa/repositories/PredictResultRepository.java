@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.roy.football.match.jpa.entities.calculation.EPredictResult;
 
 @Repository
-public interface PredictResultRepository extends CrudRepository<EPredictResult, Long>{
+public interface PredictResultRepository extends RoyRepository<EPredictResult, Long>{
 
 }

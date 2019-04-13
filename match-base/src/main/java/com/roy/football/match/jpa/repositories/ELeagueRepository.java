@@ -8,5 +8,5 @@ import com.roy.football.match.jpa.entities.calculation.EAsiaPk;
 import com.roy.football.match.jpa.entities.calculation.ELeague;
 
 @Repository
-public interface ELeagueRepository extends CrudRepository<ELeague, Long>{
+public interface ELeagueRepository extends RoyRepository<ELeague, Long>{
 }

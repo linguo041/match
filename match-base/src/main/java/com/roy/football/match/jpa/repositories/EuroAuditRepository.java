@@ -9,6 +9,6 @@ import com.roy.football.match.jpa.entities.audit.EEuroAudit;
 import com.roy.football.match.jpa.entities.audit.PKType;
 
 @Repository
-public interface EuroAuditRepository extends CrudRepository<EEuroAudit, Long>{
+public interface EuroAuditRepository extends RoyRepository<EEuroAudit, Long>{
 	EEuroAudit findByLeagueIdAndCompanyAndPkAndPkType (Long leagueId, Company company, Float pk, PKType type) ;
 }

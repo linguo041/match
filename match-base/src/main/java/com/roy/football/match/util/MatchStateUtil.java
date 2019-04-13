@@ -31,7 +31,7 @@ public class MatchStateUtil {
 		Float latestGuestAttack = matchState.getGuestAttackToHost();
 		
 		Pair<LatestMatchMatrices, LatestMatchMatrices> pair = MatchStateUtil.getComparedLatestMatchMatrices(matchState,
-				isSameCityOrNeutral, le);
+				isSameCityOrNeutral, le, true);
 		
 		LatestMatchMatrices hostMatches = pair.getFirst();
 		LatestMatchMatrices guestMatches = pair.getSecond();
@@ -42,16 +42,11 @@ public class MatchStateUtil {
 	}
 	
 	public static Pair<LatestMatchMatrices, LatestMatchMatrices> getComparedLatestMatchMatrices (
-			MatchState matchState, boolean isSameCityOrNeutral, League le) {		
-		return getComparedLatestMatchMatrices(matchState, isSameCityOrNeutral, le, true);
-	}
-	
-	public static Pair<LatestMatchMatrices, LatestMatchMatrices> getComparedLatestMatchMatrices (
-			MatchState matchState, boolean isSameCityOrNeutral, League le, boolean considerAll) {
+			MatchState matchState, boolean isDistinctHomeAway, League le, boolean considerAll) {
 		LatestMatchMatrices hostMatches = matchState.getHostHome5();
 		LatestMatchMatrices guestMatches = matchState.getGuestAway5();
 		
-		if (considerAll && (isSameCityOrNeutral || le.isState() || hostMatches == null || guestMatches == null)) {
+		if (considerAll || !isDistinctHomeAway || le.isState() || hostMatches == null || guestMatches == null) {
 			hostMatches = matchState.getHostState6();
 			guestMatches = matchState.getGuestState6();
 		}

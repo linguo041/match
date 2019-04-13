@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.roy.football.match.jpa.entities.calculation.ELatestMatchDetail;
 
 @Repository
-public interface LatestMatchDetailRepository extends CrudRepository<ELatestMatchDetail, ELatestMatchDetail.ELatestMatchDetailPk>{
+public interface LatestMatchDetailRepository extends RoyRepository<ELatestMatchDetail, ELatestMatchDetail.ELatestMatchDetailPk>{
 
 }
