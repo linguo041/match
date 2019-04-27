@@ -3,13 +3,23 @@ select * from match_club_detail;
 select * from matches m, match_result mr
  where m.ofn_match_id = mr.ofn_match_id
    and m.match_time > '2019-02-01 13:45:00'
+   and m.host_id = 961
  order by m.match_time desc;
 
 select * from matches m, match_result_detail mrd
  where m.ofn_match_id = mrd.ofn_match_id
-   and m.match_time > '2018-08-01 13:45:00' 
+   -- and m.match_time > '2018-08-01 13:45:00' 
+   and m.host_id = 349
    -- and host_shot is null 
  order by m.match_time desc;
+
+select * from matches where league is null
+
+update matches m, match_result_detail mrd 
+   set mrd.league = m.league
+ where m.ofn_match_id = mrd.ofn_match_id
+   and mrd.league is null;
+
 
 select * from matches m, match_exchange mex
  where m.ofn_match_id = mex.ofn_match_id

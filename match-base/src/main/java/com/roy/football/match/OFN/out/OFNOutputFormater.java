@@ -328,8 +328,14 @@ public class OFNOutputFormater {
 					kill = kill + " e"+ getSetVals(killByExchange);
 				}
 				excelData.setKill(kill);
+				
 				Set<ResultGroup> promote = predictRes.getKpResult().getPromoteByBase();
-				excelData.setPromote(getSetVals(promote));
+				String promoteStr = getSetVals(promote);
+				Set<ResultGroup> particularPromote = predictRes.getKpResult().getPromoteByFixModel();
+				if (particularPromote != null && particularPromote.size() > 0) {
+					promoteStr = promoteStr + " p" + getSetVals(particularPromote);
+				}
+				excelData.setPromote(promoteStr);
 				
 //				excelData.setPredictScore(String.format("%.1f : %.1f",
 //						predictRes.getHostScore(), predictRes.getGuestScore()));
@@ -353,8 +359,9 @@ public class OFNOutputFormater {
 		MatchResultAnalyzed guestMra = calculateResult.getGuestMra();
 		
 		if (hostMra != null && guestMra != null) {
-			return String.format("Time:%.2f; Shot:%.1f, SoT:%.1f, Score:%.1f; fault:%.1f, save:%.1f, Soted:%.1f\n"
-					+ "Time:%.2f; Shot:%.1f, SoT:%.1f, Score:%.1f; fault:%.1f, save:%.1f, Soted:%.1f",
+			return String.format("Time-Shot-SoT-Score|fault-save-Soted\n"
+					+ "%.2f - %.1f - %.1f - %.1f | %.1f - %.1f - %.1f\n"
+					+ "%.2f - %.1f - %.1f - %.1f | %.1f - %.1f - %.1f",
 				hostMra.getHostTime(), hostMra.getHostShot(), hostMra.getHostShotOnTarget(), hostMra.getHostScore(),
 				hostMra.getHostFault(), hostMra.getHostSave(), hostMra.getGuestShotOnTarget(),
 				guestMra.getHostTime(), guestMra.getHostShot(), guestMra.getHostShotOnTarget(), guestMra.getHostScore(),

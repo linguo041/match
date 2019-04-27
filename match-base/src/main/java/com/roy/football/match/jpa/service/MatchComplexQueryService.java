@@ -103,7 +103,7 @@ public class MatchComplexQueryService {
 					.limit(limit)
 					.list(eMatchResultDetail);
 		} catch (Exception e) {
-			log.error("unable to find latest match result of team: {}", teamId);
+			log.error("unable to find latest match result of host [{}] team: {}", host, teamId);
 		}
 		
 		return Lists.newArrayList();
