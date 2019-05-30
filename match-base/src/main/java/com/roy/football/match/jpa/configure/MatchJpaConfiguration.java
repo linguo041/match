@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -27,14 +28,16 @@ import com.mysema.query.jpa.impl.JPAQueryFactory;
 @EnableJpaRepositories(basePackages = "com.roy.football.match.jpa.repositories")
 @EnableTransactionManagement
 public class MatchJpaConfiguration {
+	@Autowired
+    private Environment environment;
 
 	@Bean(name="jpaDataSource")
     public DataSource jpaDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/football?useUnicode=true&amp;characterEncoding=UTF8&amp;autoReconnect=true&amp;connectTimeout=5000&amp;socketTimeout=60000&amp;useSSL=false");
-        dataSource.setUsername("gambler");
-        dataSource.setPassword("bet@match888");
+        dataSource.setUrl(environment.getProperty("match.mysql.url"));
+        dataSource.setUsername(environment.getProperty("match.mysql.user"));
+        dataSource.setPassword(environment.getProperty("match.mysql.password"));
         
         Properties properties = new Properties();
         properties.setProperty("useSSL", "false");
