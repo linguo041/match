@@ -15,6 +15,7 @@ import com.roy.football.match.OFN.MatchPromoter.MatchRank;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
+import com.roy.football.match.OFN.response.MatchResultAnalyzed;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
@@ -637,7 +638,8 @@ public class MatchPromoter {
 						&& jaWinDiff <= 0.001f && aomenWinChange <= 0.025f
 						&& aleWinDiff <= 0.03f
 						) {
-					if ((aaWinDiff < -0.015f || jaWinDiff <= -0.065f || rank.getWRank() >= 14)
+					if ((aaWinDiff < -0.015f || jaWinDiff <= -0.065f || current.getPanKou() >= 0.75 && rank.getWRank() >= 15
+							|| current.getPanKou() == 0.5f && rank.getWRank() >= 14)
 								&& winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 2
 							|| (latestVariance <= 2.40 && hostVariance <= 1.40
 								|| latestVariance <= 2.55 && hostVariance <= 1.35
@@ -912,6 +914,7 @@ public class MatchPromoter {
 			if (rank.getWRank() >= 10
 					&& bHWGLRt >= 0.6f
 					&& bHWRt >= 0.25f
+					&& bHWGLRt - bHWRt >= 0.26f
 					&& pcPkDiff <= 0.25f
 //					&& upChange <= -0.03
 					&& aaWinDiff <= 0.025f && aomenWinChange <= 0.035f
@@ -931,7 +934,8 @@ public class MatchPromoter {
 			}
 			if (rank.getLRank() >= 10
 					&& bGWHLRt >= 0.6f
-					&& bGWRt >= 0.25f
+					&& bGWRt >= 0.28f
+					&& bGWHLRt - bGWRt >= 0.26f
 					&& pcPkDiff >= -0.25f
 //					&& downChange <= -0.03
 					&& aaLoseDiff <= 0.025f && aomenLoseChange <= 0.035f
@@ -1866,11 +1870,6 @@ public class MatchPromoter {
 			return;
 		}
 		
-		float pankouDiff = 0f;
-		if (latestPankou != null) {
-			pankouDiff = pankou - latestPankou;
-		}
-		
 		float l1Diff = 0.07f;
 		float l2Diff = 0.15f;
 		
@@ -1891,8 +1890,18 @@ public class MatchPromoter {
 			l2Diff = 0.15f;
 		}
 		
+		if (latestPankou != null) {
+			if (pull.getHPull() >= 5 && pankou - latestPankou > 0.1f) {
+				l1Diff += 0.04f;
+				l2Diff += 0.04f;
+			} else if (pull.getGPull() >= 5 && pankou - latestPankou < -0.1f) {
+				l1Diff += 0.04f;
+				l2Diff += 0.04f;
+			}
+		}
+		
 		if (predictPk - mainPk >= l1Diff && predictPk - currentPk >= l1Diff
-				&& pull.getHPull() >= 5 && currentPk - mainPk <= 0.06f && pankouDiff < 0.1f) {
+				&& pull.getHPull() >= 5 && currentPk - mainPk <= 0.06f) {
 			if ((currentPk - mainPk <= -0.04f
 					|| predictPk - currentPk >= l1Diff + 0.03f && currentPk - mainPk <= 0.03f
 					|| predictPk - currentPk >= l2Diff)
@@ -1904,7 +1913,7 @@ public class MatchPromoter {
 				}
 			}
 		} else if (mainPk - predictPk >= l1Diff && currentPk - predictPk >= l1Diff
-				&& pull.getGPull() >= 5 && currentPk - mainPk >= -0.06f && pankouDiff > -0.1f) {
+				&& pull.getGPull() >= 5 && currentPk - mainPk >= -0.06f) {
 			if ((currentPk - mainPk >= 0.04f
 					|| mainPk - predictPk >= l1Diff + 0.03f && currentPk - predictPk >= l1Diff + 0.03f
 					|| currentPk - predictPk >= l2Diff)
@@ -2211,7 +2220,7 @@ public class MatchPromoter {
 					exRes.add(ResultGroup.Zero);
 				}
 			} else if (current.getPanKou() >= 0.5f) {
-				if (jcWinGain < -35 && bfWinGain < -20 && jaWinDiff < -0.055 && rank.getWRank() >= 14) {
+				if (jcWinGain < -35 && bfWinGain < -20 && jaWinDiff < -0.055 && rank.getWRank() >= 13) {
 					exRes.add(ResultGroup.Three);
 				}
 				
@@ -2255,7 +2264,7 @@ public class MatchPromoter {
 					exRes.add(ResultGroup.One);
 				}
 				
-				if (jcLoseGain < -35 && bfLoseGain < -20 && jaLoseDiff < -0.055 && rank.getLRank() >= 14) {
+				if (jcLoseGain < -35 && bfLoseGain < -20 && jaLoseDiff < -0.055 && rank.getLRank() >= 13) {
 					exRes.add(ResultGroup.Zero);
 				}
 			} else {

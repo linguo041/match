@@ -118,8 +118,13 @@ public class OFNCalcucator implements Calculator<OFNCalculateResult, OFNMatchDat
 			calResult.setExchanges(exchangeData);
 		}
 		
-		int consistent = 6;
-		int across = matchData.isDistinctHomeAway() ? 0 : 6;
+		int consistent = 5;
+		int across = 5;
+		
+		if (matchData.isDistinctHomeAway()) {
+			consistent = 6;
+			across = 2;
+		}
 		
 		MatchResultAnalyzed hostMra = matchResultAnalyzer.calMatchResultSummary(matchData.getHostId(), consistent, across);
 		MatchResultAnalyzed guestMra = matchResultAnalyzer.calMatchResultSummary(matchData.getGuestId(), across, consistent);

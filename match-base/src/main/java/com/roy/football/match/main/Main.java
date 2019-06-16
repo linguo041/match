@@ -44,7 +44,7 @@ public class Main {
 		wilsonScore(100, 100);
 		wilsonScore(60, 60);
 		wilsonScore(6, 6);
-		wilsonScore(2, 2);
+		wilsonScore(2000000, 1);
 	}
 	
 	private static void wilsonScore (int trails, int success) {

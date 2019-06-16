@@ -13,16 +13,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:/Match.properties")
+@PropertySource("classpath:/Match-${spring.profiles.active}.properties")
 @ComponentScan(basePackageClasses = { MatchPackageScanned.class})
 public class MatchConfiguration {
 	
 	@Value("${match.calculation.poolSize}")
 	private int calculateThreadSize;
+	
+	@Value("${match.result.dir}")
+	private String matchResultDir;
 
 	@Bean
 	public ExecutorService calculateExecutorService () {		
 		return new ThreadPoolExecutor(calculateThreadSize, calculateThreadSize, 0, TimeUnit.SECONDS,
 		        new LinkedBlockingQueue<Runnable>(5 * calculateThreadSize), new ThreadPoolExecutor.CallerRunsPolicy());
+	}
+	
+	@Bean
+	public String outputFileDir() {
+		return matchResultDir;
 	}
 }

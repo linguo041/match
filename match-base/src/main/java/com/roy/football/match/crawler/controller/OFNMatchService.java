@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -76,6 +77,9 @@ public class OFNMatchService {
 	
 	@Autowired
 	private FMParser fmParser;
+	
+	@Autowired
+	private String outputFileDir;
 	
 	public void process () throws MatchParseException {	
 		List <OFNExcelData> excelDatas = new ArrayList <OFNExcelData> ();
@@ -208,7 +212,13 @@ public class OFNMatchService {
 				writer.write(datas, workBook);
 			}
 
-			String fileName = System.getProperty("user.dir") + "/../data/match-" + DateUtil.formatSimpleDate(new Date())+".xlsx";
+			String outputDir = "";
+			if (StringUtils.isNotEmpty(outputFileDir)) {
+				outputDir = outputFileDir;
+			} else {
+				outputDir = System.getProperty("user.dir") + "/../data/";
+			}
+			String fileName = outputDir + "match-" + DateUtil.formatSimpleDate(new Date())+".xlsx";
 			
 			File file = new File (fileName);
 			
