@@ -183,7 +183,6 @@
 		  <groupId>com.mysema.querydsl</groupId>
 		  <artifactId>querydsl-apt</artifactId>
 		  <version>3.6.7</version>
-		  <scope>provided</scope>
 		</dependency>
 		<dependency>
 		    <groupId>com.mysema.querydsl</groupId>
@@ -194,7 +193,6 @@
 		    <groupId>com.mysema.querydsl</groupId>
 		    <artifactId>querydsl-sql-codegen</artifactId>
 		    <version>3.6.7</version>
-		    <scope>provided</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
@@ -228,6 +226,23 @@
           <target>1.8</target>
         </configuration>
       </plugin>
+      <plugin>  
+		<artifactId>maven-assembly-plugin</artifactId>  
+		<configuration>  
+			<descriptorRefs>  
+				<descriptorRef>jar-with-dependencies</descriptorRef>  
+			</descriptorRefs>  
+		</configuration>  
+		<executions>  
+			<execution>  
+				<id>make-assembly</id>  
+				<phase>package</phase>  
+				<goals>  
+					<goal>single</goal>  
+				</goals>  
+			</execution>  
+		</executions>  
+	  </plugin>  
       <plugin>
 	      <groupId>com.mysema.maven</groupId>
 	      <artifactId>apt-maven-plugin</artifactId>
