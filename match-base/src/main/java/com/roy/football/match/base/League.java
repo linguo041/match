@@ -17,9 +17,11 @@ public enum League {
 	WorldCupNAmericaYu(176, Company.William, true, MatchContinent.America),
 	BoluoCup(704, true, MatchContinent.America),
 	MeiZhouCup(162, true, MatchContinent.America),
+	MeiZhouGoldCup(114, true, MatchContinent.America),
 	LianHeHui(291, true, null),
 	Euro21Outter(464, true, MatchContinent.Euro),
 	WorldCup(149, true, MatchContinent.Euro),
+	FMWorldCup(127, true, MatchContinent.Euro),
 	EuroCountry(1530, true, MatchContinent.Euro),
 	ANYMOUS1(297, true, null),
 	
