@@ -1,22 +1,16 @@
 package com.roy.football.match.fivemillion;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
+import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +51,7 @@ public class FMParser {
 	private final static String FIVE_M_JCZQ = "http://trade.500.com/jczq/";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.500.com/fenxi/shuju-{fmId}.shtml";
 	private final static String EURO_URL = "http://odds.500.com/fenxi/json/ouzhi.php";
+	private final static String ASIA_URL = "http://odds.500.com/fenxi1/inc/yazhiajax.php";
 	private final static String FM_JCZQ_URL = "https://ews.500.com/static/ews/jczq/";
 
 	private Cache<Long, FmRawMatch> fmMatches = CacheBuilder.newBuilder()
@@ -186,11 +181,65 @@ public class FMParser {
 		return null;
 	}
 	
+	public List <AsiaPl> parseAsiaData (String fmatchId, Company company) {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("X-Requested-With", "XMLHttpRequest");
+		
+		try {
+			String resData = HttpRequestService.getInstance().doHttpRequest(ASIA_URL
+					+ "?id=" + company.getFmCompanyId() + "&fid=" + fmatchId, HttpRequestService.GET_METHOD, null, headers);
+			
+			String[] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[]>(){});
+			
+			if (datas != null && datas.length > 0) {
+				List <AsiaPl> res = Lists.newArrayList();
+				
+				for (String ele : datas) {
+					res.add(parseAsiaPl(ele));
+				}
+				
+				return res;
+			}
+		} catch (Exception e) {
+			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", fmatchId, company), e);
+		}
+		return null;
+	}
+	
+	private AsiaPl parseAsiaPl(String asiaStr) throws ParseException {
+		AsiaPl asia = new AsiaPl();
+		
+		Document doc = Jsoup.parse(asiaStr, "", Parser.xmlParser());
+		Elements tds = doc.select("td");
+		Iterator<Element> iterator = tds.iterator();
+		
+		Element downEle = iterator.next();
+		asia.setaWin(Float.parseFloat(downEle.text()));
+		
+		Element pkEle = iterator.next();
+		asia.setPanKou(parsePanKou(pkEle.text()));
+		
+		Element upEle = iterator.next();
+		asia.sethWin(Float.parseFloat(upEle.text()));
+		
+		Element dateEle = iterator.next();
+		asia.setPkDate(DateUtil.parseFiveMDate(dateEle.text()));
+		
+		return asia;
+	}
+	
+	private Float parsePanKou(String pkStr) {
+		switch (pkStr) {
+			case "半球": return 0.5f;
+			default: return null;
+		}
+	}
+	
 	private Long generateMatchDayId (Long day, String fmMatchDayOrder) {
 		return Long.parseLong(day + fmMatchDayOrder.substring(fmMatchDayOrder.length() - 3));
 	}
 
-	public static void main (String [] args) {
+	public static void main (String [] args) throws Exception {
 //		String instr = "[[\"4.00\",\"3.75\",\"1.75\",\"1454880574\"],[\"3.60\",\"3.75\",\"1.83\",\"1455221779\"],[\"4.20\",\"3.80\",\"1.70\",\"1455434403\"],[\"3.60\",\"3.75\",\"1.83\",\"1455435003\"],[\"4.20\",\"3.80\",\"1.70\",\"1455435312\"]]";
 //		
 //		String out[][] = GsonConverter.convertJSonToObjectUseNormal(instr, new TypeToken<String[][]>(){});
@@ -203,9 +252,33 @@ public class FMParser {
 //		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
 //		System.out.println(ms);
 		
-		FmRawMatch match1 = p.getFmMatch(190107005L);
-		System.out.println(match1);
-		FmRawMatch match2 = p.getFmMatch(190107006L);
-		System.out.println(match2);
+//		parseAsia();
+		
+		System.out.println(DateUtil.parseFiveMDate("12-15 12:12"));
+		
+//		FmRawMatch match1 = p.getFmMatch(190107005L);
+//		System.out.println(match1);
+//		FmRawMatch match2 = p.getFmMatch(190107006L);
+//		System.out.println(match2);
+	}
+	
+	private static void parseAsia () {
+		String asiaData = "[\"<tr><td class='tips_down'>0.960<\\/td><td>\u534a\\u7403<\\/td><td class='tips_up'>0.840<\\/td><td>12-15 12:12<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.950<\\/td><td>\u534a\\u7403<\\/td><td class='tips_up'>0.850<\\/td><td>12-15 12:12<\\/td><\\/tr>\"]";
+		String out[] = GsonConverter.convertJSonToObjectUseNormal(asiaData, new TypeToken<String[]>(){});
+		
+		for (String ele : out) {
+			Document doc =Jsoup.parse(ele, "", Parser.xmlParser());
+			System.out.println(doc);
+			Elements tableRows = doc.select("td");
+			
+			Iterator<Element> iterator = tableRows.iterator();
+			
+			while (iterator.hasNext()) {
+				Element row = iterator.next();
+				System.out.println(row.text());
+			}
+			
+		}
+		
 	}
 }

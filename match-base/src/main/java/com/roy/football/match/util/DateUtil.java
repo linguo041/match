@@ -21,6 +21,7 @@ public class DateUtil {
 	public static final String date_time_comma_format = "yyyy,MM,dd,HH,mm,ss";
 	
 	public static final String EIGHTWIN_FORMAT = "yyyy-MM-dd HH:mm";
+	public static final String FIVEM_FORMAT = "MM-dd HH:mm";
 
 	public final static TimeZone GMT_TIMEZONE = TimeZone.getTimeZone("GMT");
 	public final static TimeZone GMT_PLUS8_TIMEZONE = TimeZone.getTimeZone("GMT+8");
@@ -34,6 +35,7 @@ public class DateUtil {
     private static ThreadLocal<DateFormat> simpleDateWithDatabaseThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> simpleDateWithSlashThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> eightWinDateThread = new ThreadLocal<DateFormat>();
+    private static ThreadLocal<DateFormat> fiveMDateThread = new ThreadLocal<DateFormat>();
     private static ThreadLocal<DateFormat> commaDateThread = new ThreadLocal<DateFormat>();
     
     public static DateFormat getHarfYearFormat() {
@@ -82,6 +84,31 @@ public class DateUtil {
     	}
 
     	return df;
+    }
+    
+    public static DateFormat getFiveMFormat() {
+    	DateFormat df = fiveMDateThread.get();
+    	if (df == null) {
+    		df = new SimpleDateFormat(FIVEM_FORMAT);
+    		fiveMDateThread.set(df);
+    	}
+
+    	return df;
+    }
+    
+    public static Date parseFiveMDate (String dateStr) throws ParseException {
+    	Date dt = getFiveMFormat().parse(dateStr);
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(dt);
+    	
+    	Date now = new Date();
+    	cal.set(Calendar.YEAR, now.getYear() + 1900);
+    	
+    	return cal.getTime();
+    }
+
+    public static String formatFiveMDate (Date date) {
+        return getFiveMFormat().format(date);
     }
 
     public static Date parseSimpleDate (String dateStr) throws ParseException {
