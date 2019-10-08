@@ -155,11 +155,18 @@ public class FMParser {
 */
 
 	public List <EuroPl> parseEuroData (String fmatchId, Company company) {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("X-Requested-With", "XMLHttpRequest");
+		
 		try {
-			Document doc = Jsoup.connect(EURO_URL
-					+ "?cid=" + company.getFmCompanyId() + "&fid=" + fmatchId + "&type=europe").get();
+//			Document doc = Jsoup.connect(EURO_URL
+//					+ "?cid=" + company.getFmCompanyId() + "&fid=" + fmatchId + "&type=europe").get();
 			
-			String[][] datas = GsonConverter.convertJSonToObjectUseNormal(doc.body().text(), new TypeToken<String[][]>(){});
+			String resData = HttpRequestService.getInstance().doHttpRequest(EURO_URL
+					+ "?cid=" + company.getFmCompanyId() + "&fid=" + fmatchId + "&type=europe",
+					HttpRequestService.GET_METHOD, null, headers);
+			
+			String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[][]>(){});
 			
 			if (datas != null && datas.length > 0) {
 				List <EuroPl> euroPls = new ArrayList<EuroPl>();
