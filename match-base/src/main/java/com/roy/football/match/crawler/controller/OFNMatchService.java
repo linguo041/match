@@ -164,25 +164,27 @@ public class OFNMatchService {
 			// get euro peilv
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();
 			for (Company comp : Company.values()) {
-				if (comp == Company.Jincai) {
-					List<EuroPl> euroPls = getJincaiPls(oddsmid, ofnMatch.getFmMatchId(), null);
-					euroMap.put(comp, euroPls);
-				} else {
-					List<EuroPl> euroPls = parser.parseEuroData(oddsmid, comp);
-					euroMap.put(comp, euroPls);
-				}
+				List<EuroPl> euroPls = parseEuroData(ofnMatch, comp);
+				euroMap.put(comp, euroPls);
+//				if (comp == Company.Jincai) {
+//					List<EuroPl> euroPls = getJincaiPls(oddsmid, ofnMatch.getFmMatchId(), null);
+//					euroMap.put(comp, euroPls);
+//				} else {
+//					List<EuroPl> euroPls = parseEuroData(ofnMatch, comp);
+//					euroMap.put(comp, euroPls);
+//				}
 			}
 
 			ofnMatch.setEuroPls(euroMap);
 
 			// get asia peilv
-			List<AsiaPl> asiapls = parser.parseAsiaData(oddsmid, Company.Aomen);
+			List<AsiaPl> asiapls = parseAsiaData(ofnMatch, Company.Aomen);
 			ofnMatch.setAoMen(asiapls);
 			
-			List<AsiaPl> ysb = parser.parseAsiaData(oddsmid, Company.YiShenBo);
+			List<AsiaPl> ysb = parseAsiaData(ofnMatch, Company.YiShenBo);
 			ofnMatch.setYsb(ysb);
 			
-			List<AsiaPl> daxiaopls = parser.parseDaxiaoData(oddsmid, Company.Aomen);
+			List<AsiaPl> daxiaopls = parseDaxiaoData(ofnMatch, Company.Aomen);
 			ofnMatch.setDaxiao(daxiaopls);
 
 			// calculate
@@ -201,6 +203,21 @@ public class OFNMatchService {
 			log.error(String.format("Unable to calculate match %s.", jcMatch), e);
 		}
 		return null;
+	}
+	
+	private List<EuroPl> parseEuroData (OFNMatchData ofnMatch, Company company) {
+//		return parser.parseEuroData(ofnMatch.getMatchId(), comp);
+		return fmParser.parseEuroData(ofnMatch.getFmMatchId(), company);
+	}
+	
+	private List<AsiaPl> parseAsiaData (OFNMatchData ofnMatch, Company company) {
+//		return parser.parseAsiaData(ofnMatch.getMatchId(), Company.Aomen);
+		return fmParser.parseAsiaData(ofnMatch.getFmMatchId(), company);
+	}
+	
+	private List<AsiaPl> parseDaxiaoData (OFNMatchData ofnMatch, Company company) {
+//		return parser.parseDaxiaoData(ofnMatch.getMatchId(), Company.Aomen);
+		return fmParser.parseDaxiaoData(ofnMatch.getFmMatchId(), company);
 	}
 
 	private void writeExcel (List <OFNExcelData> datas) {

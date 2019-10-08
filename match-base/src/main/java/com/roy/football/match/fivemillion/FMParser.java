@@ -52,6 +52,7 @@ public class FMParser {
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.500.com/fenxi/shuju-{fmId}.shtml";
 	private final static String EURO_URL = "http://odds.500.com/fenxi/json/ouzhi.php";
 	private final static String ASIA_URL = "http://odds.500.com/fenxi1/inc/yazhiajax.php";
+	private final static String DAXIAO_URL = "http://odds.500.com/fenxi1/inc/daxiaoajax.php";
 	private final static String FM_JCZQ_URL = "https://ews.500.com/static/ews/jczq/";
 
 	private Cache<Long, FmRawMatch> fmMatches = CacheBuilder.newBuilder()
@@ -195,7 +196,7 @@ public class FMParser {
 				List <AsiaPl> res = Lists.newArrayList();
 				
 				for (String ele : datas) {
-					res.add(parseAsiaPl(ele));
+					res.add(parseAsiaPl(ele, true));
 				}
 				
 				return res;
@@ -206,7 +207,32 @@ public class FMParser {
 		return null;
 	}
 	
-	private AsiaPl parseAsiaPl(String asiaStr) throws ParseException {
+	public List <AsiaPl> parseDaxiaoData (String fmatchId, Company company) {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("X-Requested-With", "XMLHttpRequest");
+		
+		try {
+			String resData = HttpRequestService.getInstance().doHttpRequest(DAXIAO_URL
+					+ "?id=" + company.getFmCompanyId() + "&fid=" + fmatchId, HttpRequestService.GET_METHOD, null, headers);
+			
+			String[] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[]>(){});
+			
+			if (datas != null && datas.length > 0) {
+				List <AsiaPl> res = Lists.newArrayList();
+				
+				for (String ele : datas) {
+					res.add(parseAsiaPl(ele, false));
+				}
+				
+				return res;
+			}
+		} catch (Exception e) {
+			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", fmatchId, company), e);
+		}
+		return null;
+	}
+	
+	private AsiaPl parseAsiaPl(String asiaStr, boolean pankou) throws ParseException {
 		AsiaPl asia = new AsiaPl();
 		
 		Document doc = Jsoup.parse(asiaStr, "", Parser.xmlParser());
@@ -217,7 +243,7 @@ public class FMParser {
 		asia.setaWin(Float.parseFloat(downEle.text()));
 		
 		Element pkEle = iterator.next();
-		asia.setPanKou(parsePanKou(pkEle.text()));
+		asia.setPanKou(pankou ? parsePanKou(pkEle.text()) : parseDaxiao(pkEle.text()));
 		
 		Element upEle = iterator.next();
 		asia.sethWin(Float.parseFloat(upEle.text()));
@@ -230,7 +256,50 @@ public class FMParser {
 	
 	private Float parsePanKou(String pkStr) {
 		switch (pkStr) {
+			case "两球": return 2f;
+			case "球半/两球": return 1.75f;
+			case "球半": return 1.5f;
+			case "一球/球半": return 1.25f;
+			case "一球": return 1f;
+			case "半球/一球": return 0.75f;
 			case "半球": return 0.5f;
+			case "平手/半球": return 0.25f;
+			case "平手": return 0f;
+			case "受平手/半球": return -0.25f;
+			case "受半球": return -0.5f;
+			case "受半球/一球": return -0.75f;
+			case "受一球": return -1f;
+			case "受一球/球半": return -1.250f;
+			case "受球半": return -1.5f;
+			case "受球半/两球": return -1.75f;
+			case "受两球": return -2f;
+			default: return null;
+		}
+	}
+	
+	private Float parseDaxiao(String pkStr) {
+		switch (pkStr) {
+			case "5": return 5f;
+			case "4.5/5": return 4.75f;
+			case "4.5": return 4.5f;
+			case "4/4.5": return 4.25f;
+			case "4": return 4f;
+			case "3.5/4": return 3.75f;
+			case "3.5": return 3.5f;
+			case "3/3.5": return 3.25f;
+			case "3": return 3f;
+			case "2.5/3": return 2.75f;
+			case "2.5": return 2.5f;
+			case "2/2.5": return 2.25f;
+			case "2": return 2f;
+			case "1.5/2": return 1.75f;
+			case "1.5": return 1.5f;
+			case "1/1.5": return 1.25f;
+			case "1": return 1f;
+			case "0.5/1": return 0.75f;
+			case "0.5": return 0.5f;
+			case "0/0.5": return 0.25f;
+			case "0": return 1f;
 			default: return null;
 		}
 	}
@@ -252,9 +321,9 @@ public class FMParser {
 //		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
 //		System.out.println(ms);
 		
-//		parseAsia();
+		parseAsia();
 		
-		System.out.println(DateUtil.parseFiveMDate("12-15 12:12"));
+//		System.out.println(DateUtil.parseFiveMDate("12-15 12:12"));
 		
 //		FmRawMatch match1 = p.getFmMatch(190107005L);
 //		System.out.println(match1);
@@ -263,7 +332,9 @@ public class FMParser {
 	}
 	
 	private static void parseAsia () {
-		String asiaData = "[\"<tr><td class='tips_down'>0.960<\\/td><td>\u534a\\u7403<\\/td><td class='tips_up'>0.840<\\/td><td>12-15 12:12<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.950<\\/td><td>\u534a\\u7403<\\/td><td class='tips_up'>0.850<\\/td><td>12-15 12:12<\\/td><\\/tr>\"]";
+//		String asiaData = "[\"<tr><td class='tips_down'>0.960<\\/td><td>\u534a\\u7403<\\/td><td class='tips_up'>0.840<\\/td><td>12-15 12:12<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.950<\\/td><td>\u534a\\u7403<\\/td><td class='tips_up'>0.850<\\/td><td>12-15 12:12<\\/td><\\/tr>\"]";
+//		String asiaData = "[\"<td>\u5e73\u624b\\/\u534a\u7403<\\/td>\"]";
+		String asiaData = "[\"<tr><td class='tips_down'>0.72<\\/td><td class=''>2\\/2.5<\\/td><td class='tips_up'>0.98<\\/td><td class=''>12-15 19:34<\\/td><\\/tr>\"]";
 		String out[] = GsonConverter.convertJSonToObjectUseNormal(asiaData, new TypeToken<String[]>(){});
 		
 		for (String ele : out) {
