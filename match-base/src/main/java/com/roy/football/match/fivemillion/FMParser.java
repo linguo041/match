@@ -185,9 +185,10 @@ public class FMParser {
 	public List <AsiaPl> parseAsiaData (String fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
+		String resData = "";
 		
 		try {
-			String resData = HttpRequestService.getInstance().doHttpRequest(ASIA_URL
+			resData = HttpRequestService.getInstance().doHttpRequest(ASIA_URL
 					+ "?id=" + company.getFmCompanyId() + "&fid=" + fmatchId, HttpRequestService.GET_METHOD, null, headers);
 			
 			String[] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[]>(){});
@@ -202,7 +203,7 @@ public class FMParser {
 				return res;
 			}
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", fmatchId, company), e);
+			log.error(String.format("unable to parse match asia data: match [%s], company [%s], res [%s]", fmatchId, company, resData), e);
 		}
 		return null;
 	}
