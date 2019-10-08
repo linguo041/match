@@ -2,6 +2,7 @@ package com.roy.football.match.httpRequest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
@@ -15,6 +16,7 @@ import java.net.Proxy;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 import com.google.gson.reflect.TypeToken;
 import com.roy.football.match.logging.ErrorType;
@@ -142,13 +144,17 @@ public class HttpRequestService {
 			// ignore
 			logger.warn("Unable to get response code.", e1);
 		}
+		
+		String contentEncoding = conn.getContentEncoding();
+		boolean gzip = "gzip".equalsIgnoreCase(contentEncoding);
 
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new InputStreamReader(
-					conn.getInputStream(), "UTF-8"));
+			InputStream ins = gzip ? new GZIPInputStream(conn.getInputStream()) : conn.getInputStream();
+			br = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
 			String line = null;
+			
 			while ((line = br.readLine()) != null) {
 				sb.append(line);
 			}
