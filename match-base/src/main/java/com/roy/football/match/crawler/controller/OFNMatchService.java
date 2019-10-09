@@ -207,18 +207,18 @@ public class OFNMatchService {
 	
 	private List<EuroPl> parseEuroData (OFNMatchData ofnMatch, Company company) {
 //		return parser.parseEuroData(ofnMatch.getMatchId(), comp);
-		sleep();
+		sleep(200);
 		return fmParser.parseEuroData(ofnMatch.getFmMatchId(), company);
 	}
 	
 	private List<AsiaPl> parseAsiaData (OFNMatchData ofnMatch, Company company) {
-		sleep();
+		sleep(500);
 //		return parser.parseAsiaData(ofnMatch.getMatchId(), Company.Aomen);
 		return fmParser.parseAsiaData(ofnMatch.getFmMatchId(), company);
 	}
 	
 	private List<AsiaPl> parseDaxiaoData (OFNMatchData ofnMatch, Company company) {
-		sleep();
+		sleep(500);
 //		return parser.parseDaxiaoData(ofnMatch.getMatchId(), Company.Aomen);
 		return fmParser.parseDaxiaoData(ofnMatch.getFmMatchId(), company);
 	}
@@ -255,9 +255,9 @@ public class OFNMatchService {
 		}
 	}
 	
-	private void sleep () {
+	private void sleep (long time) {
 		try {
-			Thread.currentThread().sleep(200);
+			Thread.currentThread().sleep(time);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
