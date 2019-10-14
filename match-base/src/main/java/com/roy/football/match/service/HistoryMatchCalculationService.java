@@ -34,6 +34,8 @@ import com.roy.football.match.OFN.response.MatchResult;
 import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
 import com.roy.football.match.base.League;
 import com.roy.football.match.eightwin.EWJincaiParser;
+import com.roy.football.match.fivemillion.FMParser;
+import com.roy.football.match.fivemillion.FmRawMatch;
 import com.roy.football.match.jpa.entities.calculation.EMatch;
 import com.roy.football.match.jpa.entities.calculation.EMatchResult;
 import com.roy.football.match.jpa.repositories.MatchRepository;
@@ -69,6 +71,9 @@ public class HistoryMatchCalculationService {
 	
 	@Autowired
 	private MatchResultCalculator matchResultCalculator;
+	
+	@Autowired
+	private FMParser fmParser;
 	
 	public void process () {
 		List<EMatch> ematches = matchRepository.findMatchesWithoutResult();
@@ -122,12 +127,22 @@ public class HistoryMatchCalculationService {
 			if (matchDayId != null) {
 				ofnMatch.setOkoooMatchId(okoooMatchCrawler.getOkoooMatchId(matchDayId));
 				ofnMatch.setMatchDayId(matchDayId);
+				
+				FmRawMatch fmMatch = fmParser.getFmMatch(matchDayId);
+				if (fmMatch != null) {
+					String hostName = fmMatch.getHomeName().replace(" ", "");
+					String guestName = fmMatch.getAwayName().replace(" ", "");
+					if (ofnMatch.getHostName().contains(hostName) || ofnMatch.getGuestName().contains(guestName)) {
+						ofnMatch.setFmMatchId(fmMatch.getFmId());
+					}
+				}
 			}
 
 			// get euro peilv
 			Map<Company, List<EuroPl>> euroMap = new HashMap<Company, List<EuroPl>>();
 			for (Company comp : Company.values()) {
-				List<EuroPl> euroPls = parser.parseEuroData(oddsmid, comp);
+//				List<EuroPl> euroPls = parser.parseEuroData(oddsmid, comp);
+				List<EuroPl> euroPls = parseEuroData(ofnMatch, comp);
 				if (euroPls != null && euroPls.size() > 0) {
 					euroMap.put(comp, euroPls);
 				}
@@ -136,13 +151,13 @@ public class HistoryMatchCalculationService {
 			ofnMatch.setEuroPls(euroMap);
 
 			// get asia peilv
-			List<AsiaPl> asiapls = parser.parseAsiaData(oddsmid, Company.Aomen);
+			List<AsiaPl> asiapls = parseAsiaData(ofnMatch, Company.Aomen);
 			ofnMatch.setAoMen(asiapls);
-			
-			List<AsiaPl> ysb = parser.parseAsiaData(oddsmid, Company.YiShenBo);
+						
+			List<AsiaPl> ysb = parseAsiaData(ofnMatch, Company.YiShenBo);
 			ofnMatch.setYsb(ysb);
-			
-			List<AsiaPl> daxiaopls = parser.parseDaxiaoData(oddsmid, Company.Aomen);
+						
+			List<AsiaPl> daxiaopls = parseDaxiaoData(ofnMatch, Company.Aomen);
 			ofnMatch.setDaxiao(daxiaopls);
 
 			// calculate
@@ -154,5 +169,32 @@ public class HistoryMatchCalculationService {
 		} catch (Exception e) {
 			log.error(String.format("Unable to parse and calculate match %s.", oddsmid), e);
 		}		
+	}
+	
+	private List<EuroPl> parseEuroData (OFNMatchData ofnMatch, Company company) {
+//		return parser.parseEuroData(ofnMatch.getMatchId(), comp);
+		sleep(200);
+		return fmParser.parseEuroData(ofnMatch.getFmMatchId(), company);
+	}
+	
+	private List<AsiaPl> parseAsiaData (OFNMatchData ofnMatch, Company company) {
+		sleep(500);
+//		return parser.parseAsiaData(ofnMatch.getMatchId(), Company.Aomen);
+		return fmParser.parseAsiaData(ofnMatch.getFmMatchId(), company);
+	}
+	
+	private List<AsiaPl> parseDaxiaoData (OFNMatchData ofnMatch, Company company) {
+		sleep(500);
+//		return parser.parseDaxiaoData(ofnMatch.getMatchId(), Company.Aomen);
+		return fmParser.parseDaxiaoData(ofnMatch.getFmMatchId(), company);
+	}
+	
+	private void sleep (long time) {
+		try {
+			Thread.currentThread().sleep(time);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

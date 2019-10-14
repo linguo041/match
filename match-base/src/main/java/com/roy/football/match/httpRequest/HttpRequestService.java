@@ -41,6 +41,7 @@ public class HttpRequestService {
 	private static String _proxyHost = "qa-proxy.qa.ebay.com";
 //	private static String _proxyHost = "httpproxy.vip.ebay.com";
 	private final static int PROXY_PORT = 80;
+	private final static int MAX_RETRY_ATTEMPT = 3;
 	
 	private static MatchLogger logger = MatchLogger.getInstance(HttpRequestService.class);
 	
@@ -56,7 +57,31 @@ public class HttpRequestService {
 	
 	public String doHttpRequest(String requestUrl, String requestMethod,
 			String content, Map<String, String> headers) throws HttpRequestException {
-		return doHttpRequest(requestUrl, requestMethod, content, headers, false);
+		HttpRequestException throwout = null;
+		for (int count = 0; count < MAX_RETRY_ATTEMPT; count++) {
+			try {
+				return doHttpRequest(requestUrl, requestMethod, content, headers, false);
+			} catch (HttpRequestInterruptedException e) {
+				// TODO Auto-generated catch block
+				throwout = e;
+				sleep(500);
+			} catch (HttpRequestException e) {
+				// TODO Auto-generated catch block
+				throwout = e;
+				sleep(500);
+			}
+		}
+		
+		throw throwout;
+	}
+	
+	private static void sleep (int n) {
+		try {
+			Thread.sleep(n);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String doHttpRequest(String requestUrl, String requestMethod,
