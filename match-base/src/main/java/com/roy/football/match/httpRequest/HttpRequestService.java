@@ -64,11 +64,11 @@ public class HttpRequestService {
 			} catch (HttpRequestInterruptedException e) {
 				// TODO Auto-generated catch block
 				throwout = e;
-				sleep(800);
+				sleep(300);
 			} catch (HttpRequestException e) {
 				// TODO Auto-generated catch block
 				throwout = e;
-				sleep(800);
+				sleep(300);
 			}
 		}
 		
@@ -160,10 +160,11 @@ public class HttpRequestService {
 			int responseCode = conn.getResponseCode();
 			if (responseCode != HttpURLConnection.HTTP_OK) {
 				String responseMsg = conn.getResponseMessage();
-				logger.warn(String
+				String errorMsg = String
 						.format("Server [%s] responses error with error code: %d, and error message: %s",
-								requestUrl, responseCode, responseMsg));
-				return null;
+								requestUrl, responseCode, responseMsg);
+//				logger.warn();
+				throw new HttpRequestException(ErrorType.ServiceAbnormal, errorMsg);
 			}
 		} catch (IOException e1) {
 			// ignore
