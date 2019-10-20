@@ -11,7 +11,7 @@ public enum ErrorType {
     UnableReadData(6, "Unable to read data from stream."),
     UnableRedirectToUrl(7, "Unable to redirect to URL %s"),
     UnableParseXMLToObject(8, "Unable to parse XML to match the class [%s] object."),
-    ServiceAbnormal(50, "Service respond abnormal."),
+    ServiceAbnormal(50, "Service respond abnormal. %s."),
     
     MissingArgumentError(9, "Missing required arguments: "),
     

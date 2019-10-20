@@ -58,17 +58,17 @@ public class HttpRequestService {
 	public String doHttpRequest(String requestUrl, String requestMethod,
 			String content, Map<String, String> headers) throws HttpRequestException {
 		HttpRequestException throwout = null;
-		for (int count = 0; count < MAX_RETRY_ATTEMPT; count++) {
+		for (int count = 1; count <= MAX_RETRY_ATTEMPT; count++) {
 			try {
 				return doHttpRequest(requestUrl, requestMethod, content, headers, false);
 			} catch (HttpRequestInterruptedException e) {
 				// TODO Auto-generated catch block
 				throwout = e;
-				sleep(300);
+				sleep(250 * count);
 			} catch (HttpRequestException e) {
 				// TODO Auto-generated catch block
 				throwout = e;
-				sleep(300);
+				sleep(250 * count);
 			}
 		}
 		
