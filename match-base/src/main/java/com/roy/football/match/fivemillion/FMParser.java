@@ -182,7 +182,7 @@ public class FMParser {
 					euroPls.add(pl);
 				}
 				
-				return euroPls;
+				return sortEu(euroPls);
 			}
 			
 		} catch (Exception e) {
@@ -209,7 +209,7 @@ public class FMParser {
 					res.add(parseAsiaPl(ele, true));
 				}
 				
-				return res;
+				return sortAsia(res);
 			}
 		} catch (Exception e) {
 			log.error(String.format("unable to parse match asia data: match [%d], company [%s], res [%s]", fmatchId, company, resData), e);
@@ -234,12 +234,28 @@ public class FMParser {
 					res.add(parseAsiaPl(ele, false));
 				}
 				
-				return res;
+				return sortAsia(res);
 			}
 		} catch (Exception e) {
 			log.error(String.format("unable to parse match asia data: match [%d], company [%s]", fmatchId, company), e);
 		}
 		return null;
+	}
+	
+	private List<EuroPl> sortEu (List<EuroPl> euroPls) {
+		Collections.<EuroPl>sort(euroPls, (v1, v2) -> {
+			return v1.getEDate().compareTo(v2.getEDate());
+		});
+		
+		return euroPls;
+	}
+	
+	private List<AsiaPl> sortAsia (List<AsiaPl> asiaPls) {
+		Collections.<AsiaPl>sort(asiaPls, (v1, v2) -> {
+			return v1.getPkDate().compareTo(v2.getPkDate());
+		});
+		
+		return asiaPls;
 	}
 	
 	private AsiaPl parseAsiaPl(String asiaStr, boolean pankou) throws ParseException {
