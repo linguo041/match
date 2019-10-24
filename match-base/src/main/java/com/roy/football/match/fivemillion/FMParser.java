@@ -281,7 +281,9 @@ public class FMParser {
 			case "受球半": return -1.5f;
 			case "受球半/两球": return -1.75f;
 			case "受两球": return -2f;
-			default: return null;
+			default: 
+				log.warn("no yapang pk matched {}.", pkStr);
+				return null;
 		}
 	}
 	
@@ -308,7 +310,9 @@ public class FMParser {
 			case "0.5": return 0.5f;
 			case "0/0.5": return 0.25f;
 			case "0": return 1f;
-			default: return null;
+			default: 
+				log.warn("no daxiao pk matched {}.", pkStr);
+				return null;
 		}
 	}
 	
