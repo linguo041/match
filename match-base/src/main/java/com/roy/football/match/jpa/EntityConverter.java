@@ -48,6 +48,7 @@ public class EntityConverter {
 	public static EMatch toEMatch (OFNMatchData ofnMatch, CalculationType phase) {
 		EMatch ematch = new EMatch();
 		ematch.setOfnMatchId(ofnMatch.getMatchId());
+		ematch.setFmMatchId(ofnMatch.getFmMatchId());
 		ematch.setLeague(ofnMatch.getLeague());
 		ematch.setMatchTime(ofnMatch.getMatchTime());
 		ematch.setMatchDayId(ofnMatch.getMatchDayId());

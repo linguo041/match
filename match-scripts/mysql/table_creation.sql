@@ -262,3 +262,5 @@ CREATE TABLE league_euro_audit (
 	 euro_avg_lose decimal(5,3),
 	 primary key (audit_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+alter table matches add fm_match_id bigint;

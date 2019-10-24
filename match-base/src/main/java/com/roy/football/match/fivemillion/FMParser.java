@@ -154,7 +154,7 @@ public class FMParser {
 	}
 */
 
-	public List <EuroPl> parseEuroData (String fmatchId, Company company) {
+	public List <EuroPl> parseEuroData (Long fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
 		
@@ -184,12 +184,12 @@ public class FMParser {
 			}
 			
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match euro data: match [%s], company [%s]", fmatchId, company), e);
+			log.error(String.format("unable to parse match euro data: match [%d], company [%s]", fmatchId, company), e);
 		}
 		return null;
 	}
 	
-	public List <AsiaPl> parseAsiaData (String fmatchId, Company company) {
+	public List <AsiaPl> parseAsiaData (Long fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
 		String resData = "";
@@ -210,12 +210,12 @@ public class FMParser {
 				return res;
 			}
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match asia data: match [%s], company [%s], res [%s]", fmatchId, company, resData), e);
+			log.error(String.format("unable to parse match asia data: match [%d], company [%s], res [%s]", fmatchId, company, resData), e);
 		}
 		return null;
 	}
 	
-	public List <AsiaPl> parseDaxiaoData (String fmatchId, Company company) {
+	public List <AsiaPl> parseDaxiaoData (Long fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
 		
@@ -235,7 +235,7 @@ public class FMParser {
 				return res;
 			}
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", fmatchId, company), e);
+			log.error(String.format("unable to parse match asia data: match [%d], company [%s]", fmatchId, company), e);
 		}
 		return null;
 	}
