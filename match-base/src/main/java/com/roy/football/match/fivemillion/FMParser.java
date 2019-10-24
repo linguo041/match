@@ -2,6 +2,7 @@ package com.roy.football.match.fivemillion;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.roy.football.match.OFN.EuroCalculator;
 import com.roy.football.match.OFN.parser.OFHKey.Match;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.ClubDatas;
@@ -343,10 +345,12 @@ public class FMParser {
 //		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
 //		System.out.println(ms);
 		
-		System.out.println(p.parsePanKou("半球/一球 降"));
-		System.out.println(p.parsePanKou(" 半球/一球"));
-		System.out.println(p.parseDaxiao(" 2.5 "));
-		System.out.println(p.parseDaxiao("2.5 升"));
+//		System.out.println(p.parsePanKou("半球/一球 降"));
+//		System.out.println(p.parsePanKou(" 半球/一球"));
+//		System.out.println(p.parseDaxiao(" 2.5 "));
+//		System.out.println(p.parseDaxiao("2.5 升"));
+		
+		tttest();
 		
 //		parseAsia();
 		
@@ -378,5 +382,29 @@ public class FMParser {
 			
 		}
 		
+	}
+	
+	public static void tttest () throws Exception {
+		String resData = "[[1.75,4,3.85,92.49,\"2019-10-22 23:45:26\",0,0,-1],[1.75,4,3.9,92.78,\"2019-10-22 21:21:34\",0,0,-1],[1.75,4,4,93.33,\"2019-10-22 10:03:39\",0,1,0],[1.75,3.9,4,92.78,\"2019-10-22 03:15:31\",1,-1,0],[1.73,4,4,92.76,\"2019-10-21 16:15:05\",0,1,-1],[1.73,3.9,4.25,93.48,\"2019-10-21 11:54:16\",1,0,0],[1.7,3.9,4.25,92.6,\"2019-10-21 06:57:00\",0,1,1],[1.7,3.75,3.9,89.98,\"2019-10-21 00:30:49\",0,0,-1],[1.7,3.75,4,90.51,\"2019-10-20 17:01:40\",1,-1,-1],[1.65,3.9,4.25,91.09,\"2019-10-19 15:44:56\",1,0,0],[1.63,3.9,4.25,90.48,\"2019-10-17 20:48:46\",1,0,0],[1.6,3.9,4.25,89.55,\"2019-10-16 00:02:34\",0,0,0]]";
+		List <EuroPl> euroPls = new ArrayList<EuroPl>();
+		String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[][]>(){});
+		
+		if (datas != null && datas.length > 0) {
+			for (String[] eu : datas) {
+				EuroPl pl = new EuroPl(Float.parseFloat(eu[0]),
+						Float.parseFloat(eu[1]),
+						Float.parseFloat(eu[2]),
+						DateUtil.parseDateWithDataBase(eu[4]));
+				
+				euroPls.add(pl);
+			}
+		}
+		
+		Collections.<EuroPl>sort(euroPls, (v1, v2) -> {
+			return v1.getEDate().compareTo(v2.getEDate());
+		});
+		
+		EuroCalculator euc = new EuroCalculator();
+//		System.out.print(euc.getAbsoluteEuroMatrix(euroPls, DateUtil.parseDateWithDataBase("2019-10-23 00:15:00")));
 	}
 }

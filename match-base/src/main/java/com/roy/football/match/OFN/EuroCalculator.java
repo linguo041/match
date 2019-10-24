@@ -1,5 +1,6 @@
 package com.roy.football.match.OFN;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -99,8 +100,15 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		}
 	}
 	
+	private void sortEu (List<EuroPl> euroPls) {
+		Collections.<EuroPl>sort(euroPls, (v1, v2) -> {
+			return v1.getEDate().compareTo(v2.getEDate());
+		});
+	}
+	
 	private EuroMatrix getEuroMatrix (List<EuroPl> euroPls, Date matchDt) {
 		if (euroPls != null && euroPls.size() > 0) {
+			sortEu(euroPls);
 
 			if (euroPls.size() > 10) {
 				return getAbsoluteEuroMatrix(euroPls, matchDt);
