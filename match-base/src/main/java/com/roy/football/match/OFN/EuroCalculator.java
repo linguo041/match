@@ -274,7 +274,7 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 				}
 				
 				if (maxPl == null || main == null) {
-					log.info("null found for eu: %s", euroPls.toString());
+					log.info("null found for eu: {}", euroPls.toString());
 				}
 				
 				euMatrix.setSmWinDiff(MatchUtil.getEuDiff(maxPl.getEWin(), main.getEWin(), false));
