@@ -64,11 +64,11 @@ public class HttpRequestService {
 			} catch (HttpRequestInterruptedException e) {
 				// TODO Auto-generated catch block
 				throwout = e;
-				sleep(300 * count);
+				sleep(500 * count);
 			} catch (HttpRequestException e) {
 				// TODO Auto-generated catch block
 				throwout = e;
-				sleep(300 * count);
+				sleep(500 * count);
 			}
 		}
 		

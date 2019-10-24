@@ -264,7 +264,7 @@ public class FMParser {
 	
 	private String normalize(String pkStr) {
 		if (pkStr != null) {
-			return pkStr.replaceAll("\\h*(降|升)\\h*", "").trim();
+			return pkStr.replaceAll("\\h|降|升", "").trim();
 		}
 		
 		return pkStr;
@@ -344,6 +344,8 @@ public class FMParser {
 //		System.out.println(ms);
 		
 		System.out.println(p.parsePanKou("半球/一球 降"));
+		System.out.println(p.parsePanKou(" 半球/一球"));
+		System.out.println(p.parseDaxiao(" 2.5 "));
 		System.out.println(p.parseDaxiao("2.5 升"));
 		
 //		parseAsia();
