@@ -50,7 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FMParser {
 	private final static String FIVE_M_JCZQ = "http://trade.500.com/jczq/";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.500.com/fenxi/shuju-{fmId}.shtml";
-	private final static String EURO_URL = "http://odds.500.com/fenxi/json/ouzhi.php";
+	private final static String EURO_URL = "http://odds.500.com/fenxi1/json/ouzhi.php";
 	private final static String ASIA_URL = "http://odds.500.com/fenxi1/inc/yazhiajax.php";
 	private final static String DAXIAO_URL = "http://odds.500.com/fenxi1/inc/daxiaoajax.php";
 	private final static String FM_JCZQ_URL = "https://ews.500.com/static/ews/jczq/";

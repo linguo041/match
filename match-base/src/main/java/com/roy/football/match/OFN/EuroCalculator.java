@@ -160,6 +160,8 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 		index++;
 		
 		System.out.println(FastMath.sqrt(StatUtils.variance(winEuArray, 0, index)));
+		
+		System.out.println(Lists.newArrayList("a", "b"));
 	}
 	
 	private EuroMatrix getAbsoluteEuroMatrix (List<EuroPl> euroPls, Date matchDt) {
@@ -269,6 +271,10 @@ public class EuroCalculator extends AbstractBaseDataCalculator implements Calcul
 						maxCnt = entry.getValue();
 						maxPl = entry.getKey();
 					}
+				}
+				
+				if (maxPl == null || main == null) {
+					log.info("null found for eu: %s", euroPls.toString());
 				}
 				
 				euMatrix.setSmWinDiff(MatchUtil.getEuDiff(maxPl.getEWin(), main.getEWin(), false));
