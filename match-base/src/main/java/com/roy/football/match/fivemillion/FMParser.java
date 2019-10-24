@@ -262,7 +262,16 @@ public class FMParser {
 		return asia;
 	}
 	
-	private Float parsePanKou(String pkStr) {
+	private String normalize(String pkStr) {
+		if (pkStr != null) {
+			return pkStr.replaceAll("\\h*(降|升)\\h*", "").trim();
+		}
+		
+		return pkStr;
+	}
+	
+	private Float parsePanKou(String pkInputStr) {
+		String pkStr = normalize(pkInputStr);
 		switch (pkStr) {
 			case "两球": return 2f;
 			case "球半/两球": return 1.75f;
@@ -287,7 +296,8 @@ public class FMParser {
 		}
 	}
 	
-	private Float parseDaxiao(String pkStr) {
+	private Float parseDaxiao(String pkInputStr) {
+		String pkStr = normalize(pkInputStr);
 		switch (pkStr) {
 			case "5": return 5f;
 			case "4.5/5": return 4.75f;
@@ -333,7 +343,10 @@ public class FMParser {
 //		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
 //		System.out.println(ms);
 		
-		parseAsia();
+		System.out.println(p.parsePanKou("半球/一球 降"));
+		System.out.println(p.parseDaxiao("2.5 升"));
+		
+//		parseAsia();
 		
 //		System.out.println(DateUtil.parseFiveMDate("12-15 12:12"));
 		
