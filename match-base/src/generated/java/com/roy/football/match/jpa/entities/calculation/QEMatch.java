@@ -19,6 +19,8 @@ public class QEMatch extends EntityPathBase<EMatch> {
 
     public static final QEMatch eMatch = new QEMatch("eMatch");
 
+    public final NumberPath<Long> fmMatchId = createNumber("fmMatchId", Long.class);
+
     public final NumberPath<Long> guestId = createNumber("guestId", Long.class);
 
     public final StringPath guestName = createString("guestName");
