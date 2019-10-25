@@ -379,11 +379,11 @@ public class FMParser {
 //		System.out.println(ms);
 		
 //		System.out.println(p.parsePanKou("半球/一球 降"));
-//		System.out.println(p.parsePanKou(" 半球/一球"));
+		System.out.println(p.parsePanKou("受三球"));
 //		System.out.println(p.parseDaxiao(" 2.5 "));
 //		System.out.println(p.parseDaxiao("2.5 升"));
 		
-		testAsia();
+//		testAsia();
 		
 //		parseAsia();
 		
