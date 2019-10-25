@@ -292,6 +292,14 @@ public class FMParser {
 	private Float parsePanKou(String pkInputStr) {
 		String pkStr = normalize(pkInputStr);
 		switch (pkStr) {
+			case "四球": return 4f;
+			case "三球半/四球": return 3.75f;
+			case "三球半": return 3.5f;
+			case "三球/三球半": return 3.25f;
+			case "三球": return 3f;
+			case "两球半/三球": return 2.75f;
+			case "两球半": return 2.5f;
+			case "两球/两球半": return 2.25f;
 			case "两球": return 2f;
 			case "球半/两球": return 1.75f;
 			case "球半": return 1.5f;
@@ -309,6 +317,14 @@ public class FMParser {
 			case "受球半": return -1.5f;
 			case "受球半/两球": return -1.75f;
 			case "受两球": return -2f;
+			case "受两球/两球半": return -2.25f;
+			case "受两球半": return -2.5f;
+			case "受两球半/三球": return -2.75f;
+			case "受三球": return -3f;
+			case "受三球/三球半": return -3.25f;
+			case "受三球半": return -3.5f;
+			case "受三球半/四球": return -3.75f;
+			case "受四球": return -4f;
 			default: 
 				log.warn("no yapang pk matched {}.", pkStr);
 				return null;

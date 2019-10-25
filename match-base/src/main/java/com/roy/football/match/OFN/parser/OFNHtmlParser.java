@@ -116,7 +116,7 @@ public class OFNHtmlParser {
 //		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf("20191021");
 		
 		List<JinCaiMatch> todayMatches = Lists.newArrayList();
-		for (int i = 11; i <= 20; i++) {
+		for (int i = 21; i <= 23; i++) {
 			todayMatches.addAll(parseJinCaiMatchesBf("201910" + i));
 		}
 		
