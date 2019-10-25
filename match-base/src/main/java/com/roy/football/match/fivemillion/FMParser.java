@@ -25,6 +25,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.roy.football.match.OFN.EuroCalculator;
+import com.roy.football.match.OFN.PankouCalculator;
 import com.roy.football.match.OFN.parser.OFHKey.Match;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.ClubDatas;
@@ -366,7 +367,7 @@ public class FMParser {
 //		System.out.println(p.parseDaxiao(" 2.5 "));
 //		System.out.println(p.parseDaxiao("2.5 升"));
 		
-		tttest();
+		testAsia();
 		
 //		parseAsia();
 		
@@ -422,5 +423,25 @@ public class FMParser {
 		
 		EuroCalculator euc = new EuroCalculator();
 //		System.out.print(euc.getAbsoluteEuroMatrix(euroPls, DateUtil.parseDateWithDataBase("2019-10-23 00:15:00")));
+	}
+	
+	public static void testAsia () throws Exception {
+		String resData = "[\"<tr><td class='tips_up'>0.960<\\/td><td>\u534a\u7403<\\/td><td class='tips_down'>0.840<\\/td><td>12-15 19:50<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.940<\\/td><td>\u534a\u7403<\\/td><td class='tips_up'>0.860<\\/td><td>12-15 18:05<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.960<\\/td><td>\u534a\u7403<\\/td><td class='tips_up'>0.840<\\/td><td>12-15 12:12<\\/td><\\/tr>\",\"<tr><td class='tips_down'>1.020<\\/td><td>\u534a\u7403<\\/td><td class='tips_up'>0.780<\\/td><td>12-12 06:17<\\/td><\\/tr>\",\"<tr><td class=''>1.030<\\/td><td>\u534a\u7403<\\/td><td class=''>0.770<\\/td><td>12-11 23:29<\\/td><\\/tr>\"]";
+		String[] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[]>(){});
+		FMParser fmp = new FMParser();
+		List <AsiaPl> res = Lists.newArrayList();
+		
+		if (datas != null && datas.length > 0) {
+			
+			
+			for (String ele : datas) {
+				res.add(fmp.parseAsiaPl(ele, true));
+			}
+			
+			res = fmp.sortAsia(res);
+		}
+		
+		PankouCalculator pkc = new PankouCalculator();
+//		System.out.print(pkc.calculate(res, DateUtil.parseDateWithDataBase("2019-12-15 22:00:00")));
 	}
 }

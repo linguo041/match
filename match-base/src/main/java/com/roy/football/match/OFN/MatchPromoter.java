@@ -519,6 +519,7 @@ public class MatchPromoter {
 			if (isAomenMajor) {
 				if (rank.getWRank() > 14
 						&& upChange <= 0.062f
+						&& cmPkDiff >= -0.32f
 						&& (pmPkDiff <= 0.35f && pcPkDiff <= 0.35f)
 						&& (pkDirection.ordinal() > PKDirection.Downer.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
@@ -571,6 +572,7 @@ public class MatchPromoter {
 			} else {
 				if (rank.getWRank() > 14
 						&& upChange <= 0.062f
+						&& cmPkDiff >= -0.32f
 						&& (pmPkDiff <= 0.35f && pcPkDiff <= 0.35f)
 						&& (pkDirection.ordinal() > PKDirection.Downer.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
@@ -629,6 +631,7 @@ public class MatchPromoter {
 			if (isAomenMajor) {
 				if ( (current.getPanKou() >= 0.75 && rank.getWRank() > 12 || rank.getWRank() > 10)
 						&& upChange <= 0.06f
+						&& cmPkDiff >= -0.22f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
 						&& (pkDirection.ordinal() > PKDirection.Down.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
@@ -696,6 +699,7 @@ public class MatchPromoter {
 			} else {
 				if ((current.getPanKou() >= 0.75 && rank.getWRank() > 12 || rank.getWRank() > 10) // base is not bad
 						&& upChange <= 0.065f	// pk change is not too high
+						&& cmPkDiff >= -0.22f
 						&& (pmPkDiff < 0.35f && pcPkDiff < 0.35f) // predict is not high
 						&& (pkDirection.ordinal() > PKDirection.Down.ordinal() // pk is above or equal to middle
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f) // in case pk change caused pk calculated wrong
@@ -777,6 +781,7 @@ public class MatchPromoter {
 			if (isAomenMajor) {
 				if (rank.getWRank() > 10
 						&& upChange <= 0.06f
+						&& cmPkDiff >= -0.15f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
 						&& (pkDirection.ordinal() > PKDirection.Middle.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
@@ -839,6 +844,7 @@ public class MatchPromoter {
 			} else {
 				if (rank.getWRank() > 10
 						&& upChange <= 0.065f
+						&& cmPkDiff >= -0.15f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
 						&& (pkDirection.ordinal() > PKDirection.Down.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
@@ -961,10 +967,10 @@ public class MatchPromoter {
 					&& aaDrawDiff <= 0.035f && aomenDrawChange < 0.005f
 					&& aaDrawDiff - aomenDrawChange < 0.03f
 					&& jaDrawDiff <= 0.035f && jcDrawChange < 0.005f
-					&& waDrawDiff <= 0.045f
+					&& waDrawDiff <= 0.05f
 					&& aleDrawDiff <= 0.06f
 					&& bHWGLRt <= 0.9f && bGWHLRt <= 0.9f && bHDGDRt >= 0.50f
-					&& bHostAtt >= 0.7 * bGuestAtt && bHostAtt <= 1.35 * bGuestAtt
+					&& bHostAtt >= 0.7 * bGuestAtt && bHostAtt <= 1.42 * bGuestAtt
 					) {
 				if (aaDrawDiff <= -0.035f
 						|| (aomen.getOriginEuro().getEDraw() <= 3.20f && aomen.getCurrentEuro().getEDraw() <= 3.20f
@@ -986,6 +992,7 @@ public class MatchPromoter {
 			if (isAomenMajor) {
 				if (rank.getLRank() >= 10
 						&& downChange <= 0.06f
+						&& cmPkDiff <= 0.15f
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
 						&& (pkDirection.ordinal() < PKDirection.Middle.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
@@ -1030,6 +1037,7 @@ public class MatchPromoter {
 				}
 				if (rank.getWRank() >= 8
 						&& upChange <= 0.06f
+						&& cmPkDiff >= -0.15f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
 						&& pkDirection.ordinal() >= PKDirection.Middle.ordinal()
 						&& aaWinDiff < -0.001f && aomenWinChange < 0.011f
@@ -1050,6 +1058,7 @@ public class MatchPromoter {
 			} else {
 				if (rank.getLRank() >= 10
 						&& downChange <= 0.065f
+						&& cmPkDiff <= 0.15f
 						&& (pmPkDiff >= -0.3f && pcPkDiff >= -0.3f)
 						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
@@ -1099,6 +1108,7 @@ public class MatchPromoter {
 				}
 				if (rank.getWRank() >= 8
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
+						&& cmPkDiff >= -0.15f
 						&& (upChange <= 0.015f || currentPk >= -0.22f)
 						&& pkDirection.ordinal() > PKDirection.Middle.ordinal()
 						&& aaWinDiff < -0.011f && aomenWinChange < 0.011f
@@ -1124,6 +1134,7 @@ public class MatchPromoter {
 			if (isAomenMajor) {
 				if ((current.getPanKou() >= -0.5 && rank.getLRank() > 10 || rank.getLRank() > 12)
 						&& downChange <= 0.06f
+						&& cmPkDiff <= 0.22f
 						&& (pmPkDiff > -0.35f && pcPkDiff > -0.35f)
 						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
@@ -1189,6 +1200,7 @@ public class MatchPromoter {
 			} else {
 				if ((current.getPanKou() >= -0.5 && rank.getLRank() > 12 || rank.getLRank() > 13)
 						&& downChange <= 0.065f
+						&& cmPkDiff <= 0.22f
 						&& (pmPkDiff > -0.35f && pcPkDiff > -0.35f)
 						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
