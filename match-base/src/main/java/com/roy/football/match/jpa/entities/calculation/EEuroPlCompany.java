@@ -9,6 +9,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.roy.football.match.OFN.response.Company;
@@ -24,9 +26,13 @@ public class EEuroPlCompany implements Serializable{
 
 	private static final long serialVersionUID = -538324314048341206L;
 	
-	@Id
-	@Column(name = "ofn_match_id", nullable = false)
-    private Long ofnMatchId;
+//	@Id
+//	@Column(name = "ofn_match_id", nullable = false)
+//    private Long ofnMatchId;
+	
+	@ManyToOne
+    @JoinColumn(name="ofn_match_id", nullable=false)
+	private EEuroPlState eEuroPlState;
 	
 	@Id
 	@Column(name = "company", nullable = false)

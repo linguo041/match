@@ -12,7 +12,7 @@ public class AbstractBaseDataCalculator {
 		lastDtToMatch = lastDtToMatch > 20 ? 20 : lastDtToMatch;
 		thisDtToMatch = thisDtToMatch > 20 ? 20 : thisDtToMatch;
 
-		return 0.5f * (lastDtWeight + thisDtWeight) * (lastDtToMatch - thisDtToMatch) * (1.05f - 0.5f * (thisDtToMatch - lastDtToMatch));
+		return 0.5f * (lastDtWeight + thisDtWeight) * (lastDtToMatch - thisDtToMatch) * (1.05f - 0.5f * (thisDtWeight - lastDtWeight));
 	}
 	
 	private float weightFactor (float timeToMatch) {
