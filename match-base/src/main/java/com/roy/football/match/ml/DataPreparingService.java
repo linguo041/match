@@ -31,7 +31,7 @@ public class DataPreparingService {
 //				.join(eJiaoShou).on(eMatch.ofnMatchId.eq(eJiaoShou.ofnMatchId))
 				.join(eAsiaPk).on(eMatch.ofnMatchId.eq(eAsiaPk.ofnMatchId))
 				.join(eEuroPlState).on(eMatch.ofnMatchId.eq(eEuroPlState.ofnMatchId))
-				.join(eEuroPlCompany).on(eMatch.ofnMatchId.eq(eEuroPlCompany.ofnMatchId))
+				.join(eEuroPlCompany).on(eMatch.ofnMatchId.eq(eEuroPlCompany.eEuroPlState.ofnMatchId))
 				.join(eMatchResult).on(eMatch.ofnMatchId.eq(eMatchResult.ofnMatchId))
 			.where(eMatch.matchTime.between(DateUtil.parseSimpleDateWithDash(fromDate), DateUtil.parseSimpleDateWithDash(endDate))
 					.and(eMatch.league.eq(le))

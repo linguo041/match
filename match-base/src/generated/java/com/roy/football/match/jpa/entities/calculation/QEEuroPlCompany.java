@@ -7,6 +7,7 @@ import com.mysema.query.types.path.*;
 import com.mysema.query.types.PathMetadata;
 import javax.annotation.Generated;
 import com.mysema.query.types.Path;
+import com.mysema.query.types.path.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.mysema.query.types.Path;
 public class QEEuroPlCompany extends EntityPathBase<EEuroPlCompany> {
 
     private static final long serialVersionUID = 149175971L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QEEuroPlCompany eEuroPlCompany = new QEEuroPlCompany("eEuroPlCompany");
 
@@ -29,6 +32,8 @@ public class QEEuroPlCompany extends EntityPathBase<EEuroPlCompany> {
 
     public final NumberPath<Float> drawChange = createNumber("drawChange", Float.class);
 
+    public final QEEuroPlState eEuroPlState;
+
     public final NumberPath<Float> loseChange = createNumber("loseChange", Float.class);
 
     public final NumberPath<Float> mainEDraw = createNumber("mainEDraw", Float.class);
@@ -36,8 +41,6 @@ public class QEEuroPlCompany extends EntityPathBase<EEuroPlCompany> {
     public final NumberPath<Float> mainELose = createNumber("mainELose", Float.class);
 
     public final NumberPath<Float> mainEWin = createNumber("mainEWin", Float.class);
-
-    public final NumberPath<Long> ofnMatchId = createNumber("ofnMatchId", Long.class);
 
     public final NumberPath<Float> originEDraw = createNumber("originEDraw", Float.class);
 
@@ -54,15 +57,24 @@ public class QEEuroPlCompany extends EntityPathBase<EEuroPlCompany> {
     public final NumberPath<Float> winChange = createNumber("winChange", Float.class);
 
     public QEEuroPlCompany(String variable) {
-        super(EEuroPlCompany.class, forVariable(variable));
+        this(EEuroPlCompany.class, forVariable(variable), INITS);
     }
 
     public QEEuroPlCompany(Path<? extends EEuroPlCompany> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), path.getMetadata().isRoot() ? INITS : PathInits.DEFAULT);
     }
 
     public QEEuroPlCompany(PathMetadata<?> metadata) {
-        super(EEuroPlCompany.class, metadata);
+        this(metadata, metadata.isRoot() ? INITS : PathInits.DEFAULT);
+    }
+
+    public QEEuroPlCompany(PathMetadata<?> metadata, PathInits inits) {
+        this(EEuroPlCompany.class, metadata, inits);
+    }
+
+    public QEEuroPlCompany(Class<? extends EEuroPlCompany> type, PathMetadata<?> metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.eEuroPlState = inits.isInitialized("eEuroPlState") ? new QEEuroPlState(forProperty("eEuroPlState")) : null;
     }
 
 }

@@ -20,9 +20,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Data
-//@Getter
-//@Setter
+//@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "match_company_euro")
 @IdClass(value = EEuroPlCompany.EEuroPlCompanyPk.class)
@@ -30,14 +30,14 @@ public class EEuroPlCompany implements Serializable{
 
 	private static final long serialVersionUID = -538324314048341206L;
 	
-	@Id
-	@Column(name = "ofn_match_id", nullable = false)
-    private Long ofnMatchId;
-	
 //	@Id
-//	@ManyToOne
-//    @JoinColumn(name="ofn_match_id", nullable=false)
-//	private EEuroPlState eEuroPlState;
+//	@Column(name = "ofn_match_id", nullable = false)
+//    private Long ofnMatchId;
+	
+	@Id
+	@ManyToOne
+    @JoinColumn(name="ofn_match_id", nullable=false)
+	private EEuroPlState eEuroPlState;
 	
 	@Id
 	@Column(name = "company", nullable = false)
@@ -82,8 +82,8 @@ public class EEuroPlCompany implements Serializable{
 	public static class EEuroPlCompanyPk implements Serializable{
 
 		private static final long serialVersionUID = 1L;
-		private Long ofnMatchId;
-//		private EEuroPlState eEuroPlState;
+//		private Long ofnMatchId;
+		private EEuroPlState eEuroPlState;
 		private Company company;
 	}
 }
