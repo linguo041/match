@@ -77,7 +77,8 @@ public class EEuroPlCompany implements Serializable{
 	public static class EEuroPlCompanyPk implements Serializable{
 
 		private static final long serialVersionUID = 1L;
-		private Long ofnMatchId;
+//		private Long ofnMatchId;
+		private EEuroPlState eEuroPlState;
 		private Company company;
 	}
 }
