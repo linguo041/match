@@ -78,7 +78,7 @@ public class MatchComplexQueryService {
 		return jpaQueryFactory
 			.from(eMatch)
 				.join(eMatchClubState).on(eMatch.ofnMatchId.eq(eMatchClubState.ofnMatchId))
-				.join(eEuroPlCompany).on(eMatch.ofnMatchId.eq(eEuroPlCompany.eEuroPlState.ofnMatchId).and(eEuroPlCompany.company.eq(Company.Jincai)))
+				.join(eEuroPlCompany).on(eMatch.ofnMatchId.eq(eEuroPlCompany.ofnMatchId).and(eEuroPlCompany.company.eq(Company.Jincai)))
 				.join(eMatchResult).on(eMatch.ofnMatchId.eq(eMatchResult.ofnMatchId))
 			.where(eMatch.matchTime.between(DateUtil.parseSimpleDateWithDash(fromDate), DateUtil.parseSimpleDateWithDash(endDate))
 					.and(eMatch.league.eq(le))
