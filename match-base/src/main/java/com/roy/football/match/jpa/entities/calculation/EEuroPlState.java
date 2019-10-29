@@ -17,8 +17,11 @@ import javax.persistence.Transient;
 import com.roy.football.match.OFN.response.Company;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "match_euro_state")
 public class EEuroPlState implements Serializable{

@@ -17,8 +17,12 @@ import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+//@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "match_company_euro")
 @IdClass(value = EEuroPlCompany.EEuroPlCompanyPk.class)
