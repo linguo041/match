@@ -144,7 +144,7 @@ public class EntityConverter {
 		Map<Company, EuroMatrix> companyEus = euroMatrices.getCompanyEus();
 		for (Map.Entry<Company, EuroMatrix> entry : companyEus.entrySet()) {
 			if (entry.getValue() != null) {
-				euCompanyPls.add(toEEuroPlCompany(eEuroPlState, entry.getKey(), entry.getValue()));
+				euCompanyPls.add(toEEuroPlCompany(ofnMatchId, entry.getKey(), entry.getValue()));
 			}
 		}
 		
@@ -158,15 +158,15 @@ public class EntityConverter {
 		return eEuroPlState;
 	}
 	
-	public static EEuroPlCompany toEEuroPlCompany (EEuroPlState eEuroPlState, Company company, EuroMatrix euroMatrix) {
+	public static EEuroPlCompany toEEuroPlCompany (Long ofnMatchId, Company company, EuroMatrix euroMatrix) {
 		if (euroMatrix == null) {
 			return null;
 		}
 		
 		EEuroPlCompany eEuroPlCompany = new EEuroPlCompany();
 		eEuroPlCompany.setCompany(company);
-//		eEuroPlCompany.setOfnMatchId(ofnMatchId);
-		eEuroPlCompany.setEEuroPlState(eEuroPlState);
+		eEuroPlCompany.setOfnMatchId(ofnMatchId);
+//		eEuroPlCompany.setEEuroPlState(eEuroPlState);
 		
 		eEuroPlCompany.setWinChange(euroMatrix.getWinChange());
 		eEuroPlCompany.setDrawChange(euroMatrix.getDrawChange());
