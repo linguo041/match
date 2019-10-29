@@ -18,11 +18,11 @@ public interface MatchRepository extends RoyRepository<EMatch, Long>{
 	public List<EMatch> findMatchesWithoutResult ();
 	
 	@Query("select m from EMatch m"
-			+ "      left join EEuroPlCompany pl on m.ofnMatchId = pl.ofnMatchId"
-			+ " where m.matchTime > '2016-08-01 00:00:00'"
+			+ "      join EEuroPlState pls on m.ofnMatchId = pls.ofnMatchId"
+			+ " where m.matchTime > '2018-08-01 00:00:00'"
 			+ "   and m.phase = 2"
 			+ "   and m.league != 'Friendly'"
 			+ " group by m.ofnMatchId"
-			+ " having count(pl.ofnMatchId) < 1")
+			+ " having size(pls.companyPls) < 1")
 	public List<EMatch> findMatchesWithoutEuro ();
 }
