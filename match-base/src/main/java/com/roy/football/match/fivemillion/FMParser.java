@@ -266,14 +266,14 @@ public class FMParser {
 		Elements tds = doc.select("td");
 		Iterator<Element> iterator = tds.iterator();
 		
-		Element downEle = iterator.next();
-		asia.setaWin(Float.parseFloat(downEle.text()));
+		Element upEle = iterator.next();
+		asia.sethWin(Float.parseFloat(upEle.text()));
 		
 		Element pkEle = iterator.next();
 		asia.setPanKou(pankou ? parsePanKou(pkEle.text()) : parseDaxiao(pkEle.text()));
 		
-		Element upEle = iterator.next();
-		asia.sethWin(Float.parseFloat(upEle.text()));
+		Element downEle = iterator.next();
+		asia.setaWin(Float.parseFloat(downEle.text()));
 		
 		Element dateEle = iterator.next();
 		asia.setPkDate(DateUtil.parseFiveMDate(dateEle.text()));
