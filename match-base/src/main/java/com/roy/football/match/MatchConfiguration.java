@@ -25,7 +25,7 @@ public class MatchConfiguration {
 	@Bean
 	public ExecutorService calculateExecutorService () {		
 		return new ThreadPoolExecutor(calculateThreadSize, calculateThreadSize, 0, TimeUnit.SECONDS,
-		        new LinkedBlockingQueue<Runnable>(5 * calculateThreadSize), new ThreadPoolExecutor.CallerRunsPolicy());
+		        new LinkedBlockingQueue<Runnable>(10 * calculateThreadSize), new ThreadPoolExecutor.CallerRunsPolicy());
 	}
 	
 	@Bean

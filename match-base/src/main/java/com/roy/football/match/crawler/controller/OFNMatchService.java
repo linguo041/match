@@ -156,7 +156,7 @@ public class OFNMatchService {
 					String hostName = fmMatch.getHomeName().replace(" ", "");
 					String guestName = fmMatch.getAwayName().replace(" ", "");
 					if (ofnMatch.getHostName().contains(hostName) || ofnMatch.getGuestName().contains(guestName)) {
-						ofnMatch.setFmMatchId(fmMatch.getFmId());
+						ofnMatch.setFmMatchId(Long.parseLong(fmMatch.getFmId()));
 					}
 				}
 			}
@@ -207,18 +207,18 @@ public class OFNMatchService {
 	
 	private List<EuroPl> parseEuroData (OFNMatchData ofnMatch, Company company) {
 //		return parser.parseEuroData(ofnMatch.getMatchId(), comp);
-		sleep(200);
+//		sleep(200);
 		return fmParser.parseEuroData(ofnMatch.getFmMatchId(), company);
 	}
 	
 	private List<AsiaPl> parseAsiaData (OFNMatchData ofnMatch, Company company) {
-		sleep(500);
+//		sleep(500);
 //		return parser.parseAsiaData(ofnMatch.getMatchId(), Company.Aomen);
 		return fmParser.parseAsiaData(ofnMatch.getFmMatchId(), company);
 	}
 	
 	private List<AsiaPl> parseDaxiaoData (OFNMatchData ofnMatch, Company company) {
-		sleep(500);
+//		sleep(500);
 //		return parser.parseDaxiaoData(ofnMatch.getMatchId(), Company.Aomen);
 		return fmParser.parseDaxiaoData(ofnMatch.getFmMatchId(), company);
 	}

@@ -74,11 +74,18 @@ public class MatchResultCalculator {
 				
 				matchResultRepository.save(matchResult);
 				
-				if (CalculationType.resulted != match.getPhase()) {
-					match.setPhase(CalculationType.resulted);
-					matchRepository.save(match);
-				}
+				updateMatchStatus(match.getOfnMatchId());
 			}
+		}
+	}
+	
+	// TODO - put into transaction
+	private void updateMatchStatus (Long matchId) {
+		EMatch match = matchRepository.findOne(matchId);
+		
+		if (CalculationType.resulted != match.getPhase()) {
+			match.setPhase(CalculationType.resulted);
+			matchRepository.save(match);
 		}
 	}
 	

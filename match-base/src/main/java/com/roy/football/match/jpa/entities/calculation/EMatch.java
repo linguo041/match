@@ -41,6 +41,9 @@ public class EMatch implements Serializable{
     @Column(name = "okooo_match_id")
     private Long okoooMatchId;
     
+    @Column(name = "fm_match_id")
+    private Long fmMatchId;
+    
     @Column(name = "match_day_id")
     private Long matchDayId;
     

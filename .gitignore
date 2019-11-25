@@ -3,3 +3,6 @@ bin/
 *.bak
 .project
 .classpath
+.DS_Store
+data/
+.settings

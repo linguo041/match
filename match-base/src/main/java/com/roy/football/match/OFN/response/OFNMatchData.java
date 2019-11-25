@@ -26,7 +26,7 @@ public class OFNMatchData implements MatchData{
 	}
 
 	private Long okoooMatchId;
-	private String fmMatchId;
+	private Long fmMatchId;
 	private Long matchDayId;
 	private Long matchId;
 	private Date matchTime;

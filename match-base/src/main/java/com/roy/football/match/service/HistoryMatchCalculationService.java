@@ -133,7 +133,7 @@ public class HistoryMatchCalculationService {
 					String hostName = fmMatch.getHomeName().replace(" ", "");
 					String guestName = fmMatch.getAwayName().replace(" ", "");
 					if (ofnMatch.getHostName().contains(hostName) || ofnMatch.getGuestName().contains(guestName)) {
-						ofnMatch.setFmMatchId(fmMatch.getFmId());
+						ofnMatch.setFmMatchId(Long.parseLong(fmMatch.getFmId()));
 					}
 				}
 			}

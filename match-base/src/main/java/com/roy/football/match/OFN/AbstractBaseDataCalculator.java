@@ -12,22 +12,24 @@ public class AbstractBaseDataCalculator {
 		lastDtToMatch = lastDtToMatch > 20 ? 20 : lastDtToMatch;
 		thisDtToMatch = thisDtToMatch > 20 ? 20 : thisDtToMatch;
 
-		return 0.5f * (lastDtWeight + thisDtWeight) * (lastDtToMatch - thisDtToMatch);
+		return 0.5f * (lastDtWeight + thisDtWeight) * (lastDtToMatch - thisDtToMatch) * (1.05f - 0.5f * (thisDtWeight - lastDtWeight));
 	}
 	
 	private float weightFactor (float timeToMatch) {
 
 		if (timeToMatch > 20) {
-			return 0.4f;
+			return 0.3f;
 		} else if (timeToMatch > 15) {
+			return 0.4f;
+		} else if (timeToMatch > 11.5) {
 			return 0.5f;
-		} else if (timeToMatch > 10) {
+		} else if (timeToMatch > 8.5) {
 			return 0.6f;
-		} else if (timeToMatch > 7.5) {
+		} else if (timeToMatch > 6) {
 			return 0.7f;
-		} else if (timeToMatch > 5) {
+		} else if (timeToMatch > 4) {
 			return 0.8f;
-		} else if (timeToMatch > 3) {
+		} else if (timeToMatch > 2.5) {
 			return 0.9f;
 		} else {
 			return 1;

@@ -2,6 +2,7 @@ package com.roy.football.match.fivemillion;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.roy.football.match.OFN.EuroCalculator;
+import com.roy.football.match.OFN.PankouCalculator;
 import com.roy.football.match.OFN.parser.OFHKey.Match;
 import com.roy.football.match.OFN.response.AsiaPl;
 import com.roy.football.match.OFN.response.ClubDatas;
@@ -50,7 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FMParser {
 	private final static String FIVE_M_JCZQ = "http://trade.500.com/jczq/";
 	private final static String ANALYSIS_URL_PREFIX = "http://odds.500.com/fenxi/shuju-{fmId}.shtml";
-	private final static String EURO_URL = "http://odds.500.com/fenxi/json/ouzhi.php";
+	private final static String EURO_URL = "http://odds.500.com/fenxi1/json/ouzhi.php";
 	private final static String ASIA_URL = "http://odds.500.com/fenxi1/inc/yazhiajax.php";
 	private final static String DAXIAO_URL = "http://odds.500.com/fenxi1/inc/daxiaoajax.php";
 	private final static String FM_JCZQ_URL = "https://ews.500.com/static/ews/jczq/";
@@ -154,7 +157,7 @@ public class FMParser {
 	}
 */
 
-	public List <EuroPl> parseEuroData (String fmatchId, Company company) {
+	public List <EuroPl> parseEuroData (Long fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
 		
@@ -180,16 +183,16 @@ public class FMParser {
 					euroPls.add(pl);
 				}
 				
-				return euroPls;
+				return sortEu(euroPls);
 			}
 			
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match euro data: match [%s], company [%s]", fmatchId, company), e);
+			log.error(String.format("unable to parse match euro data: match [%d], company [%s]", fmatchId, company), e);
 		}
 		return null;
 	}
 	
-	public List <AsiaPl> parseAsiaData (String fmatchId, Company company) {
+	public List <AsiaPl> parseAsiaData (Long fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
 		String resData = "";
@@ -207,15 +210,15 @@ public class FMParser {
 					res.add(parseAsiaPl(ele, true));
 				}
 				
-				return res;
+				return sortAsia(res);
 			}
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match asia data: match [%s], company [%s], res [%s]", fmatchId, company, resData), e);
+			log.error(String.format("unable to parse match asia data: match [%d], company [%s], res [%s]", fmatchId, company, resData), e);
 		}
 		return null;
 	}
 	
-	public List <AsiaPl> parseDaxiaoData (String fmatchId, Company company) {
+	public List <AsiaPl> parseDaxiaoData (Long fmatchId, Company company) {
 		Map<String, String> headers = new HashMap<String, String>();
 		headers.put("X-Requested-With", "XMLHttpRequest");
 		
@@ -232,12 +235,28 @@ public class FMParser {
 					res.add(parseAsiaPl(ele, false));
 				}
 				
-				return res;
+				return sortAsia(res);
 			}
 		} catch (Exception e) {
-			log.error(String.format("unable to parse match asia data: match [%s], company [%s]", fmatchId, company), e);
+			log.error(String.format("unable to parse match asia data: match [%d], company [%s]", fmatchId, company), e);
 		}
 		return null;
+	}
+	
+	private List<EuroPl> sortEu (List<EuroPl> euroPls) {
+		Collections.<EuroPl>sort(euroPls, (v1, v2) -> {
+			return v1.getEDate().compareTo(v2.getEDate());
+		});
+		
+		return euroPls;
+	}
+	
+	private List<AsiaPl> sortAsia (List<AsiaPl> asiaPls) {
+		Collections.<AsiaPl>sort(asiaPls, (v1, v2) -> {
+			return v1.getPkDate().compareTo(v2.getPkDate());
+		});
+		
+		return asiaPls;
 	}
 	
 	private AsiaPl parseAsiaPl(String asiaStr, boolean pankou) throws ParseException {
@@ -247,14 +266,14 @@ public class FMParser {
 		Elements tds = doc.select("td");
 		Iterator<Element> iterator = tds.iterator();
 		
-		Element downEle = iterator.next();
-		asia.setaWin(Float.parseFloat(downEle.text()));
+		Element upEle = iterator.next();
+		asia.sethWin(Float.parseFloat(upEle.text()));
 		
 		Element pkEle = iterator.next();
 		asia.setPanKou(pankou ? parsePanKou(pkEle.text()) : parseDaxiao(pkEle.text()));
 		
-		Element upEle = iterator.next();
-		asia.sethWin(Float.parseFloat(upEle.text()));
+		Element downEle = iterator.next();
+		asia.setaWin(Float.parseFloat(downEle.text()));
 		
 		Element dateEle = iterator.next();
 		asia.setPkDate(DateUtil.parseFiveMDate(dateEle.text()));
@@ -262,8 +281,25 @@ public class FMParser {
 		return asia;
 	}
 	
-	private Float parsePanKou(String pkStr) {
+	private String normalize(String pkStr) {
+		if (pkStr != null) {
+			return pkStr.replaceAll("\\h|降|升", "").trim();
+		}
+		
+		return pkStr;
+	}
+	
+	private Float parsePanKou(String pkInputStr) {
+		String pkStr = normalize(pkInputStr);
 		switch (pkStr) {
+			case "四球": return 4f;
+			case "三球半/四球": return 3.75f;
+			case "三球半": return 3.5f;
+			case "三球/三球半": return 3.25f;
+			case "三球": return 3f;
+			case "两球半/三球": return 2.75f;
+			case "两球半": return 2.5f;
+			case "两球/两球半": return 2.25f;
 			case "两球": return 2f;
 			case "球半/两球": return 1.75f;
 			case "球半": return 1.5f;
@@ -281,11 +317,22 @@ public class FMParser {
 			case "受球半": return -1.5f;
 			case "受球半/两球": return -1.75f;
 			case "受两球": return -2f;
-			default: return null;
+			case "受两球/两球半": return -2.25f;
+			case "受两球半": return -2.5f;
+			case "受两球半/三球": return -2.75f;
+			case "受三球": return -3f;
+			case "受三球/三球半": return -3.25f;
+			case "受三球半": return -3.5f;
+			case "受三球半/四球": return -3.75f;
+			case "受四球": return -4f;
+			default: 
+				log.warn("no yapang pk matched {}.", pkStr);
+				return null;
 		}
 	}
 	
-	private Float parseDaxiao(String pkStr) {
+	private Float parseDaxiao(String pkInputStr) {
+		String pkStr = normalize(pkInputStr);
 		switch (pkStr) {
 			case "5": return 5f;
 			case "4.5/5": return 4.75f;
@@ -308,7 +355,9 @@ public class FMParser {
 			case "0.5": return 0.5f;
 			case "0/0.5": return 0.25f;
 			case "0": return 1f;
-			default: return null;
+			default: 
+				log.warn("no daxiao pk matched {}.", pkStr);
+				return null;
 		}
 	}
 	
@@ -329,7 +378,14 @@ public class FMParser {
 //		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
 //		System.out.println(ms);
 		
-		parseAsia();
+//		System.out.println(p.parsePanKou("半球/一球 降"));
+		System.out.println(p.parsePanKou("受三球"));
+//		System.out.println(p.parseDaxiao(" 2.5 "));
+//		System.out.println(p.parseDaxiao("2.5 升"));
+		
+//		testAsia();
+		
+//		parseAsia();
 		
 //		System.out.println(DateUtil.parseFiveMDate("12-15 12:12"));
 		
@@ -359,5 +415,49 @@ public class FMParser {
 			
 		}
 		
+	}
+	
+	public static void tttest () throws Exception {
+		String resData = "[[1.75,4,3.85,92.49,\"2019-10-22 23:45:26\",0,0,-1],[1.75,4,3.9,92.78,\"2019-10-22 21:21:34\",0,0,-1],[1.75,4,4,93.33,\"2019-10-22 10:03:39\",0,1,0],[1.75,3.9,4,92.78,\"2019-10-22 03:15:31\",1,-1,0],[1.73,4,4,92.76,\"2019-10-21 16:15:05\",0,1,-1],[1.73,3.9,4.25,93.48,\"2019-10-21 11:54:16\",1,0,0],[1.7,3.9,4.25,92.6,\"2019-10-21 06:57:00\",0,1,1],[1.7,3.75,3.9,89.98,\"2019-10-21 00:30:49\",0,0,-1],[1.7,3.75,4,90.51,\"2019-10-20 17:01:40\",1,-1,-1],[1.65,3.9,4.25,91.09,\"2019-10-19 15:44:56\",1,0,0],[1.63,3.9,4.25,90.48,\"2019-10-17 20:48:46\",1,0,0],[1.6,3.9,4.25,89.55,\"2019-10-16 00:02:34\",0,0,0]]";
+		List <EuroPl> euroPls = new ArrayList<EuroPl>();
+		String[][] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[][]>(){});
+		
+		if (datas != null && datas.length > 0) {
+			for (String[] eu : datas) {
+				EuroPl pl = new EuroPl(Float.parseFloat(eu[0]),
+						Float.parseFloat(eu[1]),
+						Float.parseFloat(eu[2]),
+						DateUtil.parseDateWithDataBase(eu[4]));
+				
+				euroPls.add(pl);
+			}
+		}
+		
+		Collections.<EuroPl>sort(euroPls, (v1, v2) -> {
+			return v1.getEDate().compareTo(v2.getEDate());
+		});
+		
+		EuroCalculator euc = new EuroCalculator();
+//		System.out.print(euc.getAbsoluteEuroMatrix(euroPls, DateUtil.parseDateWithDataBase("2019-10-23 00:15:00")));
+	}
+	
+	public static void testAsia () throws Exception {
+		String resData = "[\"<tr><td class='tips_up'>0.960<\\/td><td>\u534a\u7403<\\/td><td class='tips_down'>0.840<\\/td><td>12-15 19:50<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.940<\\/td><td>\u534a\u7403<\\/td><td class='tips_up'>0.860<\\/td><td>12-15 18:05<\\/td><\\/tr>\",\"<tr><td class='tips_down'>0.960<\\/td><td>\u534a\u7403<\\/td><td class='tips_up'>0.840<\\/td><td>12-15 12:12<\\/td><\\/tr>\",\"<tr><td class='tips_down'>1.020<\\/td><td>\u534a\u7403<\\/td><td class='tips_up'>0.780<\\/td><td>12-12 06:17<\\/td><\\/tr>\",\"<tr><td class=''>1.030<\\/td><td>\u534a\u7403<\\/td><td class=''>0.770<\\/td><td>12-11 23:29<\\/td><\\/tr>\"]";
+		String[] datas = GsonConverter.convertJSonToObjectUseNormal(resData, new TypeToken<String[]>(){});
+		FMParser fmp = new FMParser();
+		List <AsiaPl> res = Lists.newArrayList();
+		
+		if (datas != null && datas.length > 0) {
+			
+			
+			for (String ele : datas) {
+				res.add(fmp.parseAsiaPl(ele, true));
+			}
+			
+			res = fmp.sortAsia(res);
+		}
+		
+		PankouCalculator pkc = new PankouCalculator();
+//		System.out.print(pkc.calculate(res, DateUtil.parseDateWithDataBase("2019-12-15 22:00:00")));
 	}
 }
