@@ -868,15 +868,16 @@ public class MatchPromoter {
 					}
 				}
 				if (rank.getDRank() >= 8
-							&& (aaDrawDiff <= -0.001f && aomenDrawChange < 0.021f
-								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.21f)
+							&& (aaDrawDiff <= -0.001f || aomen.getOriginEuro().getEDraw() <= 3.21f)
+							&& aomenDrawChange < 0.021f
 							&& jaDrawDiff <= 0.035f - 2 * winAdjByPull && jcDrawChange < 0.005f
 							&& waDrawDiff <= 0.05f
 							&& aleDrawDiff <= 0.035f
 							&& (rank.getDRank() >= rank.getLRank() - 1 || rank.getDRank() >= rank.getWRank() - 1)
 							&& (drawP >= 0f || drawP - winP > -0.65f && drawP - loseP > -0.65f)
 						) {
-					if (aaDrawDiff <= -0.03f || aomen.getOriginEuro().getEDraw() <= 3.20f
+					if (aaDrawDiff <= -0.03f
+							|| (aomen.getOriginEuro().getEDraw() <= 3.20f && aomenDrawChange < 0.001f)
 							|| jaDrawDiff <= -0.03f
 							|| rank.getDRank() >= 12
 							|| aaWinDiff - aomenWinChange > 0.025f && aaDrawDiff - aomenDrawChange < -0.025f
@@ -1080,15 +1081,16 @@ public class MatchPromoter {
 					}
 				}
 				if (rank.getDRank() >= 8
-						&& (aaDrawDiff <= 0.001f
-							|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.25f)
+						&& (aaDrawDiff <= 0.001f || aomen.getOriginEuro().getEDraw() <= 3.21f)
+						&& aomenDrawChange <= 0.021f
 						&& jaDrawDiff < 0.035f + 2 * winAdjByPull && jcDrawChange < 0.005f
 						&& waDrawDiff <= 0.05f
 						&& aleDrawDiff <= 0.03f
 						&& (rank.getDRank() >= rank.getLRank() - 1 || rank.getDRank() >= rank.getWRank() - 1)
 						&& (drawP >= 0f || drawP - winP > -0.6f && drawP - loseP > -0.6f)
 						) {
-					if (aaDrawDiff <= -0.025f || aomen.getOriginEuro().getEDraw() <= 3.20f
+					if (aaDrawDiff <= -0.025f
+							|| (aomen.getOriginEuro().getEDraw() <= 3.20f && aomenDrawChange < 0.001f)
 							|| jaDrawDiff <= -0.025f
 							|| rank.getDRank() >= 12
 							|| aaLoseDiff - aomenLoseChange > 0.025f && aaDrawDiff - aomenDrawChange < -0.025f
@@ -1926,9 +1928,9 @@ public class MatchPromoter {
 			}
 		} else if (mainPk - predictPk >= l1Diff && currentPk - predictPk >= l1Diff
 				&& pull.getGPull() >= 5 && currentPk - mainPk >= -0.06f) {
-			if ((currentPk - mainPk >= 0.04f
-					|| mainPk - predictPk >= l1Diff + 0.03f && currentPk - predictPk >= l1Diff + 0.03f
-					|| currentPk - predictPk >= l2Diff)
+			if ((currentPk - mainPk >= 0.05f
+					|| mainPk - predictPk >= l1Diff + 0.06f && currentPk - predictPk >= l1Diff + 0.06f
+					|| currentPk - predictPk >= l2Diff + 0.03f)
 				&& pankou <= 0.75f) {
 				if (pankou > -0.7) {
 					killByPull.add(ResultGroup.Zero);
