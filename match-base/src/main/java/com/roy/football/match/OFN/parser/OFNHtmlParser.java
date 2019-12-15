@@ -105,19 +105,19 @@ public class OFNHtmlParser {
 		Date beforeYest = DateUtil.yesterday(yestoday);
 		String beforeYestStr = DateUtil.formatSimpleDate(beforeYest);
 		
-//		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
-//		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
-//		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
-//		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
+		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
+		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
+		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
+		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
 		
-		List<JinCaiMatch> todayMatches = Lists.newArrayList();
-		for (int i =1; i <= 15; i++) {
-			todayMatches.addAll(parseJinCaiMatchesBf(String.format("201911%02d", i)));
-		}
+//		List<JinCaiMatch> todayMatches = Lists.newArrayList();
+//		for (int i =1; i <= 15; i++) {
+//			todayMatches.addAll(parseJinCaiMatchesBf(String.format("201911%02d", i)));
+//		}
 		
-//		todayMatches.addAll(beforeYestodayMatches);
-//		todayMatches.addAll(yestodayMatches);
-//		todayMatches.addAll(tomorrowMatches);
+		todayMatches.addAll(beforeYestodayMatches);
+		todayMatches.addAll(yestodayMatches);
+		todayMatches.addAll(tomorrowMatches);
 		return todayMatches;
 	}
 	
