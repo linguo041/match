@@ -59,7 +59,7 @@ public class OFNHtmlParser {
 	private final static String JIN_CAI_URL = "http://m.159cai.com/cpdata/omi/jczq/odds/odds.xml";
 //	private final static String DETAIL_URL_PREIX = "http://odds.159cai.com/json/match/oddshistory";
 //	private final static String JIN_CAI_BF_URL = "http://bf.159cai.com/mcache/livejcjs/";
-	private final static String JIN_CAI_BF_URL = "http://mcache.iuliao.com/mcache/livejcjs/";
+	private final static String JIN_CAI_BF_URL = "http://mcache.iuliao.cn/mcache/livejcjs/";
 //	private final static String OFN_HOST = "odds.159cai.com";
 	private final static String OFN_HOST = "www.iuliao.com";
 	
