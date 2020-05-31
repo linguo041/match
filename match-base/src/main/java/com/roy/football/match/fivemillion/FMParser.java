@@ -1,13 +1,9 @@
 package com.roy.football.match.fivemillion;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.roy.football.match.OFN.parser.MatchParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -61,7 +57,42 @@ public class FMParser {
 	private Cache<Long, FmRawMatch> fmMatches = CacheBuilder.newBuilder()
 			.maximumSize(1000)
 			.build();
-	
+/*
+	public List<JinCaiMatch> parseJinCaiMatchesBf () throws MatchParseException {
+		Date today = new Date();
+		String todayStr = DateUtil.formatSimpleDate(today);
+
+		Date tomorrow = DateUtil.tomorrow(today);
+		String tomorrowStr = DateUtil.formatSimpleDate(tomorrow);
+
+		Date yestoday = DateUtil.yesterday(today);
+		String yestodayStr = DateUtil.formatSimpleDate(yestoday);
+
+		Date beforeYest = DateUtil.yesterday(yestoday);
+		String beforeYestStr = DateUtil.formatSimpleDate(beforeYest);
+
+//		List<JinCaiMatch> todayMatches = parseJinCaiMatchesBf(todayStr);
+//		List<JinCaiMatch> beforeYestodayMatches = parseJinCaiMatchesBf(beforeYestStr);
+//		List<JinCaiMatch> yestodayMatches = parseJinCaiMatchesBf(yestodayStr);
+//		List<JinCaiMatch> tomorrowMatches = parseJinCaiMatchesBf(tomorrowStr);
+
+//		List<JinCaiMatch> todayMatches = Lists.newArrayList();
+//		for (int i =16; i <= 25; i++) {
+//			todayMatches.addAll(parseJinCaiMatchesBf(String.format("201911%02d", i)));
+//		}
+
+		todayMatches.addAll(beforeYestodayMatches);
+		todayMatches.addAll(yestodayMatches);
+		todayMatches.addAll(tomorrowMatches);
+		return todayMatches;
+	}
+
+	private FmRawMatch getFmMatch (String day) {
+		List<FmRawMatch> matches = parseMatchData(day.substring(0, 5), day);
+		return matches.stream().map()
+	}
+	*/
+
 	public synchronized FmRawMatch getFmMatch (Long matchDayId) {
 		// matchDayId: 190107102
 		try {
