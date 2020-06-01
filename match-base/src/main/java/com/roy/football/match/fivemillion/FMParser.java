@@ -189,8 +189,7 @@ public class FMParser {
 */
 
 	public List <EuroPl> parseEuroData (Long fmatchId, Company company) {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("X-Requested-With", "XMLHttpRequest");
+		Map<String, String> headers = buildFMRequestheaders(fmatchId);
 		
 		try {
 //			Document doc = Jsoup.connect(EURO_URL
@@ -224,8 +223,7 @@ public class FMParser {
 	}
 	
 	public List <AsiaPl> parseAsiaData (Long fmatchId, Company company) {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("X-Requested-With", "XMLHttpRequest");
+		Map<String, String> headers = buildFMRequestheaders(fmatchId);
 		String resData = "";
 		
 		try {
@@ -250,8 +248,7 @@ public class FMParser {
 	}
 	
 	public List <AsiaPl> parseDaxiaoData (Long fmatchId, Company company) {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("X-Requested-With", "XMLHttpRequest");
+		Map<String, String> headers = buildFMRequestheaders(fmatchId);
 		
 		try {
 			String resData = HttpRequestService.getInstance().doHttpRequest(DAXIAO_URL
@@ -272,6 +269,14 @@ public class FMParser {
 			log.error(String.format("unable to parse match asia data: match [%d], company [%s]", fmatchId, company), e);
 		}
 		return null;
+	}
+
+	private Map<String, String> buildFMRequestheaders (Long fmatchId) {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put("X-Requested-With", "XMLHttpRequest");
+		headers.put("Referer", String.format("http://odds.500.com/fenxi/ouzhi-%d.shtml", fmatchId));
+		headers.put("Accept-Encoding", "gzip");
+		return headers;
 	}
 	
 	private List<EuroPl> sortEu (List<EuroPl> euroPls) {
@@ -403,14 +408,14 @@ public class FMParser {
 //		
 //		System.out.println(out);
 		FMParser p = new FMParser();
-//		List <EuroPl> pls = p.parseEuroData(449928L, Company.Aomen);
-//		System.out.println(pls);
+		List <EuroPl> pls = p.parseEuroData(826105L, Company.Aomen);
+		System.out.println(pls);
 		
 //		List<FmRawMatch> ms = p.parseMatchData("201901", "20190107");
 //		System.out.println(ms);
 		
 //		System.out.println(p.parsePanKou("半球/一球 降"));
-		System.out.println(p.parsePanKou("受三球"));
+//		System.out.println(p.parsePanKou("受三球"));
 //		System.out.println(p.parseDaxiao(" 2.5 "));
 //		System.out.println(p.parseDaxiao("2.5 升"));
 		
