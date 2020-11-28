@@ -1455,7 +1455,7 @@ public class MatchPromoter {
 				EuroPl currAomenEu = aomen.getCurrentEuro();
 				EuroPl currWillEu = will.getCurrentEuro();
 				EuroPl currInterEu = inter.getCurrentEuro();
-				EuroPl currYsbEu = ysb.getCurrentEuro();
+				EuroPl currYsbEu = ysb == null ? null : ysb.getCurrentEuro();
 				float majorWinChange = majorComp.getWinChange();
 				float majorDrawChange = majorComp.getDrawChange();
 				float majorLoseChange = majorComp.getLoseChange();
@@ -1472,9 +1472,9 @@ public class MatchPromoter {
 				float aomenDrawChange = aomen.getDrawChange();
 				float aomenLoseChange = aomen.getLoseChange();
 				
-				float ysbWinChange = ysb.getWinChange();
-				float ysbDrawChange = ysb.getDrawChange();
-				float ysbLoseChange = ysb.getLoseChange();
+//				float ysbWinChange = ysb.getWinChange();
+//				float ysbDrawChange = ysb.getDrawChange();
+//				float ysbLoseChange = ysb.getLoseChange();
 
 				float laWinRt = MatchUtil.getEuDiff(currLabEu.getEWin(), euroAvg.getEWin(), false);
 				float laDrawRt = MatchUtil.getEuDiff(currLabEu.getEDraw(), euroAvg.getEDraw(), false);
@@ -1484,9 +1484,9 @@ public class MatchPromoter {
 				float iaDrawRt = MatchUtil.getEuDiff(currInterEu.getEDraw(), euroAvg.getEDraw(), false);
 				float iaLoseRt = MatchUtil.getEuDiff(currInterEu.getELose(), euroAvg.getELose(), false);
 				
-				float yaWinRt = MatchUtil.getEuDiff(currYsbEu.getEWin(), euroAvg.getEWin(), false);
-				float yaDrawRt = MatchUtil.getEuDiff(currYsbEu.getEDraw(), euroAvg.getEDraw(), false);
-				float yaLoseRt = MatchUtil.getEuDiff(currYsbEu.getELose(), euroAvg.getELose(), false);
+				float yaWinRt = currYsbEu == null ? 0.011f : MatchUtil.getEuDiff(currYsbEu.getEWin(), euroAvg.getEWin(), false);
+				float yaDrawRt = currYsbEu == null ? 0.011f : MatchUtil.getEuDiff(currYsbEu.getEDraw(), euroAvg.getEDraw(), false);
+				float yaLoseRt = currYsbEu == null ? 0.011f : MatchUtil.getEuDiff(currYsbEu.getELose(), euroAvg.getELose(), false);
 
 				float maWinRt = MatchUtil.getEuDiff(currMajorEu.getEWin(), euroAvg.getEWin(), false);
 				float maDrawRt = MatchUtil.getEuDiff(currMajorEu.getEDraw(), euroAvg.getEDraw(), false);

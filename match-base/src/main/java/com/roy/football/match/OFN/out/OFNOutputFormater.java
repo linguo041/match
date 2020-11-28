@@ -270,9 +270,9 @@ public class OFNOutputFormater {
 			}
 			
 			MatchExchangeData exgData = calculateResult.getExchanges();
+			StringBuilder jcExchange = new StringBuilder(euVarianceStr);
 			if (exgData != null) {
 				String bfjcRate = "";
-				String jcExchange = euVarianceStr;
 				
 				if (exgData.hasExchangeData(ExchangeType.bf, false) && exgData.getBfWinExchange() + exgData.getBfDrawExchange() + exgData.getBfLoseExchange() > 200000) {
 					bfjcRate = String.format("%.1f : %.1f : %.1f\n%.1f : %.1f : %.1f",
@@ -290,16 +290,16 @@ public class OFNOutputFormater {
 								exgData.getJcDrawExgRt() * 100,
 								exgData.getJcLoseExgRt() * 100)
 							: bfjcRate;
-					jcExchange = euVarianceStr + String.format("%.2f万\n%d   %d   %d",
+					jcExchange.append(String.format("%.2f万\n%d   %d   %d",
 							exgData.getJcTotalExchange() / 10000f,
 							exgData.getJcWinGain(),
 							exgData.getJcDrawGain(),
-							exgData.getJcLoseGain());
+							exgData.getJcLoseGain()));
 				}
-				
-				excelData.setJincaiJY(jcExchange);
+
 				excelData.setBifa(bfjcRate);
 			}
+			excelData.setJincaiJY(jcExchange.toString());
 			
 			PredictResult predictRes = calculateResult.getPredictResult();
 			if (predictRes != null) {

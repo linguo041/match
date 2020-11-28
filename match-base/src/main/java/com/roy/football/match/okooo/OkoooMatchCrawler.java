@@ -59,7 +59,7 @@ public class OkoooMatchCrawler {
 
 			return exchangeData;
 		} catch (Exception e) {
-			log.error(String.format("Unable to parse exchange data from okooo with okooo match id [%s], with error\n: %s", matchId, e.getMessage()));
+			log.error(String.format("Unable to parse exchange data from okooo with okooo match id [%s], with error: %s", matchId, e.getMessage()));
 		}
 		
 		return null;
