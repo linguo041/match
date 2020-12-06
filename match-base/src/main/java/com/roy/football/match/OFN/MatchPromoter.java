@@ -633,8 +633,12 @@ public class MatchPromoter {
 						&& upChange <= 0.06f
 						&& cmPkDiff >= -0.22f
 						&& (pmPkDiff <= 0.3f && pcPkDiff <= 0.3f)
-						&& (pkDirection.ordinal() > PKDirection.Down.ordinal()
-								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
+						&& (pkDirection.ordinal() >= PKDirection.Up.ordinal() // low pay
+							|| pkDirection.ordinal() >= PKDirection.Middle.ordinal()  // high pay but not hot or strong
+								&& pull.getHPull() <= 5.1f
+								&& (current.getPanKou() >= 0.75 && rank.getWRank() <= 16
+									|| current.getPanKou() == 0.5 && rank.getWRank() <= 14)
+							|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.025f && aomenWinChange <= 0.025f
 						&& aaWinDiff - aomenWinChange < 0.025f // aomen original is not high
 						&& waWinDiff <= 0.03f
@@ -701,8 +705,12 @@ public class MatchPromoter {
 						&& upChange <= 0.065f	// pk change is not too high
 						&& cmPkDiff >= -0.22f
 						&& (pmPkDiff < 0.35f && pcPkDiff < 0.35f) // predict is not high
-						&& (pkDirection.ordinal() > PKDirection.Down.ordinal() // pk is above or equal to middle
-								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f) // in case pk change caused pk calculated wrong
+						&& (pkDirection.ordinal() >= PKDirection.Up.ordinal() // low pay
+							|| pkDirection.ordinal() >= PKDirection.Middle.ordinal()  // high pay but not hot or strong
+								&& pull.getHPull() <= 5.1f
+								&& (current.getPanKou() >= 0.75 && rank.getWRank() <= 16
+									|| current.getPanKou() == 0.5 && rank.getWRank() <= 14)
+						    || pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f) // in case pk change caused pk calculated wrong
 						&& aaWinDiff < 0.015f	// aomen is not much higher than the average
 						&& aaWinDiff - aomenWinChange < 0.025f // aomen original is not high
 						&& waWinDiff < 0.04f	// willian is not too high
@@ -1140,8 +1148,12 @@ public class MatchPromoter {
 						&& downChange <= 0.06f
 						&& cmPkDiff <= 0.22f
 						&& (pmPkDiff > -0.35f && pcPkDiff > -0.35f)
-						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
-								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
+						&& (pkDirection.ordinal() <= PKDirection.Down.ordinal() // low pay
+							|| pkDirection.ordinal() == PKDirection.Middle.ordinal()  // high pay but not hot or strong
+								&& pull.getGPull() <= 5.5f
+								&& (current.getPanKou() <= -0.75 && rank.getLRank() <= 16
+									|| current.getPanKou() == -0.5 && rank.getLRank() <= 15)
+							|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && upChange <= 0.04f)
 						&& aaLoseDiff < 0.021f && aomenLoseChange <= 0.025f
 						&& aaLoseDiff - aomenLoseChange < 0.025f
 						&& waLoseDiff <= 0.055f
@@ -1206,8 +1218,12 @@ public class MatchPromoter {
 						&& downChange <= 0.065f
 						&& cmPkDiff <= 0.22f
 						&& (pmPkDiff > -0.35f && pcPkDiff > -0.35f)
-						&& (pkDirection.ordinal() < PKDirection.Up.ordinal()
-								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
+						&& (pkDirection.ordinal() <= PKDirection.Down.ordinal() // low pay
+							|| pkDirection.ordinal() == PKDirection.Middle.ordinal()  // high pay but not hot or strong
+								&& pull.getGPull() <= 5.5f
+								&& (current.getPanKou() <= -0.75 && rank.getLRank() <= 16
+									|| current.getPanKou() == -0.5 && rank.getLRank() <= 15)
+							|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && upChange <= 0.04f)
 						&& aaLoseDiff < 0.011f
 						&& aaLoseDiff - aomenLoseChange < 0.025f
 						&& waLoseDiff < 0.035f
@@ -2015,7 +2031,7 @@ public class MatchPromoter {
 			if ((pkDirection.ordinal() < PKDirection.Middle.ordinal() && current.gethWin() >= 1.02f)
 					&& upChange >= 0.06f
 					&& currentPk - mainPk <= 0.04f
-					&& currentPk - predictPk <= 0.1f) {
+					&& currentPk - predictPk <= 0.15f) {
 
 				if (current.getPanKou() >= 1.0f && rank.getWRank() <= 17) {
 					killByPk.add(ResultGroup.AboveThree);
@@ -2044,7 +2060,7 @@ public class MatchPromoter {
 			if ((pkDirection.ordinal() > PKDirection.Middle.ordinal() && current.getaWin() >= 1.02f)
 					&& downChange >= 0.06f
 					&& currentPk - mainPk >= -0.04f
-					&& predictPk - currentPk <= 0.1f) {
+					&& predictPk - currentPk <= 0.15f) {
 
 				if (current.getPanKou() <= -1.0f && rank.getLRank() <= 16) {
 					killByPk.add(ResultGroup.BelowZero);
@@ -2067,6 +2083,60 @@ public class MatchPromoter {
 					if (rank.getDRank() <= 9) {
 						killByPk.add(ResultGroup.One);
 					}
+				}
+			}
+
+			if (current.getPanKou() == 0.75f) {
+				if (pkDirection.ordinal() <= PKDirection.Middle.ordinal()
+						&& current.gethWin() >= 0.92f
+						&& upChange >= -0.025f
+						&& (pull.getHPull() > 5f && rank.getWRank() >= 14
+							|| pull.getHPull() > 0.1f && rank.getWRank() >= 16)
+				) {
+					killByPk.add(ResultGroup.AboveThree);
+				}
+			} else if (current.getPanKou() == 0.5f) {
+				if (pkDirection.ordinal() <= PKDirection.Middle.ordinal()
+						&& current.gethWin() >= 0.92f
+						&& upChange >= -0.025f
+						&& (pull.getHPull() > 5f && rank.getWRank() >= 13
+							|| pull.getHPull() > 0.1f && rank.getWRank() >= 15)
+				) {
+					killByPk.add(ResultGroup.Three);
+				}
+			} else if (current.getPanKou() == 0.25f) {
+				if (pkDirection.ordinal() <= PKDirection.Middle.ordinal()
+						&& current.gethWin() >= 0.92f
+						&& upChange >= -0.025f
+						&& pull.getHPull() > 5f && rank.getWRank() >= 12
+				) {
+					killByPk.add(ResultGroup.Three);
+				}
+			} else if (current.getPanKou() == -0.25f) {
+				if (pkDirection.ordinal() >= PKDirection.Middle.ordinal()
+						&& current.getaWin() >= 0.92f
+						&& downChange >= -0.025f
+						&& pull.getGPull() > 5.5f && rank.getLRank() >= 13
+				) {
+					killByPk.add(ResultGroup.Zero);
+				}
+			} else if (current.getPanKou() == -0.5f) {
+				if (pkDirection.ordinal() >= PKDirection.Middle.ordinal()
+						&& current.getaWin() >= 0.92f
+						&& downChange >= -0.025f
+						&& (pull.getGPull() > 5.5f && rank.getLRank() >= 13
+							|| pull.getGPull() > 1.1f && rank.getLRank() >= 16)
+				) {
+					killByPk.add(ResultGroup.Zero);
+				}
+			} else if (current.getPanKou() == -0.75f) {
+				if (pkDirection.ordinal() >= PKDirection.Middle.ordinal()
+						&& current.getaWin() >= 0.92f
+						&& downChange >= -0.025f
+						&& (pull.getGPull() > 5.5f && rank.getLRank() >= 14
+							|| pull.getGPull() > 1.1f && rank.getLRank() >= 17)
+				) {
+					killByPk.add(ResultGroup.BelowZero);
 				}
 			}
 		}
