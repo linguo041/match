@@ -933,16 +933,17 @@ public class MatchPromoter {
 					&& bHWGLRt - bHWRt >= 0.26f
 					&& pcPkDiff <= 0.25f
 //					&& upChange <= -0.03
-					&& aaWinDiff <= 0.025f && aomenWinChange <= 0.035f
+					&& aaWinDiff <= 0.015f && aomenWinChange <= 0.025f
 					&& aaWinDiff - aomenWinChange <= 0.035f // aomen original is not high
-					&& jaWinDiff < -0.035f + winAdjByPull && jcWinChange <= 0.015f
+					&& jaWinDiff < -0.051f + winAdjByPull && jcWinChange <= 0.015f
 //					&& waWinDiff <= 0.065f
 					&& bHostAtt >= 0.9 * bGuestAtt
 					) {
 				if (main.getPanKou() == 0f && origin.getPanKou() == 0f
 						&& (bHWGLRt >= 0.737f && bGWHLRt <= 0.717f     // host has win
 							|| bGWHLRt < 0.59f    // host has win draw
-							|| rank.getWRank() >= 13)    
+							|| rank.getWRank() >= 13)
+						&& (aaLoseDiff >= -0.021f || jaLoseDiff >= -0.045f)
 						|| origin.getPanKou() == -0.25f && aaWinDiff <= -0.02f && aomenWinChange <= -0.01f
 					) {
 					firstOption = ResultGroup.Three;
@@ -954,16 +955,17 @@ public class MatchPromoter {
 					&& bGWHLRt - bGWRt >= 0.26f
 					&& pcPkDiff >= -0.25f
 //					&& downChange <= -0.03
-					&& aaLoseDiff <= 0.025f && aomenLoseChange <= 0.035f
+					&& aaLoseDiff <= 0.015f && aomenLoseChange <= 0.025f
 					&& aaLoseDiff - aomenLoseChange <= 0.035f
-					&& jaLoseDiff < -0.035f - winAdjByPull && jcLoseChange <= 0.015f
+					&& jaLoseDiff < -0.051f - winAdjByPull && jcLoseChange <= 0.015f
 //					&& waLoseDiff <= 0.065f
 					&& bGuestAtt >= 0.88 * bHostAtt
 					) {
 				if (main.getPanKou() == 0f && origin.getPanKou() == 0f
 						&& (bGWHLRt >= 0.737f && bHWGLRt <= 0.717f		  // guest has win
 							|| bHWGLRt < 0.59f    // guest has win draw
-							|| rank.getLRank() >= 13)     
+							|| rank.getLRank() >= 13)
+						&& (aaWinDiff >= -0.021f || jaWinDiff >= -0.045f)
 						|| origin.getPanKou() == 0.25f && aaLoseDiff <= -0.02f && aomenLoseChange <= -0.01f
 					) {
 					if (firstOption != null) {
@@ -1137,7 +1139,7 @@ public class MatchPromoter {
 										|| jaLoseDiff >= -0.05f && jcLoseChange >= 0.005f
 										|| pmPkDiff < -0.2f && pcPkDiff < -0.2f && (upChange <= -0.015f || currentPk >= -0.2f))
 								) {
-							firstOption = ResultGroup.Three;
+							firstOption = ResultGroup.RangThree;
 						}
 					}
 				}
@@ -2090,8 +2092,7 @@ public class MatchPromoter {
 				if (pkDirection.ordinal() <= PKDirection.Middle.ordinal()
 						&& current.gethWin() >= 0.92f
 						&& upChange >= -0.025f
-						&& (pull.getHPull() > 5f && rank.getWRank() >= 14
-							|| pull.getHPull() > 0.1f && rank.getWRank() >= 16)
+						&& pull.getHPull() > 5f && rank.getWRank() >= 13
 				) {
 					killByPk.add(ResultGroup.AboveThree);
 				}
@@ -2099,8 +2100,7 @@ public class MatchPromoter {
 				if (pkDirection.ordinal() <= PKDirection.Middle.ordinal()
 						&& current.gethWin() >= 0.92f
 						&& upChange >= -0.025f
-						&& (pull.getHPull() > 5f && rank.getWRank() >= 13
-							|| pull.getHPull() > 0.1f && rank.getWRank() >= 15)
+						&& pull.getHPull() > 5f && rank.getWRank() >= 12
 				) {
 					killByPk.add(ResultGroup.Three);
 				}
@@ -2108,7 +2108,7 @@ public class MatchPromoter {
 				if (pkDirection.ordinal() <= PKDirection.Middle.ordinal()
 						&& current.gethWin() >= 0.92f
 						&& upChange >= -0.025f
-						&& pull.getHPull() > 5f && rank.getWRank() >= 12
+						&& pull.getHPull() > 5f && rank.getWRank() >= 11
 				) {
 					killByPk.add(ResultGroup.Three);
 				}
@@ -2116,7 +2116,7 @@ public class MatchPromoter {
 				if (pkDirection.ordinal() >= PKDirection.Middle.ordinal()
 						&& current.getaWin() >= 0.92f
 						&& downChange >= -0.025f
-						&& pull.getGPull() > 5.5f && rank.getLRank() >= 13
+						&& pull.getGPull() >= 5.5f && rank.getLRank() >= 12
 				) {
 					killByPk.add(ResultGroup.Zero);
 				}
@@ -2124,8 +2124,7 @@ public class MatchPromoter {
 				if (pkDirection.ordinal() >= PKDirection.Middle.ordinal()
 						&& current.getaWin() >= 0.92f
 						&& downChange >= -0.025f
-						&& (pull.getGPull() > 5.5f && rank.getLRank() >= 13
-							|| pull.getGPull() > 1.1f && rank.getLRank() >= 16)
+						&& pull.getGPull() > 5.5f && rank.getLRank() >= 13
 				) {
 					killByPk.add(ResultGroup.Zero);
 				}
@@ -2133,8 +2132,7 @@ public class MatchPromoter {
 				if (pkDirection.ordinal() >= PKDirection.Middle.ordinal()
 						&& current.getaWin() >= 0.92f
 						&& downChange >= -0.025f
-						&& (pull.getGPull() > 5.5f && rank.getLRank() >= 14
-							|| pull.getGPull() > 1.1f && rank.getLRank() >= 17)
+						&& pull.getGPull() > 5.5f && rank.getLRank() >= 14
 				) {
 					killByPk.add(ResultGroup.BelowZero);
 				}
