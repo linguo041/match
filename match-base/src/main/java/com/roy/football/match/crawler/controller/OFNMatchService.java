@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.roy.football.match.OFN.out.PlainDataFormater;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,6 +124,7 @@ public class OFNMatchService {
 		}
 		
 		writeExcel(excelDatas);
+		writePlain(excelDatas);
 	}
 	
 	public void processMatches (List<JinCaiMatch> matches) {
@@ -232,19 +234,8 @@ public class OFNMatchService {
 				writer.write(datas, workBook);
 			}
 
-			String outputDir = "";
-			if (StringUtils.isNotEmpty(outputFileDir)) {
-				outputDir = outputFileDir;
-			} else {
-				outputDir = System.getProperty("user.dir") + "/../data/";
-			}
-			String fileName = outputDir + "match-" + DateUtil.formatSimpleDate(new Date())+".xlsx";
-			
-			File file = new File (fileName);
-			
-			if (file.exists()) {
-				file.delete();
-			}
+			File file = createFile(true);
+
 			if (file.createNewFile()) {
 				workBook.write(new FileOutputStream(file));
 			}
@@ -253,6 +244,53 @@ public class OFNMatchService {
 		} finally {
 
 		}
+	}
+
+	private void writePlain (List <OFNExcelData> datas) {
+		FileOutputStream fio = null;
+		try {
+			File file = createFile(false);
+
+			if (file.createNewFile()) {
+				String txt = "";
+				if (datas != null && datas.size() > 0) {
+					txt = PlainDataFormater.buildText(datas);
+				}
+				fio = new FileOutputStream(file);
+				fio.write(txt.getBytes());
+			}
+		} catch (IOException e) {
+			log.error("Unable to write excel.", e);
+		} finally {
+			if (fio != null) {
+				try {
+					fio.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	private File createFile (boolean excel) {
+		String outputDir = "";
+		if (StringUtils.isNotEmpty(outputFileDir)) {
+			outputDir = outputFileDir;
+		} else {
+			outputDir = System.getProperty("user.dir") + "/../data/";
+		}
+
+		String fileName = excel
+				? outputDir + "match-" + DateUtil.formatSimpleDate(new Date())+".xlsx"
+				: outputDir + "match-plain.txt";
+
+		File file = new File (fileName);
+
+		if (file.exists()) {
+			file.delete();
+		}
+
+		return file;
 	}
 	
 	private void sleep (long time) {
