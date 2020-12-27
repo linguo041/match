@@ -251,14 +251,12 @@ public class OFNMatchService {
 		try {
 			File file = createFile(false);
 
-			if (file.createNewFile()) {
-				String txt = "";
-				if (datas != null && datas.size() > 0) {
-					txt = PlainDataFormater.buildText(datas);
-				}
-				fio = new FileOutputStream(file);
-				fio.write(txt.getBytes());
+			String txt = "";
+			if (datas != null && datas.size() > 0) {
+				txt = PlainDataFormater.buildText(datas);
 			}
+			fio = new FileOutputStream(file);
+			fio.write(txt.getBytes());
 		} catch (IOException e) {
 			log.error("Unable to write excel.", e);
 		} finally {
