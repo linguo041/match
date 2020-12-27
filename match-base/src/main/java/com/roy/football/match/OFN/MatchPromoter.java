@@ -867,6 +867,7 @@ public class MatchPromoter {
 									rank.getWRank() >= 14 ||
 									pkDirection.ordinal() > PKDirection.Middle.ordinal())
 								&& winNegatives(jaWinDiff, aaWinDiff, upChange, pmPkDiff, pcPkDiff) < 1
+								&& (aaLoseDiff > -0.28f || jaLoseDiff > -0.42f)
 							|| (latestVariance <= 2.40 && hostVariance <= 1.40
 									|| latestVariance <= 2.55 && hostVariance <= 1.35
 									|| latestVariance <= 2.70 && hostVariance <= 1.30) && rank.getWRank() >= 13
