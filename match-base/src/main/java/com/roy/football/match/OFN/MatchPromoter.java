@@ -2304,15 +2304,17 @@ public class MatchPromoter {
 			float aoDrawChange = aomenMatrix.getDrawChange();
 			float aoLoseChange = aomenMatrix.getLoseChange();
 
-			if (jcWinGain < -35 && jcWinChange >= 0.008f && jcWinChange > aoWinChange) {
+			int threshold = jcTotal > 1000 ? -25 : jcTotal > 300 ? -30 : jcTotal > 100 ? -35 : -40;
+
+			if (jcWinGain < threshold && jcWinChange >= 0.008f && jcWinChange >= aoWinChange-0.002f) {
 				exRes.add(ResultGroup.Three);
 			}
 
-			if (jcDrawGain < -35 && jcDrawChange >= 0.008f && jcDrawChange > aoDrawChange) {
+			if (jcDrawGain < threshold && jcDrawChange >= 0.008f && jcDrawChange >= aoDrawChange-0.002f) {
 				exRes.add(ResultGroup.One);
 			}
 
-			if (jcLoseGain < -35 && jcLoseChange >= 0.008f && jcLoseChange > aoLoseChange) {
+			if (jcLoseGain < threshold && jcLoseChange >= 0.008f && jcLoseChange >= aoLoseChange-0.002f) {
 				exRes.add(ResultGroup.Zero);
 			}
 
