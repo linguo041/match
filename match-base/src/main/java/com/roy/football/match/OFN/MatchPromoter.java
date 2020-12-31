@@ -2296,11 +2296,27 @@ public class MatchPromoter {
 			bfDrawGain = bfDrawGain == null ? -100 : bfDrawGain;
 			bfLoseGain = bfLoseGain == null ? -100 : bfLoseGain;
 			
-//			float jcWinChange = jincaiMatrix.getWinChange();
-//			float jcDrawChange = jincaiMatrix.getDrawChange();
-//			float jcLoseChange = jincaiMatrix.getLoseChange();
-			
-			
+			float jcWinChange = jincaiMatrix.getWinChange();
+			float jcDrawChange = jincaiMatrix.getDrawChange();
+			float jcLoseChange = jincaiMatrix.getLoseChange();
+
+			float aoWinChange = aomenMatrix.getWinChange();
+			float aoDrawChange = aomenMatrix.getDrawChange();
+			float aoLoseChange = aomenMatrix.getLoseChange();
+
+			if (jcWinGain < -35 && jcWinChange >= 0.008f && jcWinChange > aoWinChange) {
+				exRes.add(ResultGroup.Three);
+			}
+
+			if (jcDrawGain < -35 && jcDrawChange >= 0.008f && jcDrawChange > aoDrawChange) {
+				exRes.add(ResultGroup.One);
+			}
+
+			if (jcLoseGain < -35 && jcLoseChange >= 0.008f && jcLoseChange > aoLoseChange) {
+				exRes.add(ResultGroup.Zero);
+			}
+
+			/*
 			if (current.getPanKou() >= 1f) {
 				if (jcWinGain < -35 && bfWinGain < -20 && jaWinDiff < -0.055) {
 					exRes.add(ResultGroup.Three);
@@ -2317,11 +2333,11 @@ public class MatchPromoter {
 				if (jcWinGain < -35 && bfWinGain < -20 && jaWinDiff < -0.055 && rank.getWRank() >= 13) {
 					exRes.add(ResultGroup.Three);
 				}
-				
+
 				if (jcDrawGain < -35 && bfDrawGain < -20 && jaDrawDiff < -0.025 && rank.getDRank() >= 8) {
 					exRes.add(ResultGroup.One);
 				}
-				
+
 				if (jcLoseGain < -35 && bfLoseGain < -20 && jaLoseDiff < -0.025 && rank.getLRank() >= 7) {
 					exRes.add(ResultGroup.Zero);
 				}
@@ -2374,6 +2390,7 @@ public class MatchPromoter {
 					exRes.add(ResultGroup.Zero);
 				}
 			}
+			 */
 		}
 	}
 	
