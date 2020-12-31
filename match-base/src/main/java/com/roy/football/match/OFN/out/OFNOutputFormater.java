@@ -158,7 +158,7 @@ public class OFNOutputFormater {
 				}
 
 				excelData.setPkKillRate(String.format("%.2f, %.2f\r\n%.2f, %.2f\r\n" +
-								"%.2f %.1f %.2f",
+								"%.2f_%.2f_%.2f",
 						pkMatrices.getCurrentPk().gethWin(), pkMatrices.getCurrentPk().getaWin(),
 						pkMatrices.getHwinChangeRate(), pkMatrices.getAwinChangeRate(),
 						dxHWin, dxPk, dxAWin));
