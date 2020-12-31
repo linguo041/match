@@ -145,7 +145,9 @@ public class OFNOutputFormater {
 						MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), mainPk,
 						calculatedCurrPk, currPk));
 
-				excelData.setPkKillRate(String.format("%.2f, %.2f", pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
+				excelData.setPkKillRate(String.format("%.2f, %.2f\r\n%.2f, %.2f",
+						pkmatrices.getCurrentPk().gethWin(), pkmatrices.getCurrentPk().getaWin(),
+						pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
 			}
 
 			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
