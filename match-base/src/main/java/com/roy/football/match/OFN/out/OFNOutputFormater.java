@@ -44,8 +44,18 @@ public class OFNOutputFormater {
 		excelData.setMatchDayId(ofnMatch.getMatchDayId());
 		excelData.setMatchTime(DateUtil.formatDateWithDataBase(ofnMatch.getMatchTime()));
 		excelData.setLeagueName(ofnMatch.getLeague().name());
+
+		int hostPm = 0, guestPm = 0;
+		try {
+			hostPm = ofnMatch.getBaseData().getHostData().getPm().getAllPm();
+			guestPm = ofnMatch.getBaseData().getGuestData().getPm().getAllPm();
+		} catch (Exception e) {
+
+		}
 		
-		excelData.setMatchInfor(String.format("%s\r\n%s", ofnMatch.getHostName(), ofnMatch.getGuestName()));
+		excelData.setMatchInfor(String.format("%s_%d\r\n%s_%d",
+				ofnMatch.getHostName(), hostPm,
+				ofnMatch.getGuestName(), guestPm));
 		
 		if (ofnMatch.getHostScore() != null) {
 			excelData.setResult(String.format("%s : %s", ofnMatch.getHostScore(), ofnMatch.getGuestScore()));
