@@ -27,7 +27,7 @@ public class OFNExcelData {
 	private String originPanKou;
 //	@Header(order=110, title="Predict PK [Latest]")
 	private String predictPanKou;
-	@Header(order=130, title="K_PK[Up, Down]")
+	@Header(order=130, title="PK[Up, Down]DX")
 	private String pkKillRate;
 //	@Header(order=135, title="Main_Avg Main_chg")
 	private String plMatrix;

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.roy.football.match.OFN.statics.matrices.*;
 import org.springframework.stereotype.Component;
 
 import com.roy.football.match.OFN.MatchPromoter.MatchRank;
@@ -15,17 +16,9 @@ import com.roy.football.match.OFN.response.Company;
 import com.roy.football.match.OFN.response.EuroPl;
 import com.roy.football.match.OFN.response.MatchResultAnalyzed;
 import com.roy.football.match.OFN.response.OFNMatchData;
-import com.roy.football.match.OFN.statics.matrices.ClubMatrices;
 import com.roy.football.match.OFN.statics.matrices.ClubMatrices.ClubMatrix;
-import com.roy.football.match.OFN.statics.matrices.EuroMatrices;
 import com.roy.football.match.OFN.statics.matrices.EuroMatrices.EuroMatrix;
-import com.roy.football.match.OFN.statics.matrices.JiaoShouMatrices;
-import com.roy.football.match.OFN.statics.matrices.MatchState;
 import com.roy.football.match.OFN.statics.matrices.MatchState.LatestMatchMatrices;
-import com.roy.football.match.OFN.statics.matrices.PredictResult;
-import com.roy.football.match.OFN.statics.matrices.PromoteMatrics;
-import com.roy.football.match.OFN.statics.matrices.OFNCalculateResult;
-import com.roy.football.match.OFN.statics.matrices.PankouMatrices;
 import com.roy.football.match.base.League;
 import com.roy.football.match.base.ResultGroup;
 import com.roy.football.match.base.TeamLevel;
@@ -141,23 +134,34 @@ public class OFNOutputFormater {
 			
 //			excelData.setPredictPanKou(getPredictPankouString(predictPk, latestPk));
 
-			PankouMatrices pkmatrices = calculateResult.getPkMatrices();
+			PankouMatrices pkMatrices = calculateResult.getPkMatrices();
+			DaxiaoMatrices dxMatrics = calculateResult.getDxMatrices();
 			
-			if (pkmatrices != null) {
-				Float mainPk = pkmatrices.getMainPk().getPanKou();
-				Float currPk = pkmatrices.getCurrentPk().getPanKou();
-				float calculatedCurrPk = MatchUtil.getCalculatedPk(pkmatrices.getCurrentPk());
+			if (pkMatrices != null) {
+				Float mainPk = pkMatrices.getMainPk().getPanKou();
+				Float currPk = pkMatrices.getCurrentPk().getPanKou();
+				float calculatedCurrPk = MatchUtil.getCalculatedPk(pkMatrices.getCurrentPk());
 				pkBalance = (currPk - calculatedCurrPk);
 				currentPk = currPk;
 				
 				excelData.setOriginPanKou(String.format("%.2f [%.2f]\r\n%.2f [%.2f]\r\n%.2f [%.2f]",
 						predictPk, latestPk,
-						MatchUtil.getCalculatedPk(pkmatrices.getMainPk()), mainPk,
+						MatchUtil.getCalculatedPk(pkMatrices.getMainPk()), mainPk,
 						calculatedCurrPk, currPk));
 
-				excelData.setPkKillRate(String.format("%.2f, %.2f\r\n%.2f, %.2f",
-						pkmatrices.getCurrentPk().gethWin(), pkmatrices.getCurrentPk().getaWin(),
-						pkmatrices.getHwinChangeRate(), pkmatrices.getAwinChangeRate()));
+				float dxHWin = 0f, dxPk=0f, dxAWin = 0f;
+
+				if (dxMatrics != null && dxMatrics.getCurrentPk() != null) {
+					dxHWin = dxMatrics.getCurrentPk().gethWin();
+					dxAWin = dxMatrics.getCurrentPk().getaWin();
+					dxPk = dxMatrics.getCurrentPk().getPanKou();
+				}
+
+				excelData.setPkKillRate(String.format("%.2f, %.2f\r\n%.2f, %.2f\r\n" +
+								"%.2f %.1f %.2f",
+						pkMatrices.getCurrentPk().gethWin(), pkMatrices.getCurrentPk().getaWin(),
+						pkMatrices.getHwinChangeRate(), pkMatrices.getAwinChangeRate(),
+						dxHWin, dxPk, dxAWin));
 			}
 
 			EuroMatrices euroMatrics = calculateResult.getEuroMatrices();
