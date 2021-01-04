@@ -578,7 +578,7 @@ public class MatchPromoter {
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.021f
 						&& aaWinDiff - aomenWinChange < 0.025f // aomen original is not high
-						&& waWinDiff < 0.04f
+						&& (le.getMajorCompany() == Company.William || waWinDiff <= 0.035f)
 						&& jaWinDiff <= -0.04f
 						&& aleWinDiff <= 0.025f
 					) {
@@ -713,7 +713,7 @@ public class MatchPromoter {
 						    || pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f) // in case pk change caused pk calculated wrong
 						&& aaWinDiff < 0.015f	// aomen is not much higher than the average
 						&& aaWinDiff - aomenWinChange < 0.025f // aomen original is not high
-						&& waWinDiff < 0.04f	// willian is not too high
+						&& (le.getMajorCompany() == Company.William || waWinDiff <= 0.04f)
 						&& jaWinDiff <= -0.04f	// jincai is low
 						&& aleWinDiff <= 0.025f	// aomen is not much higher than the league average
 						&& winP >= 0.25f
@@ -858,7 +858,7 @@ public class MatchPromoter {
 								|| pkDirection.ordinal() == PKDirection.Downer.ordinal() && upChange <= 0.04f)
 						&& aaWinDiff < 0.011f
 						&& aaWinDiff - aomenWinChange < 0.025f // aomen original is not high
-						&& waWinDiff <= 0.05f
+						&& (le.getMajorCompany() == Company.William || waWinDiff <= 0.035f)
 						&& jaWinDiff <= -0.025f
 						&& aleWinDiff <= 0.025f
 						&& winP > 0.25f
@@ -1077,7 +1077,7 @@ public class MatchPromoter {
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& aaLoseDiff < 0.011f
 						&& aaLoseDiff - aomenLoseChange < 0.025f
-						&& waLoseDiff <= 0.035f
+						&& (le.getMajorCompany() == Company.William || waLoseDiff <= 0.035f)
 						&& jaLoseDiff <= -0.025f
 						&& aleLoseDiff <= 0.025f
 						&& loseP > 0.25f
@@ -1229,7 +1229,7 @@ public class MatchPromoter {
 							|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && upChange <= 0.04f)
 						&& aaLoseDiff < 0.011f
 						&& aaLoseDiff - aomenLoseChange < 0.025f
-						&& waLoseDiff < 0.035f
+						&& (le.getMajorCompany() == Company.William || waLoseDiff <= 0.035f)
 						&& jaLoseDiff <= -0.03f
 						&& aleLoseDiff <= 0.025f
 						&& loseP > 0.25f
@@ -1301,7 +1301,7 @@ public class MatchPromoter {
 								|| pkDirection.ordinal() == PKDirection.Uper.ordinal() && downChange <= 0.04f)
 						&& (aaLoseDiff < 0.021f && aomenLoseChange < 0.011f || aaLoseDiff < -0.021f)
 						&& aaLoseDiff - aomenLoseChange < 0.025f
-						&& waLoseDiff <= 0.03f
+						&& (le.getMajorCompany() == Company.William || waLoseDiff <= 0.03f)
 						&& jaLoseDiff <= -0.02f
 						&& aleLoseDiff <= 0.025f
 						) {

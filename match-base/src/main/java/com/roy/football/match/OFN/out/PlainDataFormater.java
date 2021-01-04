@@ -32,25 +32,27 @@ public class PlainDataFormater {
                 .append("<th width=\"10%\">promote_ratio</th></tr>\n");
 
         for (OFNExcelData data : datas) {
-            sb.append("<tr>")
-                    .append("<td>").append(data.getMatchDayId()).append("</td>")
-                    .append("<td>").append(data.getMatchTime()).append("</td>")
-                    .append("<td>").append(data.getLeagueName()).append("</td>")
-                    .append("<td>").append(data.getMatchInfor()).append("</td>")
-                    .append("<td>").append(data.getLevel()).append("</td>")
-                    .append("<td>").append(data.getStateVariation()).append("</td>")
-                    .append("<td>").append(data.getOriginPanKou()).append("</td>")
-                    .append("<td>").append(data.getPkKillRate()).append("</td>")
-                    .append("<td>").append(data.getWill()).append("</td>")
-                    .append("<td>").append(data.getAomen()).append("</td>")
-                    .append("<td>").append(data.getJincai()).append("</td>")
-                    .append("<td>").append(data.getJincaiJY()).append("</td>")
-                    .append("<td>").append(data.getKill()).append("</td>")
-                    .append("<td>").append(data.getPromote()).append("</td>")
-                    .append("<td>").append(data.getPredictScore()).append("</td>")
-                    .append("<td>").append(data.getResult()).append("</td>")
-                    .append("<td>").append(data.getPromoteRatio()).append("</td>")
-                    .append("</tr>\n");
+            if (data != null) {
+                sb.append("<tr>")
+                        .append("<td>").append(data.getMatchDayId()).append("</td>")
+                        .append("<td>").append(data.getMatchTime()).append("</td>")
+                        .append("<td>").append(data.getLeagueName()).append("</td>")
+                        .append("<td>").append(data.getMatchInfor()).append("</td>")
+                        .append("<td>").append(data.getLevel()).append("</td>")
+                        .append("<td>").append(data.getStateVariation()).append("</td>")
+                        .append("<td>").append(data.getOriginPanKou()).append("</td>")
+                        .append("<td>").append(data.getPkKillRate()).append("</td>")
+                        .append("<td>").append(data.getWill()).append("</td>")
+                        .append("<td>").append(data.getAomen()).append("</td>")
+                        .append("<td>").append(data.getJincai()).append("</td>")
+                        .append("<td>").append(data.getJincaiJY()).append("</td>")
+                        .append("<td>").append(data.getKill()).append("</td>")
+                        .append("<td>").append(data.getPromote()).append("</td>")
+                        .append("<td>").append(data.getPredictScore()).append("</td>")
+                        .append("<td>").append(data.getResult()).append("</td>")
+                        .append("<td>").append(data.getPromoteRatio()).append("</td>")
+                        .append("</tr>\n");
+            }
         }
 
         sb.append("</table>\n");
