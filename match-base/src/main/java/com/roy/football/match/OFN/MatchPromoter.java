@@ -1095,7 +1095,7 @@ public class MatchPromoter {
 				if (rank.getDRank() >= 8
 						&& (aaDrawDiff <= 0.001f || aomen.getOriginEuro().getEDraw() <= 3.21f)
 						&& aomenDrawChange <= 0.021f
-						&& jaDrawDiff < 0.035f + 2 * winAdjByPull && jcDrawChange < 0.005f
+						&& jaDrawDiff < 0.035f + 2 * winAdjByPull && jcDrawChange < 0.012f
 						&& waDrawDiff <= 0.05f
 						&& aleDrawDiff <= 0.03f
 						&& (rank.getDRank() >= rank.getLRank() - 1 || rank.getDRank() >= rank.getWRank() - 1)
@@ -1176,7 +1176,7 @@ public class MatchPromoter {
 						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& (aaDrawDiff < 0.011f
 								|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.31f)
-						&& jaDrawDiff <= 0.035f && jcDrawChange < 0.005f
+						&& jaDrawDiff <= 0.035f && jcDrawChange < 0.008f
 						&& aleDrawDiff <= 0.03f
 						&& (rank.getDRank() >= rank.getLRank() - 1 || rank.getDRank() >= rank.getWRank() - 1)
 						) {
@@ -1247,10 +1247,10 @@ public class MatchPromoter {
 						&& pkDirection.ordinal() > PKDirection.Downer.ordinal()
 						&& (aaDrawDiff <= 0.001f && aomenDrawChange < 0.019f
 							|| aaDrawDiff <= 0.021f && aomen.getOriginEuro().getEDraw() <= 3.31f)
-						&& jaDrawDiff <= 0.015f + 2 * winAdjByPull && jcDrawChange < 0.005f
+						&& jaDrawDiff <= 0.015f + 2 * winAdjByPull && jcDrawChange < 0.012f
 						&& waDrawDiff <= 0.05f
 						&& aleDrawDiff <= 0.03f
-						&& (rank.getDRank() > rank.getLRank() || rank.getDRank() > rank.getWRank())
+						&& (rank.getDRank() >= rank.getLRank() || rank.getDRank() >= rank.getWRank())
 						&& (drawP >= 0f || drawP - winP > -0.6f && drawP - loseP > -0.6f)
 						) {
 					if (aaDrawDiff <= -0.035f || aomen.getOriginEuro().getEDraw() <= 3.30f
